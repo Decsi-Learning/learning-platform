@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f7f5" />
+  <title>DECSI Learning — Início</title>
+  <style>
+    :root {
+      /* Paleta-base do produto: azul petróleo, verde água e fundos claros. */
+      --ink: #173b43;
+      --ink-soft: #42636a;
+      --teal: #147d78;
+      --teal-dark: #0d625f;
+      --mint: #dff1eb;
+      --coral: #e9876d;
+      --sun: #f2c768;
+      --sky: #e5eff5;
+      --paper: #f6f7f5;
+      --white: #fff;
+      --line: #e5eae7;
+      --muted: #789096;
+      --shadow: 0 14px 38px rgba(23, 59, 67, .07);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, a { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    .layout { min-height: 100vh; display: grid; grid-template-columns: 252px minmax(0,1fr); }
+    .sidebar { position: sticky; top: 0; z-index: 5; height: 100vh; background: rgba(255,255,255,.78); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); border-right: 1px solid rgba(255,255,255,.8); box-shadow: 8px 0 30px rgba(23,59,67,.045); padding: 28px 18px; display: flex; flex-direction: column; }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 34px; font-weight: 750; letter-spacing: -.03em; font-size: 17px; }
+    .brand-mark { width: 38px; height: 38px; border-radius: 13px; display: grid; place-items: center; color: white; background: var(--teal); font-size: 13px; letter-spacing: -.05em; }
+    .brand small { display: block; color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+    .nav-label { padding: 0 12px; margin: 0 0 10px; color: #9aabad; font-size: 10px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+    .nav { display: grid; gap: 5px; }
+    .nav a { padding: 11px 12px; display: flex; gap: 12px; align-items: center; border-radius: 11px; color: var(--ink-soft); font-weight: 600; }
+    .nav a.active { color: var(--teal-dark); background: rgba(223,241,235,.78); box-shadow: inset 0 0 0 1px rgba(20,125,120,.07); }
+    .icon { width: 19px; height: 19px; display: inline-grid; place-items: center; font-size: 17px; line-height: 1; }
+    .sidebar-bottom { margin-top: auto; }
+    .help-card { border-radius: 16px; background: rgba(241,247,244,.78); padding: 17px; }
+    .help-card strong { display:block; font-size: 13px; margin-bottom: 5px; }
+    .help-card p { margin:0 0 12px; color: var(--ink-soft); font-size: 12px; }
+    .help-card a { color: var(--teal-dark); font-size: 12px; font-weight: 700; }
+    main { min-width: 0; padding: 26px clamp(20px, 4vw, 56px) 56px; }
+    .topbar { position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 38px;padding:10px 14px;background:rgba(255,255,255,.68);-webkit-backdrop-filter:blur(20px) saturate(175%);backdrop-filter:blur(20px) saturate(175%);border:1px solid rgba(255,255,255,.88);border-radius:16px;box-shadow:0 8px 28px rgba(23,59,67,.07),inset 0 1px rgba(255,255,255,.8); }
+    .crumb { color: var(--muted); font-size: 13px; }
+    .user { display:flex; align-items:center; gap:12px; }
+    .bell { width:40px;height:40px;border:1px solid var(--line);border-radius:12px;background:white;color:var(--ink);font-size:17px; }
+    .avatar { width:39px;height:39px;border-radius:50%;display:grid;place-items:center;background:#f7dfd5;color:#8b4b3c;font-weight:750;font-size:13px; }
+    .user-name { font-weight:700; font-size:13px; }
+    .user-role { color:var(--muted); font-size:11px; }
+    .welcome { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:27px; }
+    h1 { margin:0 0 7px; font-size: clamp(27px, 3vw, 36px); letter-spacing:-.045em; line-height:1.15; }
+    .welcome p { margin:0; color:var(--ink-soft); }
+    .date { color:var(--muted); font-size:12px; white-space:nowrap; }
+    .hero { position:relative; overflow:hidden; display:grid; grid-template-columns:1.2fr .8fr; min-height:236px; border-radius:22px; padding:30px 34px; color:white; background:var(--ink); box-shadow:var(--shadow); }
+    .hero:after { content:""; position:absolute; width:290px;height:290px;border:1px solid rgba(255,255,255,.12);border-radius:50%;right:9%;top:-120px;box-shadow:0 0 0 35px rgba(255,255,255,.035),0 0 0 75px rgba(255,255,255,.025); }
+    .hero-content { position:relative;z-index:1;max-width:510px; }
+    .eyebrow { display:inline-flex;align-items:center;gap:7px;color:#bde8d9;font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase; }
+    .eyebrow:before {content:"";width:7px;height:7px;border-radius:50%;background:#6ed1ad;}
+    .hero h2 { margin:13px 0 9px;font-size:25px;line-height:1.2;letter-spacing:-.03em; }
+    .hero p { margin:0 0 20px;color:#c8d9d8;font-size:13px;max-width:430px; }
+    .button { display:inline-flex;align-items:center;gap:9px;border:0;border-radius:10px;padding:11px 15px;background:#a9e1c9;color:#123f43;font-weight:750;font-size:12px;cursor:pointer; }
+    .hero-art { z-index:1;display:flex;align-items:center;justify-content:center; }
+    .learning-art { width:170px;height:150px;position:relative; }
+    .learning-art .book { position:absolute;left:20px;top:42px;width:130px;height:88px;border-radius:13px 13px 16px 16px;background:#f3c96e;transform:rotate(-8deg);box-shadow:inset 0 -9px rgba(160,103,46,.12),0 16px 25px rgba(0,0,0,.15); }
+    .learning-art .book:before {content:"";position:absolute;left:50%;top:0;height:100%;border-left:2px solid rgba(119,85,38,.25);}
+    .learning-art .leaf {position:absolute;width:43px;height:20px;border-radius:100% 0 100% 0;background:#73c7a4;transform:rotate(-35deg);right:4px;top:13px;}
+    .learning-art .spark {position:absolute;color:#f3c96e;font-size:24px;right:3px;bottom:21px;}
+    .section-head { display:flex;align-items:end;justify-content:space-between;gap:16px;margin:35px 0 17px; }
+    .section-head h2 { margin:0;font-size:19px;letter-spacing:-.025em; }
+    .section-head p { margin:4px 0 0;color:var(--muted);font-size:12px; }
+    .text-link { color:var(--teal-dark);font-weight:700;font-size:12px;white-space:nowrap; }
+    .stats { display:grid;grid-template-columns:repeat(3,1fr);gap:15px; }
+    .stat { display:flex;align-items:center;gap:14px;background:white;padding:17px;border:1px solid var(--line);border-radius:15px; }
+    .stat-icon { width:43px;height:43px;border-radius:13px;display:grid;place-items:center;font-size:19px; }
+    .stat-icon.mint {background:var(--mint)} .stat-icon.yellow{background:#fff2d5} .stat-icon.blue{background:var(--sky)}
+    .stat strong { display:block;font-size:21px;letter-spacing:-.04em;line-height:1.1; }
+    .stat span { color:var(--muted);font-size:11px; }
+    .tracks { display:grid;gap:12px; }
+    .track { background:white;border:1px solid var(--line);border-radius:15px;padding:19px;display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:center;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease; }
+    .track:hover { transform:translateY(-2px);border-color:#c4ded5;box-shadow:var(--shadow); }
+    .track-icon {width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:21px;}
+    .track-icon.a{background:#e4f2eb}.track-icon.b{background:#fff0e7}
+    .track h3 {margin:0 0 3px;font-size:13px;}.track p{margin:0;color:var(--muted);font-size:11px;}
+    .track .track-description {margin:5px 0;color:var(--ink-soft);font-size:12px;}
+    .track .track-count {margin-top:8px;color:var(--teal-dark);font-size:11px;font-weight:700;}
+    .progress-wrap {margin-top:10px;display:flex;align-items:center;gap:9px;}
+    .progress {height:5px;flex:1;background:#edf1ef;border-radius:9px;overflow:hidden;}.progress i{display:block;height:100%;border-radius:9px;background:var(--teal);}
+    .progress-label {color:var(--muted);font-size:10px;white-space:nowrap;}
+    .arrow {color:#97a8a9;font-size:19px;}
+    .activity {background:white;border:1px solid var(--line);border-radius:15px;padding:19px;}
+    .activity-empty {margin:0;color:var(--muted);font-size:12px;}
+    .activity h3 {margin:0 0 17px;font-size:14px;}
+    .activity-row {display:grid;grid-template-columns:34px 1fr;gap:11px;padding:0 0 16px;position:relative;}
+    .activity-row:not(:last-child):after {content:"";position:absolute;left:16px;top:33px;bottom:0;border-left:1px solid var(--line);}
+    .activity-mark {width:33px;height:33px;border-radius:10px;background:#eaf5f1;display:grid;place-items:center;font-size:14px;z-index:1;}
+    .activity-row strong {display:block;font-size:11px;line-height:1.35;}.activity-row span{display:block;color:var(--muted);font-size:10px;margin-top:4px;}
+    @media(max-width:900px){.layout{grid-template-columns:76px minmax(0,1fr)}.sidebar{padding:22px 11px}.brand{justify-content:center;padding:0 0 32px}.brand-text,.nav-label,.nav .label,.help-card{display:none}.nav a{justify-content:center;padding:12px}.sidebar-bottom{display:none}}
+    @media(max-width:620px){.layout{display:block}.sidebar{position:sticky;top:0;z-index:7;height:63px;border:0;border-bottom:1px solid rgba(255,255,255,.85);border-radius:0;padding:8px 14px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;box-shadow:0 5px 20px rgba(23,59,67,.06)}.brand{padding:0}.nav-label{display:none}.nav{display:flex;gap:3px}.nav a{padding:9px}.nav .icon{font-size:16px}.topbar{top:63px;margin:0 0 27px;padding:8px 10px;border-radius:13px}.crumb,.user-name,.user-role{display:none}.welcome{display:block}.date{display:block;margin-top:12px}.hero{grid-template-columns:1fr;padding:25px;min-height:0}.hero-art{display:none}.hero h2{font-size:22px}.stats{grid-template-columns:1fr;gap:9px}.stat{padding:13px}.section-head{margin-top:29px}.track{grid-template-columns:42px minmax(0,1fr) auto;gap:10px;padding:13px}.track-icon{width:42px;height:42px}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <a class="brand" href="#inicio" aria-label="DECSI Learning, início">
+        <span class="brand-mark">D.</span><span class="brand-text">DECSI <small>learning</small></span>
+      </a>
+      <div>
+        <p class="nav-label">Menu</p>
+        <nav class="nav">
+          <a class="active" href="#inicio"><span class="icon">⌂</span><span class="label">Início</span></a>
+          <a href="#dashboard"><span class="icon">▦</span><span class="label">Dashboard</span></a>
+          <a href="#trilhas"><span class="icon">◈</span><span class="label">Minhas trilhas</span></a>
+          <a href="#agenda"><span class="icon">▣</span><span class="label">Agenda</span></a>
+          <a href="#certificados"><span class="icon">✧</span><span class="label">Certificados</span></a>
+        </nav>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="#ajuda">Acessar central de ajuda →</a></div>
+      </div>
+    </aside>
+
+    <main id="inicio">
+      <header class="topbar">
+        <span class="crumb">Portal de aprendizagem&nbsp; / &nbsp;Início</span>
+        <div class="user"><button class="bell" aria-label="Notificações">♧</button><div class="avatar" aria-hidden="true">MC</div><div><div class="user-name">Olá, Marina</div><div class="user-role">Estudante</div></div></div>
+      </header>
+      <section class="welcome">
+        <div><h1>Olá! 👋</h1><p>Escolha uma trilha para começar a explorar.</p></div>
+      </section>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-content"><span class="eyebrow">Sua jornada continua</span><h2 id="hero-title">Pequenos passos levam a grandes conquistas.</h2><p>Retome de onde parou e siga avançando no seu ritmo. Seu próximo aprendizado está a um clique.</p><a class="button" href="#trilhas">Continuar aprendendo <span aria-hidden="true">→</span></a></div>
+        <div class="hero-art" aria-hidden="true"><div class="learning-art"><span class="leaf"></span><div class="book"></div><span class="spark">✦</span></div></div>
+      </section>
+
+      <section id="trilhas" aria-labelledby="tracks-title">
+          <div class="section-head"><div><h2 id="tracks-title">Escolha uma trilha</h2><p>Explore os conteúdos de Algoritmos e Estruturas de Dados</p></div></div>
+          <div class="tracks">
+            <a class="track" href="aeds-i.html" aria-label="Abrir trilha AEDS I"><span class="track-icon a">Ⅰ</span><span><h3>AEDS I</h3><p class="track-description">Introdução à lógica, aos algoritmos e às estruturas de dados.</p><p class="track-count" id="aeds-i-count">Plano de ensino · Carregando tópicos…</p></span><span class="arrow" aria-hidden="true">›</span></a>
+            <a class="track" href="aeds-ii.html" aria-label="Abrir trilha AEDS II"><span class="track-icon b">Ⅱ</span><span><h3>AEDS II</h3><p class="track-description">Aprofunde seus conhecimentos em algoritmos e estruturas de dados.</p><p class="track-count" id="aeds-ii-count">Carregando tópicos…</p></span><span class="arrow" aria-hidden="true">›</span></a>
+          </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    [
+      { id: "aeds-i", label: "Plano de ensino · ", element: document.getElementById("aeds-i-count") },
+      { id: "aeds-ii", label: "", element: document.getElementById("aeds-ii-count") }
+    ].forEach(({ id, label, element }) => {
+      fetch(`content/${id}/topicos.json`)
+        .then((response) => response.json())
+        .then(({ topics }) => {
+          const count = Array.isArray(topics) ? topics.length : 0;
+          const countLabel = `${count} ${count === 1 ? "tópico" : "tópicos"}`;
+          element.textContent = `${label}${countLabel}${count === 0 ? " · Conteúdo em preparação" : " · Conteúdo disponível"}`;
+        })
+        .catch(() => { element.textContent = "Conteúdo indisponível"; });
+    });
+  </script>
+</body>
+</html>

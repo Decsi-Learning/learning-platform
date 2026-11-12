@@ -1,0 +1,40 @@
+{
+  "topics": [
+    {
+      "id": "recursividade",
+      "title": "Recursividade",
+      "summary": "Recursão de cauda, indireta e aninhada; recursão excessiva e backtracking.",
+      "file": null
+    },
+    {
+      "id": "analise-complexidade",
+      "title": "Análise de complexidade de algoritmos",
+      "summary": "Análise assintótica de funções, definições e propriedades; melhor caso, pior caso e caso médio.",
+      "file": null
+    },
+    {
+      "id": "tipos-abstratos-dados",
+      "title": "Tipos Abstratos de Dados",
+      "summary": "Abstração e modelagem de problemas, definições e conceitos de Tipos Abstratos de Dados.",
+      "file": null
+    },
+    {
+      "id": "estruturas-dados-lineares",
+      "title": "Estruturas de Dados lineares",
+      "summary": "Listas, filas e pilhas.",
+      "file": "fila_lista_pilha.md"
+    },
+    {
+      "id": "estruturas-dados-hierarquicas",
+      "title": "Estruturas de Dados hierárquicas",
+      "summary": "Árvores Binárias, Árvores Vermelho e Preto e Heaps.",
+      "file": null
+    },
+    {
+      "id": "busca-ordenacao",
+      "title": "Algoritmos e técnicas de busca e ordenação",
+      "summary": "Busca sequencial e binária; eficiência e estabilidade; Bubble, Selection, Insertion, Shellsort, Quicksort, Mergesort e Heapsort.",
+      "file": null
+    }
+  ]
+}
