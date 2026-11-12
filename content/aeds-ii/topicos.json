@@ -1,0 +1,70 @@
+{
+  "topics": [
+    {
+      "id": "organizacao-memoria-secundaria",
+      "title": "Organização dos dados em memória secundária",
+      "summary": "Organização e armazenamento de dados em dispositivos de memória secundária.",
+      "file": null
+    },
+    {
+      "id": "arquivos",
+      "title": "Arquivos",
+      "summary": "Conceitos e estruturas de arquivos para armazenamento e processamento de dados.",
+      "file": null
+    },
+    {
+      "id": "acesso-sequencial-randomico",
+      "title": "Acesso sequencial e randômico",
+      "summary": "Formas de localizar e acessar registros em arquivos.",
+      "file": null
+    },
+    {
+      "id": "organizacao-dados-arquivos",
+      "title": "Organização de dados em arquivos",
+      "summary": "Métodos de disposição e organização de dados em arquivos.",
+      "file": null
+    },
+    {
+      "id": "registros-tamanho-fixo",
+      "title": "Registros de tamanho fixo",
+      "summary": "Representação e armazenamento de registros com tamanho constante.",
+      "file": null
+    },
+    {
+      "id": "registros-tamanho-variavel",
+      "title": "Registros de tamanho variável",
+      "summary": "Representação e armazenamento de registros com tamanho variável.",
+      "file": null
+    },
+    {
+      "id": "ordenacao-em-disco",
+      "title": "Ordenação em disco e reutilização de espaço",
+      "summary": "Interpolação e interpolação polifásica; reutilização de espaço; fragmentação interna e externa.",
+      "file": null
+    },
+    {
+      "id": "indexacao-arquivos",
+      "title": "Indexação de dados em disco",
+      "summary": "Árvores B, B+ e B* para indexação de arquivos.",
+      "file": null
+    },
+    {
+      "id": "compressao-dados",
+      "title": "Compressão de dados",
+      "summary": "Run length encoding, código de Huffman e LZW.",
+      "file": null
+    },
+    {
+      "id": "hash",
+      "title": "Hash",
+      "summary": "Funções de dispersão, tratamento de colisões e eficiência de tabelas Hash.",
+      "file": null
+    },
+    {
+      "id": "casamento-padroes-texto",
+      "title": "Casamento de padrões em texto",
+      "summary": "Força bruta, Shift-And, Boyer-Moore, Boyer-Moore-Horspool e Knuth-Morris-Pratt (KMP).",
+      "file": null
+    }
+  ]
+}
