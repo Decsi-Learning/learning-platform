@@ -4,7 +4,7 @@
       "id": "organizacao-memoria-secundaria",
       "title": "Organização dos dados em memória secundária",
       "summary": "Organização e armazenamento de dados em dispositivos de memória secundária.",
-      "file": null
+      "file": "organizacao_memoria_secundaria.md"
     },
     {
       "id": "arquivos",
