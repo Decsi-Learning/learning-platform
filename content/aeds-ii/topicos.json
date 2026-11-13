@@ -52,7 +52,7 @@
       "id": "compressao-dados",
       "title": "Compressão de dados",
       "summary": "Run length encoding, código de Huffman e LZW.",
-      "file": null
+      "file": "compressao-dados.md"
     },
     {
       "id": "hash",

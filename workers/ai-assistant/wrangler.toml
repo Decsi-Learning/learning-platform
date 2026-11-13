@@ -1,0 +1,20 @@
+name = "gemini-proxy"
+main = "src/index.js"
+compatibility_date = "2026-11-12"
+
+[vars]
+# Configure the exact browser origins serving the app, comma-separated.
+ALLOWED_ORIGINS = "https://decsi-learning.github.io,http://localhost:8000,http://127.0.0.1:8000,http://127.0.0.1:5500"
+
+[secrets]
+required = ["GEMINI_API_KEY"]
+
+{
+  "d1_databases": [
+    {
+      "binding": "chat_db",
+      "database_name": "chat-db",
+      "database_id": "21f7e26c-693b-4480-a94a-0c39f45b6a79"
+    }
+  ]
+}

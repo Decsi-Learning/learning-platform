@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3F8C84"/>
+      <stop offset="1" stop-color="#2D716A"/>
+    </linearGradient>
+    <g id="d-shape">
+      <path fill-rule="evenodd" d="M250 420H400C520 420 600 500 600 620C600 740 520 820 400 820H250Z M345 505V735H395C465 735 505 690 505 620C505 550 465 505 395 505Z"/>
+      <circle cx="672" cy="780" r="40"/>
+    </g>
+    <mask id="knockout" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect width="1024" height="1024" fill="#fff"/>
+      <use href="#d-shape" fill="#000" stroke="#000" stroke-width="44" stroke-linejoin="round"/>
+    </mask>
+  </defs>
+
+  <rect width="1024" height="1024" rx="230" fill="url(#bg)"/>
+
+  <!-- Lâmpada (atrás do D) -->
+  <g fill="#fff" mask="url(#knockout)">
+    <g transform="translate(-6 -10)">
+      <path d="M430 350A190 190 0 0 1 810 350C810 440 750 490 722 550L716 610H524L518 550C490 490 430 440 430 350Z"/>
+      <rect x="540" y="632" width="160" height="24" rx="12"/>
+      <rect x="575" y="672" width="90" height="24" rx="12"/>
+    </g>
+  </g>
+
+  <!-- D. na frente -->
+  <use href="#d-shape" fill="#fff"/>
+</svg>
