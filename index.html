@@ -3,7 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    try {
+      const themePreference = localStorage.getItem("decsi.theme");
+      document.documentElement.dataset.theme = themePreference === "dark" || themePreference === "light"
+        ? themePreference
+        : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    } catch {
+      document.documentElement.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+  </script>
   <meta name="theme-color" content="#f6f7f5" />
+  <link rel="icon" type="image/svg+xml" href="logo-d-lampada.svg" />
   <title>DECSI Learning — Início</title>
   <style>
     :root {
@@ -29,7 +40,7 @@
     .layout { min-height: 100vh; display: grid; grid-template-columns: 252px minmax(0,1fr); }
     .sidebar { position: sticky; top: 0; z-index: 5; height: 100vh; background: rgba(255,255,255,.78); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); border-right: 1px solid rgba(255,255,255,.8); box-shadow: 8px 0 30px rgba(23,59,67,.045); padding: 28px 18px; display: flex; flex-direction: column; }
     .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 34px; font-weight: 750; letter-spacing: -.03em; font-size: 17px; }
-    .brand-mark { width: 38px; height: 38px; border-radius: 13px; display: grid; place-items: center; color: white; background: var(--teal); font-size: 13px; letter-spacing: -.05em; }
+    .brand-mark { width: 38px; height: 38px; flex: none; display: block; border-radius: 11px; object-fit: contain; }
     .brand small { display: block; color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
     .nav-label { padding: 0 12px; margin: 0 0 10px; color: #9aabad; font-size: 10px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
     .nav { display: grid; gap: 5px; }
@@ -99,12 +110,15 @@
     @media(max-width:900px){.layout{grid-template-columns:76px minmax(0,1fr)}.sidebar{padding:22px 11px}.brand{justify-content:center;padding:0 0 32px}.brand-text,.nav-label,.nav .label,.help-card{display:none}.nav a{justify-content:center;padding:12px}.sidebar-bottom{display:none}}
     @media(max-width:620px){.layout{display:block}.sidebar{position:sticky;top:0;z-index:7;height:63px;border:0;border-bottom:1px solid rgba(255,255,255,.85);border-radius:0;padding:8px 14px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;box-shadow:0 5px 20px rgba(23,59,67,.06)}.brand{padding:0}.nav-label{display:none}.nav{display:flex;gap:3px}.nav a{padding:9px}.nav .icon{font-size:16px}.topbar{top:63px;margin:0 0 27px;padding:8px 10px;border-radius:13px}.crumb,.user-name,.user-role{display:none}.welcome{display:block}.date{display:block;margin-top:12px}.hero{grid-template-columns:1fr;padding:25px;min-height:0}.hero-art{display:none}.hero h2{font-size:22px}.stats{grid-template-columns:1fr;gap:9px}.stat{padding:13px}.section-head{margin-top:29px}.track{grid-template-columns:42px minmax(0,1fr) auto;gap:10px;padding:13px}.track-icon{width:42px;height:42px}}
   </style>
+  <link rel="stylesheet" href="assistant.css" />
+  <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="theme.css" />
 </head>
 <body>
   <div class="layout">
     <aside class="sidebar" aria-label="Navegação principal">
       <a class="brand" href="#inicio" aria-label="DECSI Learning, início">
-        <span class="brand-mark">D.</span><span class="brand-text">DECSI <small>learning</small></span>
+        <img class="brand-mark" src="logo-d-lampada.svg" alt="" /><span class="brand-text">DECSI <small>learning</small></span>
       </a>
       <div>
         <p class="nav-label">Menu</p>
@@ -114,6 +128,7 @@
           <a href="#trilhas"><span class="icon">◈</span><span class="label">Minhas trilhas</span></a>
           <a href="#agenda"><span class="icon">▣</span><span class="label">Agenda</span></a>
           <a href="#certificados"><span class="icon">✧</span><span class="label">Certificados</span></a>
+          <a href="cadastro.html"><span class="icon">＋</span><span class="label">Criar conta</span></a>
         </nav>
       </div>
       <div class="sidebar-bottom">
@@ -130,7 +145,7 @@
         <div><h1>Olá! 👋</h1><p>Escolha uma trilha para começar a explorar.</p></div>
       </section>
       <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-content"><span class="eyebrow">Sua jornada continua</span><h2 id="hero-title">Pequenos passos levam a grandes conquistas.</h2><p>Retome de onde parou e siga avançando no seu ritmo. Seu próximo aprendizado está a um clique.</p><a class="button" href="#trilhas">Continuar aprendendo <span aria-hidden="true">→</span></a></div>
+        <div class="hero-content"><span class="eyebrow">Sua jornada continua</span><h2 id="hero-title">Pequenos passos levam a grandes conquistas.</h2><p id="hero-description">Retome de onde parou e siga avançando no seu ritmo. Seu próximo aprendizado está a um clique.</p><a class="button" id="resume-study" href="#trilhas">Continuar estudando <span aria-hidden="true">→</span></a></div>
         <div class="hero-art" aria-hidden="true"><div class="learning-art"><span class="leaf"></span><div class="book"></div><span class="spark">✦</span></div></div>
       </section>
 
@@ -143,20 +158,10 @@
       </section>
     </main>
   </div>
-  <script>
-    [
-      { id: "aeds-i", label: "Plano de ensino · ", element: document.getElementById("aeds-i-count") },
-      { id: "aeds-ii", label: "", element: document.getElementById("aeds-ii-count") }
-    ].forEach(({ id, label, element }) => {
-      fetch(`content/${id}/topicos.json`)
-        .then((response) => response.json())
-        .then(({ topics }) => {
-          const count = Array.isArray(topics) ? topics.length : 0;
-          const countLabel = `${count} ${count === 1 ? "tópico" : "tópicos"}`;
-          element.textContent = `${label}${countLabel}${count === 0 ? " · Conteúdo em preparação" : " · Conteúdo disponível"}`;
-        })
-        .catch(() => { element.textContent = "Conteúdo indisponível"; });
-    });
-  </script>
+  <script src="progress.js"></script>
+  <script src="dashboard.js" defer></script>
+  <script src="auth.js" defer></script>
+  <script src="assistant.js" defer></script>
+  <script src="theme.js" defer></script>
 </body>
 </html>

@@ -3,23 +3,38 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    try {
+      const themePreference = localStorage.getItem("decsi.theme");
+      document.documentElement.dataset.theme = themePreference === "dark" || themePreference === "light"
+        ? themePreference
+        : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    } catch {
+      document.documentElement.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+  </script>
   <meta name="theme-color" content="#f6f7f5" />
+  <link rel="icon" type="image/svg+xml" href="logo-d-lampada.svg" />
   <title>AEDS I: Plano de ensino — DECSI Learning</title>
   <style>
     :root{--ink:#173b43;--soft:#42636a;--teal:#147d78;--mint:#dff1eb;--paper:#f6f7f5;--white:#fff;--line:#e5eae7;--muted:#789096;--shadow:0 14px 38px rgba(23,59,67,.07)}
-    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}.layout{min-height:100vh;display:grid;grid-template-columns:252px minmax(0,1fr)}.sidebar{position:sticky;top:0;z-index:5;height:100vh;background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border-right:1px solid rgba(255,255,255,.8);box-shadow:8px 0 30px rgba(23,59,67,.045);padding:28px 18px;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 34px;color:var(--ink);font-weight:750;letter-spacing:-.03em;font-size:17px;text-decoration:none}.brand-mark{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;color:white;background:var(--teal);font-size:13px;letter-spacing:-.05em}.brand small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.nav-label{padding:0 12px;margin:0 0 10px;color:#9aabad;font-size:10px;font-weight:750;letter-spacing:.13em;text-transform:uppercase}.nav{display:grid;gap:5px}.nav a{padding:11px 12px;display:flex;gap:12px;align-items:center;border-radius:11px;color:var(--soft);font-weight:600;text-decoration:none}.nav a.active{color:#0d625f;background:rgba(223,241,235,.78);box-shadow:inset 0 0 0 1px rgba(20,125,120,.07)}.nav-icon{width:19px;height:19px;display:inline-grid;place-items:center;font-size:17px;line-height:1}.sidebar-bottom{margin-top:auto}.help-card{border-radius:16px;background:rgba(241,247,244,.78);padding:17px}.help-card strong{display:block;font-size:13px;margin-bottom:5px}.help-card p{margin:0 0 12px;color:var(--soft);font-size:12px}.help-card a{color:#0d625f;font-size:12px;font-weight:700;text-decoration:none}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}.layout{min-height:100vh;display:grid;grid-template-columns:252px minmax(0,1fr)}.sidebar{position:sticky;top:0;z-index:5;height:100vh;background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border-right:1px solid rgba(255,255,255,.8);box-shadow:8px 0 30px rgba(23,59,67,.045);padding:28px 18px;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 34px;color:var(--ink);font-weight:750;letter-spacing:-.03em;font-size:17px;text-decoration:none}.brand-mark{width:38px;height:38px;flex:none;display:block;border-radius:11px;object-fit:contain}.brand small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.nav-label{padding:0 12px;margin:0 0 10px;color:#9aabad;font-size:10px;font-weight:750;letter-spacing:.13em;text-transform:uppercase}.nav{display:grid;gap:5px}.nav a{padding:11px 12px;display:flex;gap:12px;align-items:center;border-radius:11px;color:var(--soft);font-weight:600;text-decoration:none}.nav a.active{color:#0d625f;background:rgba(223,241,235,.78);box-shadow:inset 0 0 0 1px rgba(20,125,120,.07)}.nav-icon{width:19px;height:19px;display:inline-grid;place-items:center;font-size:17px;line-height:1}.sidebar-bottom{margin-top:auto}.help-card{border-radius:16px;background:rgba(241,247,244,.78);padding:17px}.help-card strong{display:block;font-size:13px;margin-bottom:5px}.help-card p{margin:0 0 12px;color:var(--soft);font-size:12px}.help-card a{color:#0d625f;font-size:12px;font-weight:700;text-decoration:none}
     main{width:100%;min-width:0;margin:0;padding:26px clamp(20px,4vw,56px) 56px}.topbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:20px;margin:-26px 0 30px;padding:10px 14px;background:rgba(255,255,255,.68);-webkit-backdrop-filter:blur(20px) saturate(175%);backdrop-filter:blur(20px) saturate(175%);border:1px solid rgba(255,255,255,.88);border-radius:16px;box-shadow:0 8px 28px rgba(23,59,67,.07),inset 0 1px rgba(255,255,255,.8)}.crumb{min-width:0;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.user{display:flex;align-items:center;gap:12px;flex:none}.avatar{width:39px;height:39px;border-radius:50%;display:grid;place-items:center;background:#f7dfd5;color:#8b4b3c;font-weight:750;font-size:13px}.user-name{font-weight:700;font-size:13px}.user-role{color:var(--muted);font-size:11px}.back{display:inline-flex;gap:8px;align-items:center;color:var(--teal);font-weight:700;font-size:13px;text-decoration:none;margin-bottom:20px}
     .card{background:var(--white);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,5vw,46px);box-shadow:var(--shadow)}.tag{display:inline-block;padding:6px 10px;border-radius:9px;background:var(--mint);color:var(--teal);font-size:11px;font-weight:750;letter-spacing:.06em;text-transform:uppercase}
     h1{margin:15px 0 7px;font-size:clamp(32px,6vw,46px);line-height:1.1;letter-spacing:-.045em}.subtitle{margin:0;color:var(--soft);font-size:17px}.rule{height:1px;background:var(--line);margin:28px 0}.count{font-size:13px;font-weight:700;color:var(--soft)}.topic{margin-top:16px;border:1px solid var(--line);border-radius:15px;padding:clamp(18px,3vw,28px);background:white}.topic h2{margin:0 0 16px;font-size:21px;letter-spacing:-.025em}.markdown{color:var(--ink);line-height:1.75}.markdown h1,.markdown h2,.markdown h3{margin:1.5em 0 .55em;line-height:1.25;letter-spacing:-.025em}.markdown h1{font-size:1.8em}.markdown h2{font-size:1.45em}.markdown h3{font-size:1.15em}.markdown p{margin:.8em 0}.markdown ul,.markdown ol{padding-left:1.5em}.markdown li+li{margin-top:.35em}.markdown blockquote{margin:1em 0;padding:.2em 1em;border-left:3px solid var(--teal);color:var(--soft);background:#f5f9f7}.markdown code{padding:.12em .35em;border-radius:5px;background:#edf3f0;font: .9em ui-monospace,SFMono-Regular,Menlo,monospace}.markdown pre{overflow:auto;padding:16px;border-radius:12px;background:#173b43;color:#fff}.markdown pre code{padding:0;background:transparent;color:inherit}.markdown a{color:var(--teal);text-decoration:underline}.markdown .load-error{color:#8b4b3c}.resource{margin-top:16px;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:white}.resource-head{padding:17px 19px;display:flex;justify-content:space-between;align-items:center;gap:14px}.resource-head h2{margin:0;font-size:15px}.resource-head p{margin:4px 0 0;color:var(--muted);font-size:12px}.resource-link{flex:none;display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:9px 12px;border-radius:9px;background:var(--mint);color:var(--teal);font-size:12px;font-weight:750;text-decoration:none}.pdf-viewer{display:block;width:100%;height:min(75vh,760px);min-height:420px;border:0;border-top:1px solid var(--line);background:#edf1ef}
     .page-navigation{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:22px}.page-button{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:10px 16px;border:1px solid #c9ded6;border-radius:12px;background:rgba(255,255,255,.82);color:#0d625f;font-size:13px;font-weight:750;text-decoration:none;box-shadow:0 5px 16px rgba(23,59,67,.05);transition:transform .16s ease,box-shadow .16s ease;cursor:pointer}.page-button:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(23,59,67,.1)}.page-button.next,.page-button.finish{margin-left:auto;background:var(--teal);border-color:var(--teal);color:white}.page-button .direction{font-size:18px;line-height:1}.page-button:focus-visible{outline:3px solid rgba(20,125,120,.35);outline-offset:2px}
     @media(max-width:900px){.layout{grid-template-columns:76px minmax(0,1fr)}.sidebar{padding:22px 11px}.brand{justify-content:center;padding:0 0 32px}.brand-text,.nav-label,.nav .label,.help-card{display:none}.nav a{justify-content:center;padding:12px}}
     @media(max-width:620px){.layout{display:block}.sidebar{position:sticky;z-index:7;height:63px;border:0;border-bottom:1px solid rgba(255,255,255,.85);border-radius:0;padding:8px 14px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;box-shadow:0 5px 20px rgba(23,59,67,.06)}.brand{padding:0}.nav{display:flex;gap:3px}.nav a{padding:9px}.nav-icon{font-size:16px}main{padding:18px 14px 36px}.topbar{top:63px;margin:-18px 0 22px;padding:8px 10px;border-radius:13px}.crumb{font-size:11px}.user{gap:8px}.user-name,.user-role{display:none}.avatar{width:35px;height:35px}.card{border-radius:17px}.page-navigation{align-items:stretch;flex-direction:column;gap:9px}.page-button{width:100%;text-align:center}.page-button.next,.page-button.finish{margin-left:0}.resource-head{align-items:flex-start;flex-direction:column}.pdf-viewer{height:70vh;min-height:360px}}
+    .track-progress{margin:14px 0 22px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#f8fbf9}.track-progress-head,.topic-progress-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.track-progress-head{font-size:13px}.track-progress p{margin:5px 0 0;color:var(--muted);font-size:11px}.track-progress progress,.topic-progress progress{display:block;width:100%;height:7px;margin-top:9px;accent-color:var(--teal)}.topic-list{padding-left:1.5em;color:var(--soft)}.topic-list li+li{margin-top:15px}.topic-list a{color:var(--teal-dark);font-weight:700}.topic-progress{margin:.35em 0 .15em;padding:9px 11px;border:1px solid #e5ede9;border-radius:9px;background:#fbfdfc}.topic-progress-head{font-size:11px;color:var(--soft)}.topic-progress-head strong{color:var(--ink)}.topic-progress p{margin:5px 0 0;font-size:12px}
   </style>
+  <link rel="stylesheet" href="assistant.css" />
+  <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="theme.css" />
 </head>
 <body>
   <div class="layout">
     <aside class="sidebar" aria-label="Navegação principal">
-      <a class="brand" href="index.html" aria-label="DECSI Learning, início"><span class="brand-mark">D.</span><span class="brand-text">DECSI <small>learning</small></span></a>
+      <a class="brand" href="index.html" aria-label="DECSI Learning, início"><img class="brand-mark" src="logo-d-lampada.svg" alt="" /><span class="brand-text">DECSI <small>learning</small></span></a>
       <div><p class="nav-label">Menu</p><nav class="nav">
         <a href="index.html"><span class="nav-icon">⌂</span><span class="label">Início</span></a>
         <a href="index.html#dashboard"><span class="nav-icon">▦</span><span class="label">Dashboard</span></a>
@@ -39,7 +54,8 @@
       <h1>AEDS I</h1>
       <p class="subtitle">Introdução à lógica, aos algoritmos e às estruturas de dados.</p>
       <div class="rule"></div>
-      <p class="count">Plano da trilha · 1 tópico disponível</p>
+      <p class="count">Plano da trilha · Carregando tópicos…</p>
+      <div class="track-progress" role="group" aria-label="Progresso da trilha AEDS I"><div class="track-progress-head"><strong>Avanço de AEDS I</strong><span id="track-progress-label">Calculando…</span></div><progress id="track-progress-bar" max="100" value="0" aria-label="Percentual de avanço da trilha AEDS I"></progress><p id="track-progress-count">Carregando páginas…</p></div>
       <section class="topic" aria-labelledby="plan-title">
         <h2 id="plan-title">Plano de ensino</h2>
         <div class="markdown">
@@ -59,6 +75,7 @@
     </article>
   </main>
   </div>
+  <script src="progress.js"></script>
   <script>
     const topicList = document.getElementById("topic-list");
     const firstTopicLink = document.getElementById("first-topic-link");
@@ -71,15 +88,22 @@
         if (!response.ok) throw new Error("Não foi possível carregar a lista de tópicos.");
         return response.json();
       })
-      .then(({ topics }) => {
+      .then(async ({ topics }) => {
         if (!Array.isArray(topics) || topics.length === 0) {
           topicList.innerHTML = "<li>Nenhum tópico disponível ainda.</li>";
           firstTopicLink.textContent = "Nenhum tópico disponível";
           return;
         }
-        topicList.innerHTML = topics.map((topic, index) =>
-          `<li><a href="topico.html?trilha=aeds-i&id=${encodeURIComponent(topic.id)}">${escapeHtml(topic.title)}</a> — ${escapeHtml(topic.summary || "")}</li>`
-        ).join("");
+        const progressState = await window.decsiProgress.getAll({ "aeds-i": topics });
+        const summary = window.decsiProgress.calculateTrack("aeds-i", topics, progressState);
+        const progressByTopic = new Map(summary.items.map((item) => [item.topicId, item]));
+        document.getElementById("track-progress-label").textContent = `${summary.percent}%`;
+        document.getElementById("track-progress-bar").value = summary.percent;
+        document.getElementById("track-progress-count").textContent = `${summary.completedPages} de ${summary.totalPages} páginas avançadas`;
+        topicList.innerHTML = topics.map((topic) => {
+          const progress = progressByTopic.get(topic.id);
+          return `<li><a href="topico.html?trilha=aeds-i&id=${encodeURIComponent(topic.id)}">${escapeHtml(topic.title)}</a><div class="topic-progress"><div class="topic-progress-head"><strong>Avanço do tópico</strong><span>${progress.completedPages}/${progress.totalPages} páginas · ${progress.percent}%</span></div><progress max="100" value="${progress.percent}" aria-label="Avanço de ${escapeHtml(topic.title)}"></progress><p>${escapeHtml(topic.summary || "")}</p></div></li>`;
+        }).join("");
         document.querySelector(".count").textContent = `Plano da trilha · ${topics.length} ${topics.length === 1 ? "tópico disponível" : "tópicos disponíveis"}`;
         firstTopicLink.href = `topico.html?trilha=aeds-i&id=${encodeURIComponent(topics[0].id)}`;
         firstTopicLink.innerHTML = `${escapeHtml(topics[0].title)} <span class="direction" aria-hidden="true">›</span>`;
@@ -90,5 +114,8 @@
         firstTopicLink.textContent = "Tópicos indisponíveis";
       });
   </script>
+  <script src="auth.js" defer></script>
+  <script src="assistant.js" defer></script>
+  <script src="theme.js" defer></script>
 </body>
 </html>

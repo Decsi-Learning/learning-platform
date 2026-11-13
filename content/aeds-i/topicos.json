@@ -19,10 +19,49 @@
       "file": null
     },
     {
-      "id": "estruturas-dados-lineares",
-      "title": "Estruturas de Dados lineares",
-      "summary": "Listas, filas e pilhas.",
-      "file": "fila_lista_pilha.md"
+      "id": "estruturas-dados-lineares-lista",
+      "title": "Estruturas de Dados lineares - Lista",
+      "summary": "Listas - encadeadas, duplamente encadeadas e circulares; operações de inserção, remoção e busca.",
+      "pages": [
+        {
+          "id": "listas-simplesmente-encadeadas",
+          "title": "Lista simplesmente encadeada",
+          "summary": "Nós ligados em uma direção, com referência para o próximo elemento.",
+          "file": "listas-simplesmente-encadeadas.md"
+        },
+        {
+          "id": "listas-duplamente-encadeadas",
+          "title": "Lista duplamente encadeada",
+          "summary": "Nós com referências para o elemento anterior e para o próximo.",
+          "file": "listas-duplamente-encadeadas.md"
+        },
+        {
+          "id": "listas-circulares",
+          "title": "Lista circular",
+          "summary": "A referência do último nó retorna ao primeiro e fecha o ciclo.",
+          "file": "listas-circulares.md"
+        }
+      ]
+    },
+    {
+      "id": "estruturas-dados-lineares-pilha",
+      "title": "Estruturas de Dados lineares - Pilha",
+      "summary": "Pilha - conceito, operações de inserção, remoção e busca; implementação com vetor e lista encadeada.",
+      "pages": [
+        {
+          "id": "pilha-conceito",
+          "title": "Pilha - Conceito",
+          "summary": "Entendimento do conceito de Pilha e sua aplicação prática.",
+          "file": "pilha.md"
+        },
+        {
+          "id": "pilha-exercicios",
+          "title": "Pilha - Exercícios",
+          "summary": "Exercícios práticos para fixação do conteúdo de Pilha.",
+          "requiresQuizAnswers": true,
+          "file": "pilha-exercicios.md"
+        }
+      ]
     },
     {
       "id": "estruturas-dados-hierarquicas",

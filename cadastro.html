@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    try {
+      const themePreference = localStorage.getItem("decsi.theme");
+      document.documentElement.dataset.theme = themePreference === "dark" || themePreference === "light"
+        ? themePreference
+        : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    } catch {
+      document.documentElement.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+  </script>
+  <meta name="theme-color" content="#f6f7f5" />
+  <link rel="icon" type="image/svg+xml" href="logo-d-lampada.svg" />
+  <link rel="stylesheet" href="assistant.css" />
+  <link rel="stylesheet" href="auth.css" />
+  <title>Criar conta — DECSI Learning</title>
+  <style>
+    :root{--ink:#173b43;--soft:#42636a;--teal:#147d78;--mint:#dff1eb;--paper:#f6f7f5;--white:#fff;--line:#e5eae7;--muted:#789096;--shadow:0 14px 38px rgba(23,59,67,.07)}
+    *{box-sizing:border-box}body{min-height:100vh;margin:0;display:grid;grid-template-rows:auto 1fr;background:var(--paper);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:inherit}.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px clamp(20px,5vw,64px);background:rgba(255,255,255,.78);border-bottom:1px solid rgba(23,59,67,.06)}.brand{display:flex;align-items:center;gap:11px;font-weight:750;letter-spacing:-.03em;font-size:17px;text-decoration:none}.brand img{width:38px;height:38px;border-radius:11px}.brand small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.back{color:var(--teal);font-size:13px;font-weight:700;text-decoration:none}.main{display:grid;place-items:center;padding:36px 18px 72px}.card{width:min(100%,480px);padding:clamp(24px,5vw,42px);border:1px solid var(--line);border-radius:22px;background:var(--white);box-shadow:var(--shadow)}.tag{display:inline-block;padding:6px 10px;border-radius:9px;background:var(--mint);color:var(--teal);font-size:11px;font-weight:750;letter-spacing:.06em;text-transform:uppercase}.card h1{margin:15px 0 7px;font-size:clamp(29px,6vw,38px);line-height:1.1;letter-spacing:-.04em}.intro{margin:0 0 26px;color:var(--soft)}.field{display:grid;gap:7px;margin-top:16px}.field label{font-size:13px;font-weight:700}.field input{width:100%;height:48px;padding:0 13px;border:1px solid #cbd9d5;border-radius:10px;background:#fff;color:var(--ink);font:inherit}.field input:focus{outline:3px solid rgba(20,125,120,.16);border-color:var(--teal)}.hint{margin:-2px 0 0;color:var(--muted);font-size:11px}.submit{width:100%;min-height:48px;margin-top:24px;border:0;border-radius:11px;background:var(--teal);color:#fff;font:inherit;font-weight:750;cursor:pointer}.submit:hover{background:#0d6e69}.submit:disabled{opacity:.65;cursor:wait}.status{min-height:1.5em;margin:14px 0 0;color:var(--soft);font-size:13px}.status.error{color:#a44338}.status.success{color:#16724f}.fine-print{margin:20px 0 0;color:var(--muted);font-size:11px}@media(max-width:520px){.topbar{padding:12px 15px}.main{align-items:start;padding-top:24px}.card{border-radius:17px}}
+  </style>
+  <link rel="stylesheet" href="theme.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><img src="logo-d-lampada.svg" alt="" /><span>DECSI <small>learning</small></span></a>
+    <a class="back" href="index.html">‹ Voltar ao início</a>
+  </header>
+  <main class="main">
+    <section class="card" aria-labelledby="signup-title">
+      <span class="tag">Cadastro de estudante</span>
+      <h1 id="signup-title">Crie sua conta</h1>
+      <p class="intro">Use seu e-mail para criar uma conta na plataforma.</p>
+      <form id="signup-form" novalidate>
+        <div class="field">
+          <label for="signup-first-name">Nome</label>
+          <input id="signup-first-name" name="firstName" type="text" autocomplete="given-name" maxlength="80" required />
+        </div>
+        <div class="field">
+          <label for="signup-last-name">Sobrenome</label>
+          <input id="signup-last-name" name="lastName" type="text" autocomplete="family-name" maxlength="80" required />
+        </div>
+        <div class="field">
+          <label for="signup-email">E-mail</label>
+          <input id="signup-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="voce@exemplo.com" required />
+        </div>
+        <div class="field">
+          <label for="signup-password">Senha</label>
+          <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required />
+          <p class="hint">Use de 12 a 128 caracteres.</p>
+        </div>
+        <div class="field">
+          <label for="signup-confirm-password">Confirme sua senha</label>
+          <input id="signup-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="12" maxlength="128" required />
+        </div>
+        <button class="submit" type="submit">Criar conta</button>
+        <p id="signup-status" class="status" role="status" aria-live="polite"></p>
+      </form>
+      <p class="fine-print">Sua senha é protegida antes de ser armazenada.</p>
+      <p class="fine-print">Já tem uma conta? <a href="login.html">Entrar</a></p>
+    </section>
+  </main>
+  <script src="cadastro.js" defer></script>
+  <script src="auth.js" defer></script>
+  <script src="assistant.js" defer></script>
+  <script src="theme.js" defer></script>
+</body>
+</html>

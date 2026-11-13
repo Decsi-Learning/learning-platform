@@ -3,24 +3,38 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    try {
+      const themePreference = localStorage.getItem("decsi.theme");
+      document.documentElement.dataset.theme = themePreference === "dark" || themePreference === "light"
+        ? themePreference
+        : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    } catch {
+      document.documentElement.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+  </script>
   <meta name="theme-color" content="#f6f7f5" />
+  <link rel="icon" type="image/svg+xml" href="logo-d-lampada.svg" />
   <title>AEDS I — DECSI Learning</title>
   <style>
     :root{--ink:#173b43;--soft:#42636a;--teal:#147d78;--mint:#dff1eb;--paper:#f6f7f5;--white:#fff;--line:#e5eae7;--muted:#789096;--shadow:0 14px 38px rgba(23,59,67,.07)}
-    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}.layout{min-height:100vh;display:grid;grid-template-columns:252px minmax(0,1fr)}.sidebar{position:sticky;top:0;z-index:5;height:100vh;background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border-right:1px solid rgba(255,255,255,.8);box-shadow:8px 0 30px rgba(23,59,67,.045);padding:28px 18px;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 34px;color:var(--ink);font-weight:750;letter-spacing:-.03em;font-size:17px;text-decoration:none}.brand-mark{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;color:white;background:var(--teal);font-size:13px;letter-spacing:-.05em}.brand small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.nav-label{padding:0 12px;margin:0 0 10px;color:#9aabad;font-size:10px;font-weight:750;letter-spacing:.13em;text-transform:uppercase}.nav{display:grid;gap:5px}.nav a{padding:11px 12px;display:flex;gap:12px;align-items:center;border-radius:11px;color:var(--soft);font-weight:600;text-decoration:none}.nav a.active{color:#0d625f;background:rgba(223,241,235,.78);box-shadow:inset 0 0 0 1px rgba(20,125,120,.07)}.nav-icon{width:19px;height:19px;display:inline-grid;place-items:center;font-size:17px;line-height:1}.sidebar-bottom{margin-top:auto}.help-card{border-radius:16px;background:rgba(241,247,244,.78);padding:17px}.help-card strong{display:block;font-size:13px;margin-bottom:5px}.help-card p{margin:0 0 12px;color:var(--soft);font-size:12px}.help-card a{color:#0d625f;font-size:12px;font-weight:700;text-decoration:none}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}.layout{min-height:100vh;display:grid;grid-template-columns:252px minmax(0,1fr)}.sidebar{position:sticky;top:0;z-index:5;height:100vh;background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border-right:1px solid rgba(255,255,255,.8);box-shadow:8px 0 30px rgba(23,59,67,.045);padding:28px 18px;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 34px;color:var(--ink);font-weight:750;letter-spacing:-.03em;font-size:17px;text-decoration:none}.brand-mark{width:38px;height:38px;flex:none;display:block;border-radius:11px;object-fit:contain}.brand small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.nav-label{padding:0 12px;margin:0 0 10px;color:#9aabad;font-size:10px;font-weight:750;letter-spacing:.13em;text-transform:uppercase}.nav{display:grid;gap:5px}.nav a{padding:11px 12px;display:flex;gap:12px;align-items:center;border-radius:11px;color:var(--soft);font-weight:600;text-decoration:none}.nav a.active{color:#0d625f;background:rgba(223,241,235,.78);box-shadow:inset 0 0 0 1px rgba(20,125,120,.07)}.nav-icon{width:19px;height:19px;display:inline-grid;place-items:center;font-size:17px;line-height:1}.sidebar-bottom{margin-top:auto}.help-card{border-radius:16px;background:rgba(241,247,244,.78);padding:17px}.help-card strong{display:block;font-size:13px;margin-bottom:5px}.help-card p{margin:0 0 12px;color:var(--soft);font-size:12px}.help-card a{color:#0d625f;font-size:12px;font-weight:700;text-decoration:none}
     main{width:100%;min-width:0;margin:0;padding:26px clamp(20px,4vw,56px) 56px}.topbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:20px;margin:-26px 0 30px;padding:10px 14px;background:rgba(255,255,255,.68);-webkit-backdrop-filter:blur(20px) saturate(175%);backdrop-filter:blur(20px) saturate(175%);border:1px solid rgba(255,255,255,.88);border-radius:16px;box-shadow:0 8px 28px rgba(23,59,67,.07),inset 0 1px rgba(255,255,255,.8)}.crumb{min-width:0;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.user{display:flex;align-items:center;gap:12px;flex:none}.avatar{width:39px;height:39px;border-radius:50%;display:grid;place-items:center;background:#f7dfd5;color:#8b4b3c;font-weight:750;font-size:13px}.user-name{font-weight:700;font-size:13px}.user-role{color:var(--muted);font-size:11px}.back{display:inline-flex;gap:8px;align-items:center;color:var(--teal);font-weight:700;font-size:13px;text-decoration:none;margin-bottom:20px}
     .card{background:var(--white);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,5vw,46px);box-shadow:var(--shadow)}.tag{display:inline-block;padding:6px 10px;border-radius:9px;background:var(--mint);color:var(--teal);font-size:11px;font-weight:750;letter-spacing:.06em;text-transform:uppercase}
-    h1{margin:15px 0 7px;font-size:clamp(32px,6vw,46px);line-height:1.1;letter-spacing:-.045em}.subtitle{margin:0;color:var(--soft);font-size:17px}.rule{height:1px;background:var(--line);margin:28px 0}.count{font-size:13px;font-weight:700;color:var(--soft)}.topic{margin-top:16px;border:1px solid var(--line);border-radius:15px;padding:clamp(18px,3vw,28px);background:white}.topic h2{margin:0 0 16px;font-size:21px;letter-spacing:-.025em}.markdown{color:var(--ink);line-height:1.75}.markdown h1,.markdown h2,.markdown h3{margin:1.5em 0 .55em;line-height:1.25;letter-spacing:-.025em}.markdown h1{font-size:1.8em}.markdown h2{font-size:1.45em}.markdown h3{font-size:1.15em}.markdown p{margin:.8em 0}.markdown ul,.markdown ol{padding-left:1.5em}.markdown li+li{margin-top:.35em}.markdown blockquote{margin:1em 0;padding:.2em 1em;border-left:3px solid var(--teal);color:var(--soft);background:#f5f9f7}.markdown code{padding:.12em .35em;border-radius:5px;background:#edf3f0;font: .9em ui-monospace,SFMono-Regular,Menlo,monospace}.markdown pre{overflow:auto;padding:16px;border-radius:12px;background:#173b43;color:#fff}.markdown pre code{padding:0;background:transparent;color:inherit}.markdown a{color:var(--teal);text-decoration:underline}.markdown .load-error{color:#8b4b3c}.resource{margin-top:16px;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:white}.resource-head{padding:17px 19px;display:flex;justify-content:space-between;align-items:center;gap:14px}.resource-head h2{margin:0;font-size:15px}.resource-head p{margin:4px 0 0;color:var(--muted);font-size:12px}.resource-link{flex:none;display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border-radius:9px;background:var(--mint);color:var(--teal);font-size:12px;font-weight:750;text-decoration:none}.pdf-viewer{display:block;width:100%;height:min(75vh,760px);min-height:420px;border:0;border-top:1px solid var(--line);background:#edf1ef}
+    h1{margin:15px 0 7px;font-size:clamp(32px,6vw,46px);line-height:1.1;letter-spacing:-.045em}.subtitle{margin:0;color:var(--soft);font-size:17px}.rule{height:1px;background:var(--line);margin:28px 0}.count{font-size:13px;font-weight:700;color:var(--soft)}.topic{margin-top:16px;border:1px solid var(--line);border-radius:15px;padding:clamp(18px,3vw,28px);background:white}.topic h2{margin:0 0 16px;font-size:21px;letter-spacing:-.025em}.markdown{color:var(--ink);line-height:1.75}.markdown h1,.markdown h2,.markdown h3{margin:1.5em 0 .55em;line-height:1.25;letter-spacing:-.025em}.markdown h1{font-size:1.8em}.markdown h2{font-size:1.45em}.markdown h3{font-size:1.15em}.markdown p{margin:.8em 0}.markdown ul,.markdown ol{padding-left:1.5em}.markdown li+li{margin-top:.35em}.markdown blockquote{margin:1em 0;padding:.2em 1em;border-left:3px solid var(--teal);color:var(--soft);background:#f5f9f7}.markdown code{padding:.12em .35em;border-radius:5px;background:#edf3f0;font: .9em ui-monospace,SFMono-Regular,Menlo,monospace}.markdown pre{overflow:auto;padding:16px;border-radius:12px;background:#173b43;color:#fff}.markdown pre code{padding:0;background:transparent;color:inherit}.markdown a{color:var(--teal);text-decoration:underline}.markdown .load-error{color:#8b4b3c}.resource{margin-top:16px;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:white}.resource-head{padding:17px 19px;display:flex;justify-content:space-between;align-items:center;gap:14px}.resource-head h2{margin:0;font-size:15px}.resource-head p{margin:4px 0 0;color:var(--muted);font-size:12px}.resource-link{flex:none;display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border-radius:9px;background:var(--mint);color:var(--teal);font-size:12px;font-weight:750;text-decoration:none}.pdf-viewer{display:block;width:100%;height:min(75vh,760px);min-height:420px;border:0;border-top:1px solid var(--line);background:#edf1ef}.video-viewer{display:block;width:100%;max-height:75vh;aspect-ratio:16/9;border:0;border-top:1px solid var(--line);background:#101918}
     .knowledge-test{margin:24px 0;padding:clamp(18px,3vw,26px);border:1px solid #cfe4da;border-radius:16px;background:linear-gradient(145deg,#f6fbf8,#edf7f2)}.knowledge-test h3{margin:0 0 8px;font-size:19px}.knowledge-test .question{margin:0 0 16px;color:var(--ink);font-weight:650}.knowledge-test fieldset{display:grid;gap:9px;margin:0;padding:0;border:0}.knowledge-test label{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border:1px solid #dce9e3;border-radius:11px;background:rgba(255,255,255,.8);cursor:pointer}.knowledge-test label:has(input:checked){border-color:var(--teal);background:#e8f5ef}.knowledge-test input{margin:4px 0 0;accent-color:var(--teal)}.knowledge-test button{margin-top:16px;padding:10px 15px;border:0;border-radius:10px;background:var(--teal);color:white;font:inherit;font-size:13px;font-weight:750;cursor:pointer}.knowledge-test button:focus-visible{outline:3px solid rgba(20,125,120,.35);outline-offset:2px}.quiz-feedback{min-height:1.5em;margin:12px 0 0;font-weight:700}.quiz-feedback.correct{color:#16724f}.quiz-feedback.incorrect{color:#a44338}.quiz-feedback.unanswered{color:#926414}.quiz-error{color:#a44338;font-weight:700}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    .page-navigation{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:22px}.page-button{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:10px 16px;border:1px solid #c9ded6;border-radius:12px;background:rgba(255,255,255,.82);color:#0d625f;font-size:13px;font-weight:750;text-decoration:none;box-shadow:0 5px 16px rgba(23,59,67,.05);transition:transform .16s ease,box-shadow .16s ease;cursor:pointer}.page-button:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(23,59,67,.1)}.page-button.next,.page-button.finish{margin-left:auto;background:var(--teal);border-color:var(--teal);color:white}.page-button .direction{font-size:18px;line-height:1}.page-button:focus-visible{outline:3px solid rgba(20,125,120,.35);outline-offset:2px}
+    .page-navigation{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:22px}.page-button{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:10px 16px;border:1px solid #c9ded6;border-radius:12px;background:rgba(255,255,255,.82);color:#0d625f;font-size:13px;font-weight:750;text-decoration:none;box-shadow:0 5px 16px rgba(23,59,67,.05);transition:transform .16s ease,box-shadow .16s ease;cursor:pointer}.page-button:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(23,59,67,.1)}.page-button.next,.page-button.finish{margin-left:auto;background:var(--teal);border-color:var(--teal);color:white}.page-button .direction{font-size:18px;line-height:1}.page-button:focus-visible{outline:3px solid rgba(20,125,120,.35);outline-offset:2px}.page-button[aria-disabled="true"],.page-button:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}.quiz-gate-message{margin:18px 0 0;padding:12px 15px;border:1px solid #ead8a8;border-radius:11px;background:#fff8e8;color:#72540f;font-size:13px;font-weight:650}
     @media(max-width:900px){.layout{grid-template-columns:76px minmax(0,1fr)}.sidebar{padding:22px 11px}.brand{justify-content:center;padding:0 0 32px}.brand-text,.nav-label,.nav .label,.help-card{display:none}.nav a{justify-content:center;padding:12px}}
-    @media(max-width:620px){.layout{display:block}.sidebar{position:sticky;z-index:7;height:63px;border:0;border-bottom:1px solid rgba(255,255,255,.85);border-radius:0;padding:8px 14px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;box-shadow:0 5px 20px rgba(23,59,67,.06)}.brand{padding:0}.nav{display:flex;gap:3px}.nav a{padding:9px}.nav-icon{font-size:16px}main{padding:18px 14px 36px}.topbar{top:63px;margin:-18px 0 22px;padding:8px 10px;border-radius:13px}.crumb{font-size:11px}.user{gap:8px}.user-name,.user-role{display:none}.avatar{width:35px;height:35px}.card{border-radius:17px}.page-navigation{align-items:stretch;flex-direction:column;gap:9px}.page-button{width:100%;text-align:center}.page-button.next,.page-button.finish{margin-left:0}.resource-head{align-items:flex-start;flex-direction:column}.pdf-viewer{height:70vh;min-height:360px}}
+    @media(max-width:620px){.layout{display:block}.sidebar{position:sticky;z-index:7;height:63px;border:0;border-bottom:1px solid rgba(255,255,255,.85);border-radius:0;padding:8px 14px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;box-shadow:0 5px 20px rgba(23,59,67,.06)}.brand{padding:0}.nav{display:flex;gap:3px}.nav a{padding:9px}.nav-icon{font-size:16px}main{padding:18px 14px 36px}.topbar{top:63px;margin:-18px 0 22px;padding:8px 10px;border-radius:13px}.crumb{font-size:11px}.user{gap:8px}.user-name,.user-role{display:none}.avatar{width:35px;height:35px}.card{border-radius:17px}.page-navigation{align-items:stretch;flex-direction:column;gap:9px}.page-button{width:100%;text-align:center}.page-button.next,.page-button.finish{margin-left:0}.resource-head{align-items:flex-start;flex-direction:column}.pdf-viewer{height:70vh;min-height:360px}.video-viewer{max-height:70vh}}
   </style>
+  <link rel="stylesheet" href="assistant.css" />
+  <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="theme.css" />
 </head>
 <body>
   <div class="layout">
     <aside class="sidebar" aria-label="Navegação principal">
-      <a class="brand" href="index.html" aria-label="DECSI Learning, início"><span class="brand-mark">D.</span><span class="brand-text">DECSI <small>learning</small></span></a>
+      <a class="brand" href="index.html" aria-label="DECSI Learning, início"><img class="brand-mark" src="logo-d-lampada.svg" alt="" /><span class="brand-text">DECSI <small>learning</small></span></a>
       <div><p class="nav-label">Menu</p><nav class="nav">
         <a href="index.html"><span class="nav-icon">⌂</span><span class="label">Início</span></a>
         <a href="index.html#dashboard"><span class="nav-icon">▦</span><span class="label">Dashboard</span></a>
@@ -49,6 +63,7 @@
     </article>
   </main>
   </div>
+  <script src="progress.js"></script>
   <script>
     const trackConfigs = {
       "aeds-i": { title: "AEDS I", catalog: "content/aeds-i/topicos.json", plan: "aeds-i.html" },
@@ -58,7 +73,7 @@
     const track = trackConfigs[trackId];
     const lessonContainer = document.getElementById("lesson-content");
     const topicId = new URLSearchParams(window.location.search).get("id");
-
+    let quizGate = null;
     function escapeHtml(value) {
       return value.replace(/[&<>"']/g, (character) => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -70,7 +85,15 @@
         .replace(/`([^`]+)`/g, "<code>$1</code>")
         .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
         .replace(/\*(.+?)\*/g, "<em>$1</em>")
-        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (match, label, url) => {
+          const mediaType = url.match(/\.(pdf|mp4|webm|ogv)(?:$|[?#])/i)?.[1].toLowerCase();
+          if (!mediaType) return `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
+          if (mediaType === "pdf") {
+            return `<section class="resource"><div class="resource-head"><div><h2>${label}</h2><p>Visualização do PDF</p></div><a class="resource-link" href="${url}" target="_blank" rel="noopener">Abrir em nova aba ↗</a></div><iframe class="pdf-viewer" src="${url}" title="${label}" loading="lazy"></iframe></section>`;
+          }
+          const videoType = mediaType === "mp4" ? "video/mp4" : mediaType === "webm" ? "video/webm" : "video/ogg";
+          return `<section class="resource"><div class="resource-head"><div><h2>${label}</h2><p>Reprodução de vídeo</p></div><a class="resource-link" href="${url}" target="_blank" rel="noopener">Abrir em nova aba ↗</a></div><video class="video-viewer" controls playsinline preload="metadata" aria-label="${label}"><source src="${url}" type="${videoType}">Seu navegador não consegue reproduzir este vídeo.</video></section>`;
+        });
     }
 
     function renderQuiz(source, index) {
@@ -152,6 +175,49 @@
       return html.join("\n");
     }
 
+    function updateQuizGate() {
+      if (!quizGate) return;
+      const forms = [...lessonContainer.querySelectorAll(".quiz-form")];
+      const allAnswered = forms.length > 0 && forms.every((form) => form.querySelector('input[type="radio"]:checked'));
+      quizGate.message.hidden = allAnswered;
+      quizGate.message.textContent = forms.length
+        ? "Selecione uma alternativa em cada questão para continuar."
+        : "As questões obrigatórias ainda não foram carregadas.";
+
+      if (quizGate.control instanceof HTMLButtonElement) {
+        quizGate.control.disabled = !allAnswered || quizGate.control.dataset.topicFinished === "true";
+      } else if (allAnswered) {
+        quizGate.control.setAttribute("href", quizGate.href);
+        quizGate.control.removeAttribute("aria-disabled");
+        quizGate.control.classList.remove("quiz-gate-blocked");
+      } else {
+        quizGate.control.removeAttribute("href");
+        quizGate.control.setAttribute("aria-disabled", "true");
+        quizGate.control.classList.add("quiz-gate-blocked");
+      }
+    }
+
+    function setupQuizGate(page, navigation) {
+      if (page.requiresQuizAnswers !== true) return;
+      const control = navigation.querySelector(".page-button.next, .page-button.finish");
+      if (!control) return;
+      const message = document.createElement("p");
+      message.className = "quiz-gate-message";
+      message.setAttribute("role", "status");
+      message.setAttribute("aria-live", "polite");
+      navigation.before(message);
+      quizGate = { control, href: control.getAttribute("href"), message };
+      control.addEventListener("click", (event) => {
+        if (control.getAttribute("aria-disabled") === "true") event.preventDefault();
+      });
+      updateQuizGate();
+    }
+
+    lessonContainer.addEventListener("change", (event) => {
+      if (!event.target.matches('input[type="radio"]')) return;
+      updateQuizGate();
+    });
+
     lessonContainer.addEventListener("submit", (event) => {
       const form = event.target.closest(".quiz-form");
       if (!form) return;
@@ -169,6 +235,7 @@
         feedback.textContent = form.dataset.incorrectFeedback;
         feedback.classList.add("incorrect");
       }
+      updateQuizGate();
     });
 
     function showError(message) {
@@ -190,48 +257,94 @@
         if (topicIndex < 0) throw new Error("Este tópico não está cadastrado no plano de ensino.");
 
         const topic = topics[topicIndex];
-        document.title = `${topic.title} — ${track.title} — DECSI Learning`;
-        document.getElementById("topic-breadcrumb").textContent = `Portal de aprendizagem / ${track.title} / ${topic.title}`;
-        document.getElementById("topic-tag").textContent = `${track.title} · Tópico ${topicIndex + 1}`;
-        document.getElementById("topic-title").textContent = topic.title;
-        document.getElementById("topic-description").textContent = topic.summary || `Conteúdo da trilha ${track.title}.`;
-        document.getElementById("topic-navigation").innerHTML = topicIndex === 0
-          ? `<a class="page-button" href="${track.plan}"><span class="direction" aria-hidden="true">‹</span> Plano de ensino</a>`
-          : `<a class="page-button" href="topico.html?trilha=${encodeURIComponent(trackId)}&id=${encodeURIComponent(topics[topicIndex - 1].id)}"><span class="direction" aria-hidden="true">‹</span> ${escapeHtml(topics[topicIndex - 1].title)}</a>`;
+        const pages = Array.isArray(topic.pages) && topic.pages.length ? topic.pages : [topic];
+        const pageId = new URLSearchParams(window.location.search).get("pagina");
+        const pageIndex = pageId ? pages.findIndex((page) => page.id === pageId) : 0;
+        if (pageIndex < 0) throw new Error("Esta página não existe dentro do tópico.");
+        const page = pages[pageIndex];
+        window.decsiProgress.mark(trackId, topic.id, page.id || topic.id, "in_progress");
+        const pageTitle = page.title || topic.title;
+        const hasSubpages = Array.isArray(topic.pages) && topic.pages.length > 0;
+        const topicUrl = (targetTopic, targetPage) => {
+          const params = new URLSearchParams({ trilha: trackId, id: targetTopic.id });
+          if (Array.isArray(targetTopic.pages) && targetTopic.pages.length && targetPage) params.set("pagina", targetPage.id);
+          return `topico.html?${params.toString()}`;
+        };
 
-        if (topicIndex < topics.length - 1) {
-          document.getElementById("topic-navigation").insertAdjacentHTML("beforeend", `<a class="page-button next" href="topico.html?trilha=${encodeURIComponent(trackId)}&id=${encodeURIComponent(topics[topicIndex + 1].id)}">${escapeHtml(topics[topicIndex + 1].title)} <span class="direction" aria-hidden="true">›</span></a>`);
+        document.title = `${pageTitle} — ${track.title} — DECSI Learning`;
+        document.getElementById("topic-breadcrumb").textContent = hasSubpages
+          ? `Portal de aprendizagem / ${track.title} / ${topic.title} / ${pageTitle}`
+          : `Portal de aprendizagem / ${track.title} / ${topic.title}`;
+        document.getElementById("topic-tag").textContent = hasSubpages
+          ? `${track.title} · Tópico ${topicIndex + 1} · Página ${pageIndex + 1} de ${pages.length}`
+          : `${track.title} · Tópico ${topicIndex + 1}`;
+        document.getElementById("topic-title").textContent = pageTitle;
+        document.getElementById("topic-description").textContent = page.summary || topic.summary || `Conteúdo da trilha ${track.title}.`;
+
+        const navigation = document.getElementById("topic-navigation");
+        if (pageIndex > 0) {
+          const previousPage = pages[pageIndex - 1];
+          navigation.innerHTML = `<a class="page-button" href="${topicUrl(topic, previousPage)}"><span class="direction" aria-hidden="true">‹</span> ${escapeHtml(previousPage.title || topic.title)}</a>`;
+        } else if (topicIndex > 0) {
+          const previousTopic = topics[topicIndex - 1];
+          const previousPages = Array.isArray(previousTopic.pages) && previousTopic.pages.length ? previousTopic.pages : [previousTopic];
+          const previousPage = previousPages[previousPages.length - 1];
+          navigation.innerHTML = `<a class="page-button" href="${topicUrl(previousTopic, previousPage)}"><span class="direction" aria-hidden="true">‹</span> ${escapeHtml(previousPage.title || previousTopic.title)}</a>`;
         } else {
-          const finishButton = document.createElement("button");
+          navigation.innerHTML = `<a class="page-button" href="${track.plan}"><span class="direction" aria-hidden="true">‹</span> Plano de ensino</a>`;
+        }
+
+        if (pageIndex < pages.length - 1) {
+          const nextPage = pages[pageIndex + 1];
+          navigation.insertAdjacentHTML("beforeend", `<a class="page-button next" href="${topicUrl(topic, nextPage)}">${escapeHtml(nextPage.title || topic.title)} <span class="direction" aria-hidden="true">›</span></a>`);
+        } else {
           const completionKey = `decsi-learning:${trackId}:${topic.id}:concluido`;
+          const nextTopic = topics[topicIndex + 1];
+          const finishButton = document.createElement("button");
           finishButton.className = "page-button finish";
           finishButton.type = "button";
           finishButton.innerHTML = 'Finalizar tópico <span class="direction" aria-hidden="true">✓</span>';
-          finishButton.addEventListener("click", () => {
-            localStorage.setItem(completionKey, "true");
-            finishButton.innerHTML = 'Tópico finalizado <span class="direction" aria-hidden="true">✓</span>';
+          finishButton.addEventListener("click", async () => {
             finishButton.disabled = true;
+            finishButton.innerHTML = 'Salvando progresso…';
+            await window.decsiProgress.mark(trackId, topic.id, page.id || topic.id, "completed");
+            if (nextTopic) {
+              const nextPages = Array.isArray(nextTopic.pages) && nextTopic.pages.length ? nextTopic.pages : [nextTopic];
+              window.location.href = topicUrl(nextTopic, nextPages[0]);
+            } else {
+              finishButton.innerHTML = 'Tópico finalizado <span class="direction" aria-hidden="true">✓</span>';
+              finishButton.dataset.topicFinished = "true";
+            }
           });
-          if (localStorage.getItem(completionKey) === "true") {
+          if (localStorage.getItem(completionKey) === "true" && !nextTopic) {
             finishButton.innerHTML = 'Tópico finalizado <span class="direction" aria-hidden="true">✓</span>';
+            finishButton.dataset.topicFinished = "true";
             finishButton.disabled = true;
           }
-          document.getElementById("topic-navigation").append(finishButton);
+          navigation.append(finishButton);
         }
 
-        if (!topic.file) {
+        setupQuizGate(page, navigation);
+
+        if (!page.file) {
           lessonContainer.innerHTML = '<p class="load-error">O assunto já está no plano da disciplina. O texto deste tópico será adicionado depois.</p>';
           return null;
         }
-        return fetch(`content/${encodeURIComponent(trackId)}/topicos/${encodeURIComponent(topic.file)}`);
+        return fetch(`content/${encodeURIComponent(trackId)}/topicos/${encodeURIComponent(page.file)}`);
       })
       .then((response) => {
         if (response === null) return null;
         if (!response.ok) throw new Error("Não foi possível carregar o texto deste tópico.");
         return response.text();
       })
-      .then((markdown) => { if (markdown !== null) lessonContainer.innerHTML = renderMarkdown(markdown); })
+      .then((markdown) => {
+        if (markdown !== null) lessonContainer.innerHTML = renderMarkdown(markdown);
+        updateQuizGate();
+      })
       .catch((error) => showError(error.message));
   </script>
+  <script src="auth.js" defer></script>
+  <script src="assistant.js" defer></script>
+  <script src="theme.js" defer></script>
 </body>
 </html>
