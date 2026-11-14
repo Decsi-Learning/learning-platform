@@ -31,6 +31,17 @@
   <link rel="stylesheet" href="auth.css" />
   <link rel="stylesheet" href="search.css" />
   <link rel="stylesheet" href="theme.css" />
+  <style>
+    .markdown::after{content:"";display:block;clear:both}
+    .markdown h1,.markdown h2,.markdown h3{clear:both}
+    .markdown-image{height:auto;max-width:100%;border-radius:14px;box-shadow:0 9px 24px rgba(23,59,67,.1)}
+    .markdown-image.image-left{float:left;width:42%;max-width:60%;margin:.35rem 1.35rem .85rem 0}
+    .markdown-image.image-right{float:right;width:42%;max-width:60%;margin:.35rem 0 .85rem 1.35rem}
+    .markdown-image.image-center{display:block;width:70%;margin:1.25rem auto}
+    .image-error{display:inline-block;padding:8px 10px;border-radius:8px;background:#fff0ed;color:#8b4b3c;font-size:12px}
+    .topic-summary-actions{display:flex;justify-content:flex-end;margin:0 0 12px}.topic-summary-actions[hidden]{display:none}.summary-trigger{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid #b8d8ce;border-radius:10px;background:#e8f5ef;color:#145b52;font:inherit;font-size:13px;font-weight:750;cursor:pointer}.summary-trigger:disabled{opacity:.6;cursor:wait}.summary-dialog{width:min(680px,calc(100vw - 28px));max-height:min(82vh,800px);padding:0;border:1px solid #d8e5df;border-radius:20px;background:#fff;color:#173b43;box-shadow:0 24px 80px rgba(10,35,35,.28)}.summary-dialog::backdrop{background:rgba(12,27,30,.62);backdrop-filter:blur(3px)}.summary-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 24px 14px;border-bottom:1px solid #e1e8e5}.summary-head h2{margin:0;font-size:22px}.summary-close{width:38px;height:38px;border:0;border-radius:10px;background:#edf3f0;color:#173b43;font-size:24px;cursor:pointer}.summary-body{max-height:calc(82vh - 100px);overflow:auto;padding:20px 24px 24px}.summary-notice{margin:0 0 18px;padding:13px 15px;border:1px solid #e5d49b;border-radius:12px;background:#fff8df;color:#574719;font-size:13px;line-height:1.55}.summary-status{color:#42636a}.summary-content{line-height:1.7;overflow-wrap:anywhere}.summary-content:empty{display:none}.summary-content h1,.summary-content h2,.summary-content h3{margin:1em 0 .45em}.summary-content p{margin:.7em 0}.summary-content ul,.summary-content ol{padding-left:1.4em}.summary-error{color:#9a3e35}
+    @media(max-width:620px){.markdown-image.image-left,.markdown-image.image-right{float:none!important;display:block;width:min(100%,420px)!important;max-width:100%;margin:1rem auto}.markdown-image.image-center{width:min(100%,420px)}}
+  </style>
 </head>
 <body>
   <div class="layout">
@@ -40,8 +51,6 @@
         <a href="index.html"><span class="nav-icon">⌂</span><span class="label">Início</span></a>
         <a href="dashboard.html"><span class="nav-icon">▦</span><span class="label">Dashboard</span></a>
         <a class="active" href="index.html#trilhas" aria-current="page"><span class="nav-icon">◈</span><span class="label">Minhas trilhas</span></a>
-        <a href="index.html#agenda"><span class="nav-icon">▣</span><span class="label">Agenda</span></a>
-        <a href="index.html#certificados"><span class="nav-icon">✧</span><span class="label">Certificados</span></a>
       </nav></div>
       <div class="sidebar-bottom"><div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="index.html#ajuda">Acessar central de ajuda →</a></div></div>
     </aside>
@@ -62,6 +71,7 @@
       <p class="subtitle" id="topic-description">Introdução à lógica, aos algoritmos e às estruturas de dados.</p>
       <div class="rule"></div>
       <p class="count">Texto de estudo</p>
+      <div class="topic-summary-actions" id="topic-summary-actions" hidden><button class="summary-trigger" id="summarize-topic" type="button" disabled><span aria-hidden="true">✦</span> Resumir conteúdo</button></div>
       <section class="topic" aria-labelledby="topic-title">
         <h2 id="topic-title">Conteúdo</h2>
         <div id="lesson-content" class="markdown" aria-live="polite">Carregando conteúdo…</div>
@@ -70,24 +80,104 @@
     </article>
   </main>
   </div>
+  <dialog class="summary-dialog" id="summary-dialog" aria-labelledby="summary-title">
+    <header class="summary-head"><h2 id="summary-title">Resumo do conteúdo</h2><button class="summary-close" id="summary-close" type="button" aria-label="Fechar resumo">×</button></header>
+    <div class="summary-body">
+      <p class="summary-notice"><strong>Use este resumo como apoio.</strong> O conteúdo da aula foi elaborado com cuidado para orientar seu aprendizado. Um resumo pode deixar de fora explicações, nuances e exemplos importantes; depender apenas dele pode comprometer sua aprendizagem. Recomendamos estudar também o material completo.</p>
+      <p class="summary-status" id="summary-status" role="status" aria-live="polite"></p>
+      <div class="summary-content markdown" id="summary-content"></div>
+    </div>
+  </dialog>
   <script src="progress.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@18.0.13/lib/marked.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]],
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="mathjax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-chtml.js"></script>
   <script>
     const trackId = new URLSearchParams(window.location.search).get("trilha");
     let track = null;
     const lessonContainer = document.getElementById("lesson-content");
+    const summarizeButton = document.getElementById("summarize-topic");
+    const summaryActions = document.getElementById("topic-summary-actions");
+    const summaryDialog = document.getElementById("summary-dialog");
+    const summaryStatus = document.getElementById("summary-status");
+    const summaryContent = document.getElementById("summary-content");
+    const summaryClose = document.getElementById("summary-close");
+    let currentMarkdown = "";
+    let currentPageTitle = "";
+    summaryClose.addEventListener("click", () => summaryDialog.close());
+    summaryDialog.addEventListener("click", (event) => {
+      if (event.target === summaryDialog) summaryDialog.close();
+    });
+    summarizeButton.addEventListener("click", async () => {
+      if (!currentMarkdown || summarizeButton.disabled) return;
+      summarizeButton.disabled = true;
+      summaryContent.replaceChildren();
+      summaryStatus.textContent = "Preparando um resumo do conteúdo…";
+      summaryStatus.classList.remove("summary-error");
+      summaryDialog.showModal();
+      try {
+        const response = await fetch("https://gemini-proxy.scrrhdvp7v.workers.dev/api/summarize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: currentPageTitle, content: currentMarkdown })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || "Não foi possível resumir este conteúdo agora.");
+        if (!result.summary) throw new Error("O serviço retornou um resumo vazio.");
+        renderMarkdownInto(result.summary, summaryContent, markdownUrl, false);
+        summaryStatus.textContent = "Resumo gerado com IA.";
+      } catch (error) {
+        summaryStatus.textContent = error instanceof Error ? error.message : "Não foi possível gerar o resumo.";
+        summaryStatus.classList.add("summary-error");
+      } finally {
+        summarizeButton.disabled = false;
+      }
+    });
     const topicId = new URLSearchParams(window.location.search).get("id");
     let quizGate = null;
+    let markdownUrl = new URL(".", window.location.href);
     function escapeHtml(value) {
       return value.replace(/[&<>"']/g, (character) => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
       })[character]);
     }
 
-    function renderInline(text) {
-      return escapeHtml(text)
-        .replace(/`([^`]+)`/g, "<code>$1</code>")
+    function renderInline(text, sourceUrl = markdownUrl) {
+      const codeSpans = [];
+      let inline = escapeHtml(text).replace(/`([^`]+)`/g, (_match, code) => {
+        const token = `@@CODE${codeSpans.length}@@`;
+        codeSpans.push(`<code>${code}</code>`);
+        return token;
+      });
+
+      inline = inline.replace(/!\[([^\]]*)\]\(((?:https?:\/\/|\.\.\/|\.\/|\/)?[^\s)]+)\)(?:\{([^}]*)\})?/g, (_match, alt, source, attributes = "") => {
+        let imageUrl;
+        try {
+          imageUrl = new URL(source.replace(/&amp;/g, "&"), sourceUrl);
+          if (!["http:", "https:"].includes(imageUrl.protocol)) return '<span class="image-error">Endereço de imagem inválido</span>';
+        } catch {
+          return '<span class="image-error">Não foi possível ler o endereço da imagem</span>';
+        }
+        const align = attributes.match(/(?:^|\s)align=(left|right|center)(?:\s|$)/)?.[1] || "center";
+        const widthValue = attributes.match(/(?:^|\s)width=(\d{1,3}%|\d{1,4}px)(?:\s|$)/)?.[1];
+        const width = widthValue ? ` style="width:${widthValue}"` : "";
+        return `<img class="markdown-image image-${align}" src="${escapeHtml(imageUrl.href)}" alt="${alt}" loading="lazy" decoding="async"${width}>`;
+      });
+
+      inline = inline
         .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-        .replace(/\*(.+?)\*/g, "<em>$1</em>")
+        .replace(/\*([^*]+)\*/g, "<em>$1</em>")
         .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (match, label, url) => {
           const mediaType = url.match(/\.(pdf|mp4|webm|ogv)(?:$|[?#])/i)?.[1].toLowerCase();
           if (!mediaType) return `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
@@ -97,6 +187,7 @@
           const videoType = mediaType === "mp4" ? "video/mp4" : mediaType === "webm" ? "video/webm" : "video/ogg";
           return `<section class="resource"><div class="resource-head"><div><h2>${label}</h2><p>Reprodução de vídeo</p></div><a class="resource-link" href="${url}" target="_blank" rel="noopener">Abrir em nova aba ↗</a></div><video class="video-viewer" controls playsinline preload="metadata" aria-label="${label}"><source src="${url}" type="${videoType}">Seu navegador não consegue reproduzir este vídeo.</video></section>`;
         });
+      return inline.replace(/@@CODE(\d+)@@/g, (_match, index) => codeSpans[Number(index)]);
     }
 
     function renderQuiz(source, index) {
@@ -125,23 +216,23 @@
 
     function isTableSeparator(line) {
       const cells = splitTableRow(line);
-      return cells.length > 1 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
+      return cells.length > 1 && cells.every((cell) => /^:?-+:?$/.test(cell));
     }
 
-    function renderTable(rows) {
+    function renderTable(rows, sourceUrl = markdownUrl) {
       const headers = splitTableRow(rows[0]);
       const alignments = splitTableRow(rows[1]).map((cell) => cell.startsWith(":")
         ? (cell.endsWith(":") ? "center" : "left")
         : (cell.endsWith(":") ? "right" : ""));
       const renderCells = (cells, tag) => headers.map((_, index) => {
         const alignment = alignments[index] ? ` style="text-align:${alignments[index]}"` : "";
-        return `<${tag}${alignment}>${renderInline(cells[index] || "")}</${tag}>`;
+        return `<${tag}${alignment}>${renderInline(cells[index] || "", sourceUrl)}</${tag}>`;
       }).join("");
       const body = rows.slice(2).map((row) => `<tr>${renderCells(splitTableRow(row), "td")}</tr>`).join("");
       return `<div class="table-wrap"><table><thead><tr>${renderCells(headers, "th")}</tr></thead><tbody>${body}</tbody></table></div>`;
     }
 
-    function renderMarkdown(markdown) {
+    function renderBasicMarkdown(markdown, sourceUrl = markdownUrl, includeQuizzes = true) {
       const lines = markdown.replace(/\r/g, "").split("\n");
       const html = [];
       let paragraph = [];
@@ -152,7 +243,7 @@
       let quizIndex = 0;
 
       const flushParagraph = () => {
-        if (paragraph.length) html.push(`<p>${renderInline(paragraph.join(" "))}</p>`);
+        if (paragraph.length) html.push(`<p>${renderInline(paragraph.join(" "), sourceUrl)}</p>`);
         paragraph = [];
       };
       const closeList = () => {
@@ -165,7 +256,7 @@
         if (line.trim().startsWith("```")) {
           flushParagraph(); closeList();
           if (inCode) {
-            html.push(codeLanguage === "quiz"
+            html.push(codeLanguage === "quiz" && includeQuizzes
               ? renderQuiz(codeLines.join("\n"), quizIndex++)
               : `<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
             codeLines = [];
@@ -190,22 +281,22 @@
             lineIndex += 1;
           }
           lineIndex -= 1;
-          html.push(renderTable(tableRows));
+          html.push(renderTable(tableRows, sourceUrl));
           continue;
         }
         if (!line.trim()) { flushParagraph(); closeList(); continue; }
         if (heading) {
           flushParagraph(); closeList();
           const level = heading[1].length;
-          html.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+          html.push(`<h${level}>${renderInline(heading[2], sourceUrl)}</h${level}>`);
         } else if (listItem) {
           flushParagraph();
           const nextType = /^\d/.test(listItem[1]) ? "ol" : "ul";
           if (listType !== nextType) { closeList(); html.push(`<${nextType}>`); listType = nextType; }
-          html.push(`<li>${renderInline(listItem[2])}</li>`);
+          html.push(`<li>${renderInline(listItem[2], sourceUrl)}</li>`);
         } else if (quote) {
           flushParagraph(); closeList();
-          html.push(`<blockquote>${renderInline(quote[1])}</blockquote>`);
+          html.push(`<blockquote>${renderInline(quote[1], sourceUrl)}</blockquote>`);
         } else {
           closeList(); paragraph.push(line.trim());
         }
@@ -215,6 +306,164 @@
         ? renderQuiz(codeLines.join("\n"), quizIndex++)
         : `<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
       return html.join("\n");
+    }
+
+    function protectMath(markdown) {
+      const formulas = [];
+      const expression = /\\begin\{([a-zA-Z*]+)\}[\s\S]*?\\end\{\1\}|\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|(?<!\\)\$(?!\$)(?:\\.|[^$\n])*?(?<!\\)\$/g;
+      const protectedMarkdown = markdown.replace(expression, (formula) => {
+        const token = `FORMULATEXPLACEHOLDER${formulas.length}TOKEN`;
+        formulas.push(formula.startsWith("\\begin") ? `\\[${formula}\\]` : formula);
+        return token;
+      });
+      return { markdown: protectedMarkdown, formulas };
+    }
+
+    function restoreMath(root, formulas) {
+      if (!formulas.length) return;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+      for (const node of textNodes) {
+        node.nodeValue = node.nodeValue.replace(/FORMULATEXPLACEHOLDER(\d+)TOKEN/g, (_match, index) => formulas[Number(index)] || "");
+      }
+    }
+
+    function makeResourceCard(label, url, mediaType) {
+      const section = document.createElement("section");
+      section.className = "resource";
+      const header = document.createElement("div");
+      header.className = "resource-head";
+      const text = document.createElement("div");
+      const title = document.createElement("h2");
+      title.textContent = label;
+      const description = document.createElement("p");
+      description.textContent = mediaType === "pdf" ? "Visualização do PDF" : "Reprodução de vídeo";
+      text.append(title, description);
+      const openLink = document.createElement("a");
+      openLink.className = "resource-link";
+      openLink.href = url;
+      openLink.target = "_blank";
+      openLink.rel = "noopener";
+      openLink.textContent = "Abrir em nova aba ↗";
+      header.append(text, openLink);
+      section.append(header);
+
+      if (mediaType === "pdf") {
+        const frame = document.createElement("iframe");
+        frame.className = "pdf-viewer";
+        frame.src = url;
+        frame.title = label;
+        frame.loading = "lazy";
+        section.append(frame);
+      } else {
+        const video = document.createElement("video");
+        video.className = "video-viewer";
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = "metadata";
+        video.setAttribute("aria-label", label);
+        const source = document.createElement("source");
+        source.src = url;
+        source.type = mediaType === "mp4" ? "video/mp4" : mediaType === "webm" ? "video/webm" : "video/ogg";
+        video.append(source, "Seu navegador não consegue reproduzir este vídeo.");
+        section.append(video);
+      }
+      return section;
+    }
+
+    function enhanceMarkdownContent(root, sourceUrl) {
+      for (const image of root.querySelectorAll("img")) {
+        const rawSource = image.getAttribute("src") || "";
+        try {
+          const imageUrl = new URL(rawSource, sourceUrl);
+          if (!["http:", "https:"].includes(imageUrl.protocol)) throw new Error("Invalid image protocol");
+          image.src = imageUrl.href;
+        } catch {
+          image.replaceWith(document.createTextNode(image.alt || "Imagem indisponível"));
+          continue;
+        }
+
+        let align = "center";
+        const followingText = image.nextSibling;
+        if (followingText?.nodeType === Node.TEXT_NODE) {
+          const attributes = followingText.nodeValue.match(/^(\s*)\{([^{}]*)\}/);
+          if (attributes) {
+            const alignValue = attributes[2].match(/(?:^|\s)align=(left|right|center)(?:\s|$)/)?.[1];
+            const widthValue = attributes[2].match(/(?:^|\s)width=(\d{1,3}%|\d{1,4}px)(?:\s|$)/)?.[1];
+            if (alignValue) align = alignValue;
+            if (widthValue) image.style.width = widthValue;
+            followingText.nodeValue = followingText.nodeValue.slice(attributes[0].length);
+            if (!followingText.nodeValue.trim()) followingText.remove();
+          }
+        }
+        image.classList.add("markdown-image", `image-${align}`);
+        image.loading = "lazy";
+        image.decoding = "async";
+      }
+
+      for (const link of [...root.querySelectorAll("a[href]")]) {
+        let url;
+        try { url = new URL(link.getAttribute("href"), sourceUrl); }
+        catch { continue; }
+        if (!["http:", "https:", "mailto:", "tel:"].includes(url.protocol)) continue;
+        link.href = url.href;
+        if (!["http:", "https:"].includes(url.protocol)) continue;
+        const mediaType = url.pathname.match(/\.(pdf|mp4|webm|ogv)$/i)?.[1]?.toLowerCase();
+        if (!mediaType) {
+          link.target = "_blank";
+          link.rel = "noopener";
+          continue;
+        }
+        const resource = makeResourceCard(link.textContent.trim() || "Material complementar", url.href, mediaType);
+        const paragraph = link.parentElement?.tagName === "P" && !link.parentElement.textContent.replace(link.textContent, "").trim()
+          ? link.parentElement
+          : link;
+        paragraph.replaceWith(resource);
+      }
+    }
+
+    function typesetMarkdownMath(root) {
+      const mathJax = window.MathJax;
+      if (typeof mathJax?.typesetPromise === "function") {
+        (mathJax.startup?.promise || Promise.resolve())
+          .then(() => mathJax.typesetPromise([root]))
+          .catch(() => {});
+        return;
+      }
+      document.getElementById("mathjax-script")?.addEventListener("load", () => typesetMarkdownMath(root), { once: true });
+    }
+
+    function renderMarkdown(markdown, sourceUrl = markdownUrl) {
+      renderMarkdownInto(markdown, lessonContainer, sourceUrl, true);
+    }
+
+    function renderMarkdownInto(markdown, target, sourceUrl = markdownUrl, includeQuizzes = false) {
+      if (!window.marked?.parse || !window.DOMPurify?.sanitize) {
+        target.innerHTML = renderBasicMarkdown(markdown, sourceUrl, includeQuizzes);
+        return;
+      }
+      const protectedMath = protectMath(markdown);
+      let quizIndex = 0;
+      const renderer = new window.marked.Renderer();
+      const renderCode = renderer.code;
+      renderer.code = function (token) {
+        if (includeQuizzes && token.lang?.trim().split(/\s+/)[0].toLowerCase() === "quiz") {
+          return renderQuiz(token.text, quizIndex++);
+        }
+        return renderCode.call(this, token);
+      };
+      const rendered = window.marked.parse(protectedMath.markdown, {
+        gfm: true,
+        breaks: false,
+        renderer
+      });
+      const template = document.createElement("template");
+      template.innerHTML = window.DOMPurify.sanitize(rendered);
+      restoreMath(template.content, protectedMath.formulas);
+      enhanceMarkdownContent(template.content, sourceUrl);
+      target.replaceChildren(template.content);
+      typesetMarkdownMath(target);
     }
 
     function updateQuizGate() {
@@ -315,6 +564,7 @@
         const page = pages[pageIndex];
         window.decsiProgress.mark(trackId, topic.id, page.id || topic.id, "in_progress");
         const pageTitle = page.title || topic.title;
+        currentPageTitle = pageTitle;
         const hasSubpages = Array.isArray(topic.pages) && topic.pages.length > 0;
         const topicUrl = (targetTopic, targetPage) => {
           const params = new URLSearchParams({ trilha: trackId, id: targetTopic.id });
@@ -384,7 +634,8 @@
           return null;
         }
         const contentDirectory = track.contentDirectory || `content/${trackId}/topicos/`;
-        return fetch(`${contentDirectory.replace(/\/?$/, "/")}${encodeURI(page.file)}`);
+        markdownUrl = new URL(`${contentDirectory.replace(/\/?$/, "/")}${encodeURIComponent(page.file)}`, window.location.href);
+        return fetch(markdownUrl);
       })
       .then((response) => {
         if (response === null) return null;
@@ -392,7 +643,12 @@
         return response.text();
       })
       .then((markdown) => {
-        if (markdown !== null) lessonContainer.innerHTML = renderMarkdown(markdown);
+        if (markdown !== null) {
+          currentMarkdown = markdown;
+          summarizeButton.disabled = !markdown.trim();
+          summaryActions.hidden = !markdown.trim();
+          renderMarkdown(markdown, markdownUrl);
+        }
         updateQuizGate();
       })
       .catch((error) => showError(error.message));

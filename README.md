@@ -2,10 +2,12 @@
 
 Plataforma estática publicada no GitHub Pages. Os textos das aulas ficam em arquivos Markdown dentro de `content/` e são carregados pela página do tópico.
 
+O [guia e modelo de Markdown](docs/guia-e-modelo-markdown.md) descreve os elementos suportados, a sintaxe para imagens, vídeos, PDFs, tabelas e testes, e inclui um esqueleto copiável para novas aulas.
+
 ## Adicionar e ordenar tópicos
 
 1. Escolha a trilha e crie o arquivo `.md` dentro da pasta `topicos/` correspondente, por exemplo `content/aeds-ii/topicos/variaveis.md`.
-2. Escreva o conteúdo em Markdown. O renderizador aceita títulos (`#`, `##`, `###`), parágrafos, listas, citações, negrito, itálico, código em crases, links HTTPS e testes em blocos `quiz`.
+2. Escreva o conteúdo em Markdown. O renderizador aceita títulos (`#`, `##`, `###`), parágrafos, listas, citações, negrito, itálico, código em crases, links HTTPS, imagens e testes em blocos `quiz`.
 3. Abra o catálogo da mesma trilha (`content/aeds-i/topicos.json` ou `content/aeds-ii/topicos.json`). Para um tópico de uma página, registre `id`, `title`, `summary` e `file`. Para dividir o tópico em páginas internas, use `pages`: cada entrada tem seu próprio `id`, `title`, `summary` e `file`.
 4. A ordem dos objetos em `topics` define a ordem dos tópicos; a ordem em `pages` define a navegação interna. Os botões anterior/próximo acompanham essas ordens automaticamente.
 5. Publique o Markdown e o JSON no repositório. A página da trilha lista os tópicos e a página genérica `topico.html` exibe o conteúdo. Não é preciso criar uma página HTML nova para cada tópico.
@@ -53,7 +55,7 @@ O ícone de chat é incluído em todas as páginas HTML por `assistant.js` e `as
 6. Publique as alterações do site depois que o Worker correto estiver ativo.
 7. Configure uma regra de rate limiting no Cloudflare para o endpoint do Worker e monitore o uso/custo no Google AI Studio. CORS restringe uso em navegadores, mas sozinho não impede chamadas automatizadas diretas.
 
-O Worker limita a pergunta a 1.500 caracteres e não armazena conversas na Gemini API. Somente a pergunta digitada é enviada à Gemini; o texto da aula, o histórico e os metadados do tópico não são enviados. Para uso local, sirva a pasta do projeto via HTTP na porta 5500 ou 8000; abrir por `file://` não é permitido pelo CORS.
+O Worker limita a pergunta do chat a 1.500 caracteres e não armazena conversas na Gemini API. No chat, somente as mensagens digitadas e o contexto recente da conversa são enviados. Ao clicar em **Resumir conteúdo** dentro de uma página de estudo, o título e o texto Markdown daquela página são enviados ao Worker para gerar o resumo; a Gemini recebe `store: false`. O modal informa que o resumo é um apoio e não substitui o estudo do material completo. Para uso local, sirva a pasta do projeto via HTTP na porta 5500 ou 8000; abrir por `file://` não é permitido pelo CORS.
 
 Se o assistente retornar HTTP 502, publique novamente o Worker para que ele mostre a mensagem de erro da Gemini sem expor a chave. A mensagem exibida ajuda a identificar chave inválida, modelo/acesso indisponível ou erro de solicitação. Para ver logs em tempo real, execute `npx wrangler tail gemini-proxy`.
 
@@ -87,3 +89,13 @@ O dashboard consulta os catálogos das trilhas e o progresso da conta em `/api/p
 ### Teste interativo dentro do Markdown
 
 Não use `<form>`, `<script>`, `onclick` ou HTML dentro do arquivo Markdown: o renderizador escapa HTML e não executa JavaScript incluído no conteúdo. Para uma pergunta de múltipla escolha, use um bloco cercado por três crases com a palavra `quiz`. Escreva o conteúdo do bloco como JSON e marque a alternativa correta com `"correct": true`. Para exigir que o estudante selecione uma alternativa em cada questão antes de avançar ou finalizar, marque a página correspondente no catálogo com `"requiresQuizAnswers": true`. O exemplo está em `content/aeds-i/topicos.json`, na página de exercícios da pilha.
+
+### Imagens no texto
+
+Use a sintaxe `![descrição da imagem](caminho-ou-URL)`. O endereço pode ser um link público do R2 ou um arquivo relativo ao `.md`. Por padrão, a imagem fica centralizada. Para flutuar à esquerda ou à direita e deixar o texto correr ao lado, acrescente `{align=left width=40%}` ou `{align=right width=40%}`. Em celular, imagens laterais são empilhadas para manter o texto legível. Imagens com `align=center` podem ser colocadas entre parágrafos para aparecer acima, abaixo ou no ponto desejado do texto.
+
+```markdown
+![Representação de uma lista](https://exemplo.r2.dev/lista.png){align=right width=38%}
+
+Este parágrafo começa ao lado da imagem. No celular, a imagem aparece acima do texto.
+```

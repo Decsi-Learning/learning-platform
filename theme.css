@@ -171,6 +171,41 @@ html[data-theme="dark"] .quiz-gate-message {
   color: #f4d27f;
 }
 
+html[data-theme="dark"] .summary-dialog {
+  border-color: var(--theme-border);
+  background: var(--theme-surface);
+  color: var(--theme-text);
+}
+
+html[data-theme="dark"] .summary-head {
+  border-color: var(--theme-border);
+}
+
+html[data-theme="dark"] .summary-notice {
+  border-color: #665a35;
+  background: var(--theme-warning-bg);
+  color: var(--theme-warning);
+}
+
+html[data-theme="dark"] .summary-status {
+  color: var(--theme-text-soft);
+}
+
+html[data-theme="dark"] .summary-close {
+  background: var(--theme-code);
+  color: var(--theme-text);
+}
+
+html[data-theme="dark"] .summary-trigger {
+  border-color: #4d776d;
+  background: #203b35;
+  color: #b4ecd5;
+}
+
+html[data-theme="dark"] .summary-status.summary-error {
+  color: var(--theme-error);
+}
+
 html[data-theme="dark"] .arrow,
 html[data-theme="dark"] .direction {
   color: #a5b8b8;
