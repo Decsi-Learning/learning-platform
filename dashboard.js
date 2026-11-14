@@ -30,6 +30,7 @@
 
   async function initialize() {
     const topicsByTrack = {};
+    const catalogAvailable = {};
     await Promise.all(tracks.map(async (track) => {
       try {
         const response = await fetch(`content/${track.id}/topicos.json`);
@@ -37,16 +38,77 @@
         const data = await response.json();
         const topics = Array.isArray(data.topics) ? data.topics : [];
         topicsByTrack[track.id] = topics;
-        const count = topics.length;
-        const countLabel = `${count} ${count === 1 ? "tópico" : "tópicos"}`;
-        track.element.textContent = `${track.label}${countLabel}${count === 0 ? " · Conteúdo em preparação" : " · Conteúdo disponível"}`;
+        catalogAvailable[track.id] = true;
       } catch {
         topicsByTrack[track.id] = [];
-        track.element.textContent = "Conteúdo indisponível";
+        catalogAvailable[track.id] = false;
+        if (track.element) track.element.textContent = "Conteúdo indisponível";
       }
     }));
 
     const allTopics = tracks.flatMap((track) => (topicsByTrack[track.id] || []).map((topic) => ({ track, topic })));
+    const progressState = allTopics.length
+      ? await window.decsiProgress.getAll(topicsByTrack)
+      : { topics: [], pages: [] };
+    const progressByTopic = new Map(progressState.topics.map((record) => [
+      `${record.trackId}:${record.topicId}`,
+      record,
+    ]));
+
+    for (const track of tracks) {
+      const topics = topicsByTrack[track.id] || [];
+      const card = document.getElementById(`${track.id}-dashboard`);
+
+      if (!catalogAvailable[track.id]) {
+        if (track.element) track.element.textContent = "Conteúdo indisponível";
+        if (card) {
+          card.querySelector("[data-dashboard-percent]").textContent = "";
+          card.querySelector("[data-dashboard-completion]").textContent = "";
+          card.querySelector("[data-dashboard-bar]").hidden = true;
+          card.querySelector("[data-dashboard-breakdown]").hidden = true;
+          const empty = card.querySelector("[data-dashboard-empty]");
+          empty.hidden = false;
+          empty.textContent = "Não foi possível carregar o conteúdo da trilha.";
+        }
+        continue;
+      }
+
+      if (topics.length === 0) {
+        if (track.element) track.element.textContent = `${track.label}Trilha sem conteúdo cadastrado`;
+        if (card) {
+          card.querySelector("[data-dashboard-percent]").textContent = "";
+          card.querySelector("[data-dashboard-completion]").textContent = "";
+          card.querySelector("[data-dashboard-bar]").hidden = true;
+          card.querySelector("[data-dashboard-breakdown]").hidden = true;
+          const empty = card.querySelector("[data-dashboard-empty]");
+          empty.hidden = false;
+          empty.textContent = "Esta trilha ainda está sem conteúdo.";
+        }
+        continue;
+      }
+
+      const completed = topics.filter((topic) => progressByTopic.get(`${track.id}:${topic.id}`)?.status === "completed").length;
+      const active = topics.filter((topic) => progressByTopic.get(`${track.id}:${topic.id}`)?.status === "in_progress").length;
+      const pending = topics.length - completed - active;
+      const percentage = Math.round((completed / topics.length) * 100);
+      const countLabel = `${topics.length} ${topics.length === 1 ? "tópico" : "tópicos"}`;
+      if (track.element) track.element.textContent = `${track.label}${countLabel} · Conteúdo disponível`;
+      if (card) {
+        card.querySelector("[data-dashboard-percent]").textContent = `${percentage}%`;
+        card.querySelector("[data-dashboard-completion]").textContent = `${completed} de ${topics.length} ${topics.length === 1 ? "tópico concluído" : "tópicos concluídos"}`;
+        const bar = card.querySelector("[data-dashboard-bar]");
+        bar.value = percentage;
+        bar.hidden = false;
+        const breakdown = card.querySelector("[data-dashboard-breakdown]");
+        breakdown.querySelector("[data-dashboard-active]").textContent = active;
+        breakdown.querySelector("[data-dashboard-pending]").textContent = pending;
+        breakdown.hidden = false;
+        card.querySelector("[data-dashboard-empty]").hidden = true;
+      }
+    }
+
+    if (!title || !description || !action) return;
+
     if (!allTopics.length) {
       title.textContent = "Suas trilhas estão sendo preparadas.";
       description.textContent = "Volte em breve para começar seus estudos.";
@@ -54,15 +116,8 @@
       return;
     }
 
-    const progressState = await window.decsiProgress.getAll(topicsByTrack);
     const progress = progressState.topics;
-    for (const track of tracks) {
-      const trackTopics = topicsByTrack[track.id] || [];
-      const trackProgress = window.decsiProgress.calculateTrack(track.id, trackTopics, progressState);
-      const countLabel = `${trackTopics.length} ${trackTopics.length === 1 ? "tópico" : "tópicos"}`;
-      track.element.textContent = `${track.label}${countLabel} · ${trackProgress.percent}% (${trackProgress.completedPages}/${trackProgress.totalPages} páginas)`;
-    }
-    const recordsByTopic = new Map(progress.map((record) => [`${record.trackId}:${record.topicId}`, record]));
+    const recordsByTopic = progressByTopic;
     const inProgress = progress
       .filter((record) => record.status === "in_progress")
       .sort((left, right) => Date.parse(right.lastAccessedAt || "") - Date.parse(left.lastAccessedAt || ""));
@@ -96,6 +151,7 @@
   }
 
   initialize().catch(() => {
+    if (!title || !description || !action) return;
     title.textContent = "Não foi possível carregar seu progresso.";
     description.textContent = "Tente atualizar a página para continuar seus estudos.";
     hideAction();

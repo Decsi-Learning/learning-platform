@@ -1,0 +1,18 @@
+{
+  "tracks": [
+    {
+      "id": "aeds-i",
+      "title": "AEDS I",
+      "catalog": "content/aeds-i/topicos.json",
+      "contentDirectory": "content/aeds-i/topicos/",
+      "plan": "aeds-i.html"
+    },
+    {
+      "id": "aeds-ii",
+      "title": "AEDS II",
+      "catalog": "content/aeds-ii/topicos.json",
+      "contentDirectory": "content/aeds-ii/topicos/",
+      "plan": "aeds-ii.html"
+    }
+  ]
+}

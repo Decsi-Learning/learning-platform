@@ -108,10 +108,11 @@
     .activity-mark {width:33px;height:33px;border-radius:10px;background:#eaf5f1;display:grid;place-items:center;font-size:14px;z-index:1;}
     .activity-row strong {display:block;font-size:11px;line-height:1.35;}.activity-row span{display:block;color:var(--muted);font-size:10px;margin-top:4px;}
     @media(max-width:900px){.layout{grid-template-columns:76px minmax(0,1fr)}.sidebar{padding:22px 11px}.brand{justify-content:center;padding:0 0 32px}.brand-text,.nav-label,.nav .label,.help-card{display:none}.nav a{justify-content:center;padding:12px}.sidebar-bottom{display:none}}
-    @media(max-width:620px){.layout{display:block}.sidebar{position:sticky;top:0;z-index:7;height:63px;border:0;border-bottom:1px solid rgba(255,255,255,.85);border-radius:0;padding:8px 14px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;box-shadow:0 5px 20px rgba(23,59,67,.06)}.brand{padding:0}.nav-label{display:none}.nav{display:flex;gap:3px}.nav a{padding:9px}.nav .icon{font-size:16px}.topbar{top:63px;margin:0 0 27px;padding:8px 10px;border-radius:13px}.crumb,.user-name,.user-role{display:none}.welcome{display:block}.date{display:block;margin-top:12px}.hero{grid-template-columns:1fr;padding:25px;min-height:0}.hero-art{display:none}.hero h2{font-size:22px}.stats{grid-template-columns:1fr;gap:9px}.stat{padding:13px}.section-head{margin-top:29px}.track{grid-template-columns:42px minmax(0,1fr) auto;gap:10px;padding:13px}.track-icon{width:42px;height:42px}}
+    @media(max-width:620px){.layout{display:block}.sidebar{position:sticky;top:0;z-index:7;height:63px;border:0;border-bottom:1px solid rgba(255,255,255,.85);border-radius:0;padding:8px 14px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;box-shadow:0 5px 20px rgba(23,59,67,.06)}.brand{padding:0}.nav-label{display:none}.nav{display:flex;gap:3px}.nav a{padding:9px}.nav .icon{font-size:16px}.topbar{top:63px;margin:0 0 27px;padding:8px 10px;border-radius:13px}.crumb,.user-name,.user-role{display:none}.welcome{display:block}.date{display:block;margin-top:12px}.hero{grid-template-columns:1fr;padding:25px;min-height:0}.hero-art{display:none}.hero h2{font-size:22px}.stats{grid-template-columns:1fr;gap:9px}stat{padding:13px}.section-head{margin-top:29px}.track{grid-template-columns:42px minmax(0,1fr) auto;gap:10px;padding:13px}.track-icon{width:42px;height:42px}}
   </style>
   <link rel="stylesheet" href="assistant.css" />
   <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="search.css" />
   <link rel="stylesheet" href="theme.css" />
 </head>
 <body>
@@ -124,7 +125,7 @@
         <p class="nav-label">Menu</p>
         <nav class="nav">
           <a class="active" href="#inicio"><span class="icon">⌂</span><span class="label">Início</span></a>
-          <a href="#dashboard"><span class="icon">▦</span><span class="label">Dashboard</span></a>
+          <a href="dashboard.html"><span class="icon">▦</span><span class="label">Dashboard</span></a>
           <a href="#trilhas"><span class="icon">◈</span><span class="label">Minhas trilhas</span></a>
           <a href="#agenda"><span class="icon">▣</span><span class="label">Agenda</span></a>
           <a href="#certificados"><span class="icon">✧</span><span class="label">Certificados</span></a>
@@ -139,6 +140,12 @@
     <main id="inicio">
       <header class="topbar">
         <span class="crumb">Portal de aprendizagem&nbsp; / &nbsp;Início</span>
+        <div class="global-search" role="search" aria-label="Buscar conteúdo">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <label class="visually-hidden" for="content-search">Buscar conteúdo da plataforma</label>
+          <input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" />
+          <div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div>
+        </div>
         <div class="user"><button class="bell" aria-label="Notificações">♧</button><div class="avatar" aria-hidden="true">MC</div><div><div class="user-name">Olá, Marina</div><div class="user-role">Estudante</div></div></div>
       </header>
       <section class="welcome">
@@ -162,6 +169,7 @@
   <script src="dashboard.js" defer></script>
   <script src="auth.js" defer></script>
   <script src="assistant.js" defer></script>
+  <script src="search.js" defer></script>
   <script src="theme.js" defer></script>
 </body>
 </html>

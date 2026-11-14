@@ -28,6 +28,7 @@
   </style>
   <link rel="stylesheet" href="assistant.css" />
   <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="search.css" />
   <link rel="stylesheet" href="theme.css" />
 </head>
 <body>
@@ -36,7 +37,7 @@
       <a class="brand" href="index.html" aria-label="DECSI Learning, início"><img class="brand-mark" src="logo-d-lampada.svg" alt="" /><span class="brand-text">DECSI <small>learning</small></span></a>
       <div><p class="nav-label">Menu</p><nav class="nav">
         <a href="index.html"><span class="nav-icon">⌂</span><span class="label">Início</span></a>
-        <a href="index.html#dashboard"><span class="nav-icon">▦</span><span class="label">Dashboard</span></a>
+        <a href="dashboard.html"><span class="nav-icon">▦</span><span class="label">Dashboard</span></a>
         <a class="active" href="index.html#trilhas" aria-current="page"><span class="nav-icon">◈</span><span class="label">Minhas trilhas</span></a>
         <a href="index.html#agenda"><span class="nav-icon">▣</span><span class="label">Agenda</span></a>
         <a href="index.html#certificados"><span class="nav-icon">✧</span><span class="label">Certificados</span></a>
@@ -46,6 +47,12 @@
   <main>
     <header class="topbar">
       <span class="crumb">Portal de aprendizagem&nbsp; / &nbsp;AEDS II</span>
+        <div class="global-search" role="search" aria-label="Buscar conteúdo">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <label class="visually-hidden" for="content-search">Buscar conteúdo da plataforma</label>
+          <input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" />
+          <div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div>
+        </div>
       <div class="user"><div class="avatar" aria-hidden="true">MC</div><div><div class="user-name">Olá, Marina</div><div class="user-role">Estudante</div></div></div>
     </header>
     <a class="back" href="index.html"><span aria-hidden="true">←</span> Voltar às trilhas</a>
@@ -108,6 +115,7 @@
   </script>
   <script src="auth.js" defer></script>
   <script src="assistant.js" defer></script>
+  <script src="search.js" defer></script>
   <script src="theme.js" defer></script>
 </body>
 </html>

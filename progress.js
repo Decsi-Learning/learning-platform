@@ -43,6 +43,32 @@
   }
 
   async function getAll(topicsByTrack) {
+    const entries = readLocal();
+    const topicsByKey = new Map(Object.values(entries).map((record) => [
+      key(record.trackId, record.topicId),
+      record,
+    ]));
+    for (const [trackId, topics] of Object.entries(topicsByTrack || {})) {
+      for (const topic of topics) {
+        const topicKey = key(trackId, topic.id);
+        const oldCompletionKey = `decsi-learning:${trackId}:${topic.id}:concluido`;
+        if (localStorage.getItem(oldCompletionKey) === "true" && topicsByKey.get(topicKey)?.status !== "completed") {
+          topicsByKey.set(topicKey, {
+            ...topicsByKey.get(topicKey),
+            trackId,
+            topicId: topic.id,
+            status: "completed",
+            lastAccessedAt: topicsByKey.get(topicKey)?.lastAccessedAt || "1970-01-01T00:00:00.000Z",
+            completedAt: topicsByKey.get(topicKey)?.completedAt || "",
+          });
+        }
+      }
+    }
+
+    const pagesByKey = new Map(Object.values(readLocalPages()).map((page) => [
+      pageKey(page.trackId, page.topicId, page.pageId),
+      page,
+    ]));
     const sessionToken = token();
     if (sessionToken) {
       try {
@@ -52,33 +78,26 @@
         });
         if (response.ok) {
           const result = await response.json();
-          return {
-            topics: Array.isArray(result.progress) ? result.progress : [],
-            pages: Array.isArray(result.pages) ? result.pages : [],
-          };
+          for (const record of Array.isArray(result.progress) ? result.progress : []) {
+            const recordKey = key(record.trackId, record.topicId);
+            const local = topicsByKey.get(recordKey);
+            topicsByKey.set(recordKey, local?.status === "completed" && record.status !== "completed"
+              ? local
+              : record);
+          }
+          for (const page of Array.isArray(result.pages) ? result.pages : []) {
+            const recordKey = pageKey(page.trackId, page.topicId, page.pageId);
+            const local = pagesByKey.get(recordKey);
+            if (!local || Date.parse(page.lastAccessedAt || "") > Date.parse(local.lastAccessedAt || "")) {
+              pagesByKey.set(recordKey, page);
+            }
+          }
         }
       } catch {
         // Keep a usable local fallback if the service is temporarily unavailable.
       }
     }
-
-    const entries = readLocal();
-    const progress = Object.values(entries);
-    for (const [trackId, topics] of Object.entries(topicsByTrack || {})) {
-      for (const topic of topics) {
-        const oldCompletionKey = `decsi-learning:${trackId}:${topic.id}:concluido`;
-        if (localStorage.getItem(oldCompletionKey) === "true" && !entries[key(trackId, topic.id)]) {
-          progress.push({
-            trackId,
-            topicId: topic.id,
-            status: "completed",
-            lastAccessedAt: "1970-01-01T00:00:00.000Z",
-            completedAt: "",
-          });
-        }
-      }
-    }
-    return { topics: progress, pages: Object.values(readLocalPages()) };
+    return { topics: [...topicsByKey.values()], pages: [...pagesByKey.values()] };
   }
 
   function calculateTrack(trackId, topics, progressState) {

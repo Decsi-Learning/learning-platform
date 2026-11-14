@@ -10,6 +10,8 @@ Plataforma estática publicada no GitHub Pages. Os textos das aulas ficam em arq
 4. A ordem dos objetos em `topics` define a ordem dos tópicos; a ordem em `pages` define a navegação interna. Os botões anterior/próximo acompanham essas ordens automaticamente.
 5. Publique o Markdown e o JSON no repositório. A página da trilha lista os tópicos e a página genérica `topico.html` exibe o conteúdo. Não é preciso criar uma página HTML nova para cada tópico.
 
+A busca no cabeçalho percorre títulos, resumos e textos Markdown dos tópicos e páginas cadastrados. Ao adicionar tópicos a uma trilha existente, eles entram na busca automaticamente. Ao criar uma trilha, registre-a também em `content/trilhas.json`, informando `id`, `title`, `catalog` e `contentDirectory` (e `plan` se houver uma página própria para a trilha). A página genérica `topico.html` lê esse manifesto para abrir conteúdos de qualquer trilha cadastrada.
+
 Os tópicos extraídos dos planos já estão listados nos catálogos das duas disciplinas. Nos que ainda não têm texto, `"file": null` mantém a página acessível e mostra que o conteúdo está em preparação. Ao criar o Markdown correspondente, substitua `null` pelo nome do arquivo.
 
 Exemplo de tópico com páginas internas:
