@@ -1,6 +1,12 @@
 {
   "topics": [
     {
+      "id": "introducao-aeds-i",
+      "title": "Introdução aos Algoritmos e Estruturas de Dados I",
+      "summary": "Introdução aos conceitos fundamentais de algoritmos e estruturas de dados.",
+      "file": "introducao-aeds-i.md"
+    },
+    {
       "id": "recursividade",
       "title": "Recursividade",
       "summary": "Recursão de cauda, indireta e aninhada; recursão excessiva e backtracking.",

@@ -1,6 +1,12 @@
 {
   "topics": [
     {
+      "id": "introducao-aeds-ii",
+      "title": "Introdução aos Algoritmos e Estruturas de Dados II",
+      "summary": "Introdução aos conceitos fundamentais de algoritmos e estruturas de dados.",
+      "file": "introducao_aeds_ii.md"
+    },
+    {
       "id": "organizacao-memoria-secundaria",
       "title": "Organização dos dados em memória secundária",
       "summary": "Organização e armazenamento de dados em dispositivos de memória secundária.",

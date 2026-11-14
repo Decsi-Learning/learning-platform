@@ -38,9 +38,15 @@
   }
 
   function updateHeader(profile) {
+    const email = profile?.email || "";
+    const createAccountLink = document.querySelector('.nav a[href="cadastro.html"]');
+    if (createAccountLink) {
+      createAccountLink.hidden = Boolean(email);
+      createAccountLink.style.display = email ? "none" : "";
+    }
+
     const user = document.querySelector(".user");
     if (!user) return;
-    const email = profile?.email || "";
     const firstName = profile?.firstName || "";
     const lastName = profile?.lastName || "";
     const fullName = [firstName, lastName].filter(Boolean).join(" ");

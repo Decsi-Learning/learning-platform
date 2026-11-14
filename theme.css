@@ -72,6 +72,7 @@ html[data-theme="dark"] .topbar,
 html[data-theme="dark"] .card,
 html[data-theme="dark"] .topic,
 html[data-theme="dark"] .track,
+html[data-theme="dark"] .dashboard-card,
 html[data-theme="dark"] .stat,
 html[data-theme="dark"] .activity,
 html[data-theme="dark"] .resource,
@@ -95,6 +96,7 @@ html[data-theme="dark"] .topbar {
 html[data-theme="dark"] .card,
 html[data-theme="dark"] .topic,
 html[data-theme="dark"] .track,
+html[data-theme="dark"] .dashboard-card,
 html[data-theme="dark"] .stat,
 html[data-theme="dark"] .activity,
 html[data-theme="dark"] .resource,
@@ -122,10 +124,21 @@ html[data-theme="dark"] .nav-label,
 html[data-theme="dark"] .crumb,
 html[data-theme="dark"] .user-role,
 html[data-theme="dark"] .track p,
+html[data-theme="dark"] .dashboard-completion,
+html[data-theme="dark"] .dashboard-empty,
+html[data-theme="dark"] .dashboard-breakdown,
 html[data-theme="dark"] .activity-empty,
 html[data-theme="dark"] .resource-head p,
 html[data-theme="dark"] .track-progress p {
   color: var(--theme-muted);
+}
+
+html[data-theme="dark"] .dashboard-breakdown strong {
+  color: var(--theme-text);
+}
+
+html[data-theme="dark"] .dashboard-card-link {
+  color: var(--theme-accent-strong);
 }
 
 html[data-theme="dark"] .nav a.active,
@@ -156,6 +169,41 @@ html[data-theme="dark"] .quiz-gate-message {
   border-color: #665a35;
   background: #3a3423;
   color: #f4d27f;
+}
+
+html[data-theme="dark"] .summary-dialog {
+  border-color: var(--theme-border);
+  background: var(--theme-surface);
+  color: var(--theme-text);
+}
+
+html[data-theme="dark"] .summary-head {
+  border-color: var(--theme-border);
+}
+
+html[data-theme="dark"] .summary-notice {
+  border-color: #665a35;
+  background: var(--theme-warning-bg);
+  color: var(--theme-warning);
+}
+
+html[data-theme="dark"] .summary-status {
+  color: var(--theme-text-soft);
+}
+
+html[data-theme="dark"] .summary-close {
+  background: var(--theme-code);
+  color: var(--theme-text);
+}
+
+html[data-theme="dark"] .summary-trigger {
+  border-color: #4d776d;
+  background: #203b35;
+  color: #b4ecd5;
+}
+
+html[data-theme="dark"] .summary-status.summary-error {
+  color: var(--theme-error);
 }
 
 html[data-theme="dark"] .arrow,
@@ -270,6 +318,11 @@ html[data-theme="dark"] .markdown pre,
 html[data-theme="dark"] .assistant-message.markdown pre {
   background: #0c1519;
   color: #eaf4f1;
+}
+
+html[data-theme="dark"] .markdown th {
+  background: #26383d;
+  color: var(--theme-text);
 }
 
 html[data-theme="dark"] .knowledge-test {
