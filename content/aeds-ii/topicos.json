@@ -58,7 +58,26 @@
       "id": "compressao-dados",
       "title": "Compressão de dados",
       "summary": "Run length encoding, código de Huffman e LZW.",
-      "file": "compressao-dados.md"
+     "pages": [
+    {
+      "id": "rle",
+      "title": "Run-Length Encoding (RLE)",
+      "summary": "Substitui corridas de símbolos iguais por pares (contagem, símbolo).",
+      "file": "rle.md"
+    },
+    {
+      "id": "huffman",
+      "title": "Código de Huffman",
+      "summary": "Códigos de prefixo de tamanho variável construídos com um Min-Heap.",
+      "file": "huffman.md"
+    },
+    {
+      "id": "lzw",
+      "title": "LZW",
+      "summary": "Compressão baseada em dicionário aprendido durante a leitura.",
+      "file": "lzw.md"
+    }
+  ]
     },
     {
       "id": "hash",
