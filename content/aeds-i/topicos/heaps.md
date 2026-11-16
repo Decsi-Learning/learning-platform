@@ -18,7 +18,7 @@ Um Heap Binário é uma **árvore binária quase completa** (todos os níveis es
 - **Max-Heap:** A chave de cada nó pai é **maior ou igual** às chaves de seus filhos ($V[\text{pai}] \ge V[\text{filho}]$). O **maior** elemento está sempre na raiz.
 - **Min-Heap:** A chave de cada nó pai é **menor ou igual** às chaves de seus filhos ($V[\text{pai}] \le V[\text{filho}]$). O **menor** elemento está sempre na raiz.
 
-![Representação lógica em árvore e mapeamento em vetor contíguo de um Max-Heap](imagens/heap-estrutura.svg){align=center width=88%}
+![Representação lógica em árvore e mapeamento em vetor contíguo de um Max-Heap](imagens/heap-estrutura.svg)
 
 ### Como funciona
 
@@ -36,7 +36,7 @@ Considere as operações fundamentais sobre um **Max-Heap** armazenado em vetor.
 
 ### 1. Inserção e `Sift-Up` (Subir)
 
-![Passo a passo da operação Sift-Up ao inserir a chave 95 no Max-Heap](imagens/heap-sift-up.svg){align=right width=46%}
+![Passo a passo da operação Sift-Up ao inserir a chave 95 no Max-Heap](imagens/heap-sift-up.svg)
 
 Para inserir um novo valor mantendo a estrutura intacta:
 
