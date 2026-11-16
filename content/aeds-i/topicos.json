@@ -6,12 +6,62 @@
       "summary": "Introdução aos conceitos fundamentais de algoritmos e estruturas de dados.",
       "file": "introducao-aeds-i.md"
     },
+    
+{
+  "id": "recursividade",
+  "title": "Recursividade",
+  "summary": "Fundamentos, recursão de cauda, indireta e aninhada; recursão excessiva e backtracking.",
+  "pages": [
     {
-      "id": "recursividade",
-      "title": "Recursividade",
-      "summary": "Recursão de cauda, indireta e aninhada; recursão excessiva e backtracking.",
-      "file": null
+      "id": "fundamentos-recursividade",
+      "title": "Fundamentos da Recursividade",
+      "summary": "Conceitos fundamentais da recursão.",
+      "file": "recursividade/fundamentos-recursividade.md"
     },
+    {
+      "id": "recursao-cauda",
+      "title": "Recursão de Cauda",
+      "summary": "Recursão com chamada como última operação.",
+      "file": "recursividade/recursao-cauda.md"
+    },
+    {
+      "id": "recursao-indireta",
+      "title": "Recursão Indireta",
+      "summary": "Funções que chamam umas às outras recursivamente.",
+      "file": "recursividade/recursao-indireta.md"
+    },
+    {
+      "id": "recursao-aninhada",
+      "title": "Recursão Aninhada",
+      "summary": "Chamadas recursivas dentro de outras chamadas recursivas.",
+      "file": "recursividade/recursao-aninhada.md"
+    },
+    {
+      "id": "recursao-excessiva",
+      "title": "Recursão Excessiva",
+      "summary": "Chamadas redundantes e otimização.",
+      "file": "recursividade/recursao-excessiva.md"
+    },
+    {
+      "id": "backtracking",
+      "title": "Backtracking",
+      "summary": "Exploração de possibilidades e retrocesso.",
+      "file": "recursividade/backtracking.md"
+    },
+    {
+      "id": "exercicios-avaliativos-recursividade",
+      "title": "Exercícios Avaliativos",
+      "summary": "Questões sobre todos os conteúdos de recursividade.",
+      "file": "recursividade/exercicios-avaliativos-recursividade.md"
+    },
+    {
+      "id": "slides-recursividade",
+      "title": "Slides — Revisão Geral",
+      "summary": "Apresentação completa de todos os conteúdos de recursividade.",
+      "file": "recursividade/slides-recursividade.md"
+    }
+  ]
+},
     {
       "id": "analise-complexidade",
       "title": "Análise de complexidade de algoritmos",
