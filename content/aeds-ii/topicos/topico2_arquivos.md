@@ -77,6 +77,8 @@ Funciona como uma **Lista Encadeada**: os blocos podem ficar espalhados em qualq
 * **Vantagem:** Elimina a fragmentação externa e o arquivo pode crescer livremente.
 * **Desvantagem:** **Péssimo para acesso direto!** Para chegar ao $50^\circ$ bloco, o disco precisa ler os $49$ blocos anteriores seguindo os ponteiros, gerando alto tempo de *seek*.
 
+![Alocação Encadeada](img-Top1-3/alocacaoencadeada.png)
+
 ### 3.3. Alocação Indexada
 Cria-se um **Bloco de Índice** especial que funciona como um sumário (um vetor de ponteiros), guardando os endereços de todos os blocos de dados daquele arquivo.
 * **Vantagem:** Permite acesso direto rápido sem sofrer com fragmentação externa. É a base de como os Sistemas de Arquivos modernos e as **Árvores B** funcionam!
@@ -92,7 +94,7 @@ O Cabeçalho guarda **metadados** (dados sobre os próprios dados) essenciais pa
 ```
 +-----------------------------------------------------------------------+
 | CABEÇALHO (Ex: primeiros 16 bytes)                                    |
-| [Assinatura: "AED2"] [Versão: 1] [Total Registros: 500] [TopoLixo: -1]|
+| [Assinatura: "AEDS2"] [Versão: 1] [Total Registros: 500] [TopoLixo: -1]|
 +-----------------------------------------------------------------------+
 | DADOS (Começam a partir do byte 16)                                   |
 | [ Registro 0 ] [ Registro 1 ] [ Registro 2 ] ...                      |
@@ -138,17 +140,17 @@ Exercícios de Fixação - Arquivos
 Chegou a hora de testar seus conhecimentos sobre Arquivos! Responda às questões abaixo para avaliar o seu entendimento.
 
 
-Questão 1: Texto vs. Binário na Prática
+Questão 1: Operações de Manutenção em Arquivos
 ```quiz
 {
-  "question": "Se armazenarmos 1.000.000 de números inteiros de 9 dígitos (tipo int de 4 bytes na RAM) em um Arquivo Binário em vez de um Arquivo de Texto (com quebra de linha), qual será o impacto principal?",
+  "question": "Após muitas remoções lógicas de registros, um arquivo binário passa a acumular vários espaços vazios inutilizados. Qual operação de manutenção resolve esse problema?",
   "options": [
-    { "text": "O arquivo binário ocupará exatamente 4 MB (contra ~10 MB em texto) e será lido mais rápido por não exigir conversão de caracteres ASCII.", "correct": true },
-    { "text": "O arquivo de texto ocupará menos espaço, pois caracteres ASCII são comprimidos automaticamente pelo Sistema Operacional.", "correct": false },
-    { "text": "Ambos terão o mesmo tamanho em disco, mas o arquivo binário poderá ser editado facilmente no Bloco de Notas.", "correct": false }
+    { "text": "Reorganização ou Compactação (recriando o arquivo copiando apenas os registros ativos e eliminando os espaços vazios).", "correct": true },
+    { "text": "Abertura em modo de leitura ('read') seguida imediatamente de um fechamento ('close').", "correct": false },
+    { "text": "Conversão automática do arquivo binário para arquivo de texto (.txt).", "correct": false }
   ],
-  "correctFeedback": "✅ Correto! Em binário, cada int ocupa fixos 4 bytes (4 MB no total) e os bytes vão direto para a RAM sem conversão. Em texto, 9 dígitos + '\\n' consomem 10 bytes por número (~10 MB).",
-  "incorrectFeedback": "❌ Quase lá! Lembre-se de quantos bytes um número de 9 dígitos gasta quando escrito caractere por caractere em texto versus o tamanho fixo de um 'int' na memória RAM."
+  "correctFeedback": "✅ Correto! A reorganização/compactação limpa os 'buracos' deixados pelas remoções lógicas, reduzindo o tamanho do arquivo em disco e melhorando o desempenho das leituras.",
+  "incorrectFeedback": "❌ Lembre-se das operações de manutenção vistas no tópico: apenas abrir e fechar não altera a estrutura interna. Como eliminamos os espaços vazios acumulados no arquivo?"
 }
 ```
 
