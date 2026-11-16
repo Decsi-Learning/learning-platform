@@ -16,7 +16,7 @@
       "id": "arquivos",
       "title": "Arquivos",
       "summary": "Conceitos e estruturas de arquivos para armazenamento e processamento de dados.",
-      "file": null
+      "file": "topico2_arquivos.md"
     },
     {
       "id": "acesso-sequencial-randomico",
