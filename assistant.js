@@ -4,7 +4,7 @@
     <div class="assistant-widget">
       <section class="assistant-panel" id="site-assistant-panel" aria-labelledby="site-assistant-title" hidden>
         <header class="assistant-head">
-          <div><h2 id="site-assistant-title">Assistente de estudos</h2><p>Somente sua mensagem é enviada à IA.</p></div>
+          <div><h2 id="site-assistant-title">Assistente de estudos</h2><p>Uso até 8 trocas desta página como contexto; a Gemini não as armazena.</p></div>
           <button class="assistant-close" id="site-assistant-close" type="button" aria-label="Fechar assistente">×</button>
         </header>
         <div class="assistant-transcript" id="site-assistant-transcript" aria-live="polite"></div>
@@ -28,6 +28,18 @@
   const questionField = document.getElementById("site-assistant-question");
   const transcript = document.getElementById("site-assistant-transcript");
   const status = document.getElementById("site-assistant-status");
+  const conversationTurns = [];
+  const MAX_CONVERSATION_TURNS = 8;
+
+  function getConversationHistory() {
+    let history = conversationTurns.flat();
+    while (history.length > 32 || new TextEncoder().encode(JSON.stringify(history)).length > 48 * 1024) {
+      if (!conversationTurns.length) return [];
+      conversationTurns.shift();
+      history = conversationTurns.flat();
+    }
+    return history;
+  }
 
   function setOpen(open) {
     panel.hidden = !open;
@@ -55,6 +67,7 @@
     if (!question) return;
 
     const submitButton = form.querySelector("button");
+    if (submitButton.disabled) return;
     const userMessage = document.createElement("div");
     userMessage.className = "assistant-message user";
     userMessage.textContent = question;
@@ -73,7 +86,7 @@
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question })
+        body: JSON.stringify({ question, history: getConversationHistory() })
       });
       const result = await response.json();
       if (!response.ok) {
@@ -84,6 +97,18 @@
       answer.className = "assistant-message markdown";
       answer.innerHTML = renderAssistantMarkdown(result.answer);
       transcript.append(answer);
+      const returnedSteps = Array.isArray(result.steps)
+        ? result.steps.filter((step) => step?.type !== "user_input")
+        : [];
+      const hasModelOutput = returnedSteps.some((step) => step?.type === "model_output");
+      const modelSteps = hasModelOutput
+        ? returnedSteps
+        : [...returnedSteps, { type: "model_output", content: [{ type: "text", text: result.answer }] }];
+      conversationTurns.push([
+        { type: "user_input", content: [{ type: "text", text: question }] },
+        ...modelSteps,
+      ]);
+      if (conversationTurns.length > MAX_CONVERSATION_TURNS) conversationTurns.shift();
       status.textContent = "Resposta gerada por IA. Confira informações importantes.";
     } catch (error) {
       const errorMessage = document.createElement("div");

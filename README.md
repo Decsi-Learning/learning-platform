@@ -55,7 +55,11 @@ O ícone de chat é incluído em todas as páginas HTML por `assistant.js` e `as
 6. Publique as alterações do site depois que o Worker correto estiver ativo.
 7. Configure uma regra de rate limiting no Cloudflare para o endpoint do Worker e monitore o uso/custo no Google AI Studio. CORS restringe uso em navegadores, mas sozinho não impede chamadas automatizadas diretas.
 
+<<<<<<< Updated upstream
 O Worker limita a pergunta do chat a 1.500 caracteres e não armazena conversas na Gemini API. No chat, somente as mensagens digitadas e o contexto recente da conversa são enviados. Ao clicar em **Resumir conteúdo** dentro de uma página de estudo, o título e o texto Markdown daquela página são enviados ao Worker para gerar o resumo; a Gemini recebe `store: false`. O modal informa que o resumo é um apoio e não substitui o estudo do material completo. Para uso local, sirva a pasta do projeto via HTTP na porta 5500 ou 8000; abrir por `file://` não é permitido pelo CORS.
+=======
+O Worker limita cada pergunta a 1.500 caracteres. O assistente mantém até oito trocas em memória enquanto a página estiver aberta e envia esse contexto junto com a nova pergunta; fecha a conversa ao navegar/recarregar. O Worker usa `store: false`, então o histórico é reenviado a cada chamada e não é mantido como sessão pela Gemini. O texto da aula e os metadados do tópico não são enviados. Para uso local, sirva a pasta do projeto via HTTP na porta 5500 ou 8000; abrir por `file://` não é permitido pelo CORS.
+>>>>>>> Stashed changes
 
 Se o assistente retornar HTTP 502, publique novamente o Worker para que ele mostre a mensagem de erro da Gemini sem expor a chave. A mensagem exibida ajuda a identificar chave inválida, modelo/acesso indisponível ou erro de solicitação. Para ver logs em tempo real, execute `npx wrangler tail gemini-proxy`.
 
