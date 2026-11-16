@@ -71,6 +71,12 @@
       "title": "Casamento de padrões em texto",
       "summary": "Força bruta, Shift-And, Boyer-Moore, Boyer-Moore-Horspool e Knuth-Morris-Pratt (KMP).",
       "file": null
+    },
+    {
+      "id": "arvore-trie",
+      "title": "Árvore Trie",
+      "summary": "Árvore de prefixos: inserção, busca, remoção, complexidade e variações.",
+      "file": "arvore-trie.md"
     }
   ]
 }
