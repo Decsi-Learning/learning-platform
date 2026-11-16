@@ -2,8 +2,8 @@
 
 Ao final deste tópico, você deverá ser capaz de:
 
-- Compreender as propriedades estruturais e de ordenação de um Heap Binário (Max-Heap e Min-Heap).
-- Diferenciar a ordenação vertical de um Heap da ordenação horizontal de uma Árvore Binária de Busca.
+- Compreender as propriedades estruturais e de ordenação de um Heap Binário (**Max-Heap** e **Min-Heap**).
+- Diferenciar a ordenação vertical de um Heap da ordenação horizontal de uma Árvore Binária de Busca (ABB).
 - Mapear um Heap diretamente em um vetor contíguo utilizando aritmética de índices.
 - Executar as operações `sift-up` (inserção), `sift-down` (extração da raiz) e `build-heap` em C.
 
@@ -15,26 +15,16 @@ Um **Heap Binário** (*Binary Heap*) é uma estrutura de dados baseada em árvor
 
 Um Heap Binário é uma **árvore binária quase completa** (todos os níveis estão totalmente preenchidos, exceto possivelmente o último, que é preenchido estritamente da esquerda para a direita) que satisfaz a **Propriedade de Heap**:
 
-- **Max-Heap:** A chave de cada nó pai é **maior ou igual** às chaves de seus filhos ($V[pai] \ge V[filho]$). O **maior** elemento está sempre na raiz.
-- **Min-Heap:** A chave de cada nó pai é **menor ou igual** às chaves de seus filhos ($V[pai] \le V[filho]$). O **menor** elemento está sempre na raiz.
+- **Max-Heap:** A chave de cada nó pai é **maior ou igual** às chaves de seus filhos ($V[\text{pai}] \ge V[\text{filho}]$). O **maior** elemento está sempre na raiz.
+- **Min-Heap:** A chave de cada nó pai é **menor ou igual** às chaves de seus filhos ($V[\text{pai}] \le V[\text{filho}]$). O **menor** elemento está sempre na raiz.
 
-```text
-Visão Lógica (Max-Heap):              Representação em Vetor (Base 0):
-
-         [ 90 ] (0)                   Índice:  0    1    2    3    4    5
-         /        \                   Valor: [ 90 | 75 | 80 | 40 | 60 | 50 ]
-    [ 75 ] (1)   [ 80 ] (2)
-    /      \       /
-[ 40 ](3) [ 60 ](4) [ 50 ](5)
-```
+![Representação lógica em árvore e mapeamento em vetor contíguo de um Max-Heap](imagens/heap-estrutura.svg){align=center width=88%}
 
 ### Como funciona
 
-Por ser uma árvore quase completa sem lacunas internas, o Heap dispensa ponteiros e alocação dinâmica de nós. Todo o armazenamento é feito em um vetor contíguo `V` (indexado a partir de `0`), navegando pelas relações:
+Por ser uma árvore quase completa sem lacunas internas, o Heap dispensa ponteiros e alocação dinâmica de nós. Todo o armazenamento é feito em um vetor contíguo `V` (indexado a partir de `0`), navegando pelas relações matemáticas para um nó no índice $i$:
 
-- **Pai de `i`:** $\lfloor (i - 1) / 2 \rfloor$
-- **Filho esquerdo de `i`:** $2i + 1$
-- **Filho direito de `i`:** $2i + 2$
+$$\text{Pai}(i) = \left\lfloor \frac{i - 1}{2} \right\rfloor \qquad \text{Esquerdo}(i) = 2i + 1 \qquad \text{Direito}(i) = 2i + 2$$
 
 > **Regra fundamental:** um Heap **não** é uma Árvore Binária de Busca. Não existe ordenação entre filho esquerdo e filho direito; a única garantia é a relação vertical entre pai e filho.
 
@@ -46,27 +36,48 @@ Considere as operações fundamentais sobre um **Max-Heap** armazenado em vetor.
 
 ### 1. Inserção e `Sift-Up` (Subir)
 
-Para inserir um novo valor:
-1. Colocamos o elemento na primeira posição livre ao final do vetor (`V[n]`), preservando o formato de árvore quase completa.
-2. Aplicamos o **Sift-Up** (*Heapify-Up*): comparamos o elemento com seu pai e trocamos ambos enquanto o filho for maior que o pai:
+![Passo a passo da operação Sift-Up ao inserir a chave 95 no Max-Heap](imagens/heap-sift-up.svg){align=right width=46%}
 
-```text
-Inserir [ 95 ] no Max-Heap anterior:
-1. Entra no índice 6 (filho direito de [ 80 ]):  95 > 80 ──► troca com [ 80 ]
-2. Agora está no índice 2 (filho direito de [ 90 ]): 95 > 90 ──► troca com [ 90 ]
-3. Chegou ao índice 0 (raiz) ──► encerra.
-```
+Para inserir um novo valor mantendo a estrutura intacta:
+
+1. Colocamos o elemento na primeira posição livre ao final do vetor (`V[n]`), preservando o formato de árvore quase completa.
+2. Aplicamos o **Sift-Up** (*Heapify-Up*): comparamos o elemento com seu pai e trocamos ambos enquanto o filho for maior que o pai.
+
+<details>
+<summary><strong>Ver rastreamento passo a passo da inserção do 95</strong></summary>
+
+1. O valor `95` entra no índice `6` (filho direito de `80`).
+2. Como $95 > 80$, trocamos `V[6]` com `V[2]`.
+3. Agora no índice `2`, comparamos com a raiz `90`: como $95 > 90$, trocamos `V[2]` com `V[0]`.
+4. O elemento alcançou o índice `0` (raiz) e o processo encerra em $O(\log n)$.
+
+</details>
 
 ### 2. Extração da Raiz e `Sift-Down` (Descer)
 
 Para remover o maior elemento (`V[0]`):
+
 1. Guardamos `V[0]` para retorno.
 2. Movemos o **último elemento do vetor** (`V[n - 1]`) para a raiz `V[0]` e decrementamos o tamanho `n`.
 3. Aplicamos o **Sift-Down** (*Heapify-Down*): comparamos `V[0]` com seus dois filhos e trocamos com o **maior** filho até restabelecer a propriedade de Max-Heap.
 
+<details>
+<summary><strong>Ver rastreamento da extração da raiz (95)</strong></summary>
+
+1. Salvamos `95` para retorno.
+2. Movemos o último elemento (`80`, que estava no índice `6`) para `V[0]` e reduzimos $n$ para `6`.
+3. Comparamos `80` com seus filhos `75` (esq) e `90` (dir): como $90 > 80$, trocamos `V[0]` com `V[2]`.
+4. No índice `2`, `80` é maior que seu único filho `50` (índice `5`), encerrando a descida.
+
+</details>
+
 ### 3. Construção Linear (`Build-Heap`) e `HeapSort`
 
-Dado um vetor desordenado qualquer de tamanho $n$, transformamos o vetor em um Max-Heap aplicando `sift-down` de trás para frente a partir do último nó interno ($\lfloor n/2 \rfloor - 1$) até o índice `0`. Essa construção leva tempo linear $O(n)$. Em seguida, extraindo a raiz $n - 1$ vezes para o final do vetor, obtemos o algoritmo **HeapSort** em tempo $O(n \log n)$ e memória auxiliar $O(1)$.
+Dado um vetor desordenado qualquer de tamanho $n$, transformamos o vetor em um Max-Heap aplicando `sift-down` de trás para frente a partir do último nó interno até a raiz:
+
+$$i = \left\lfloor \frac{n}{2} \right\rfloor - 1 \;\longrightarrow\; 0$$
+
+Graças à distribuição das alturas dos nós na árvore, essa construção ocorre em tempo linear $O(n)$. Em seguida, extraindo a raiz $n - 1$ vezes para o final do vetor, obtemos o algoritmo **HeapSort** em tempo $O(n \log n)$ e memória auxiliar $O(1)$.
 
 ### 4. Implementação em C (Max-Heap)
 
@@ -136,11 +147,11 @@ A tabela abaixo resume o custo computacional das operações em um Heap Binário
 
 | Operação | Descrição | Custo |
 |:--|:--|--:|
-| Consultar topo (`Peek`) | Lê diretamente `V[0]` (máximo ou mínimo) | O(1) |
-| Inserir (`Insert`) | Adiciona ao fim do vetor e executa `sift-up` | O(log n) |
-| Extrair raiz (`Extract`) | Move o último elemento para `V[0]` e executa `sift-down` | O(log n) |
-| Construir Heap (`Build-Heap`) | Aplica `sift-down` de $\lfloor n/2 \rfloor - 1$ até `0` | O(n) |
-| Buscar valor arbitrário | Exige varredura linear pois não há ordenação horizontal | O(n) |
+| Consultar topo (`Peek`) | Lê diretamente `V[0]` (máximo ou mínimo) | $O(1)$ |
+| Inserir (`Insert`) | Adiciona ao fim do vetor e executa `sift-up` | $O(\log n)$ |
+| Extrair raiz (`Extract`) | Move o último elemento para `V[0]` e executa `sift-down` | $O(\log n)$ |
+| Construir Heap (`Build-Heap`) | Aplica `sift-down` de $\lfloor n/2 \rfloor - 1$ até `0` | $O(n)$ |
+| Buscar valor arbitrário | Exige varredura linear pois não há ordenação horizontal | $O(n)$ |
 
 ## Teste de conhecimento
 
