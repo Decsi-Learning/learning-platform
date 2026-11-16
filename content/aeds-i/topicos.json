@@ -73,7 +73,26 @@
       "id": "estruturas-dados-hierarquicas",
       "title": "Estruturas de Dados hierárquicas",
       "summary": "Árvores Binárias, Árvores Vermelho e Preto e Heaps.",
-      "file": null
+      "pages": [
+        {
+          "id": "arvores-binarias",
+          "title": "Árvores Binárias e de Busca (ABB)",
+          "summary": "Conceitos hierárquicos, percursos e operações de inserção, busca e remoção.",
+          "file": "arvores-binarias.md"
+        },
+        {
+          "id": "arvores-vermelho-preto",
+          "title": "Árvores Vermelho e Preto",
+          "summary": "Balanceamento automático, invariantes de cores, rotações e recoloração.",
+          "file": "arvores-vermelho-preto.md"
+        },
+        {
+          "id": "heaps",
+          "title": "Heaps (Árvores de Prioridade)",
+          "summary": "Min-Heap, Max-Heap, representação em vetor e operações Heapify.",
+          "file": "heaps.md"
+        }
+      ]
     },
     {
       "id": "busca-ordenacao",
