@@ -38,6 +38,21 @@
     .markdown-image.image-left{float:left;width:42%;max-width:60%;margin:.35rem 1.35rem .85rem 0}
     .markdown-image.image-right{float:right;width:42%;max-width:60%;margin:.35rem 0 .85rem 1.35rem}
     .markdown-image.image-center{display:block;width:70%;margin:1.25rem auto}
+    .explained-code{margin:1.1em 0}
+    .explained-code figcaption{margin:0 0 .45em;color:var(--muted);font-size:12px;font-weight:650}
+    .explained-code pre{counter-reset:code-line;padding:12px 0}
+    .explained-code .code-line{display:block;min-height:1.5em;padding:0 16px 0 0;line-height:1.6;white-space:pre;border-left:3px solid transparent;transition:background-color .12s ease}
+    .explained-code .code-line::before{counter-increment:code-line;content:counter(code-line);display:inline-block;width:2.6em;padding-right:1em;text-align:right;color:rgba(255,255,255,.38);user-select:none}
+    .explained-code .code-line.has-note{cursor:help}
+    .explained-code .code-line.has-note .code-text{text-decoration:underline dotted rgba(255,255,255,.32);text-underline-offset:4px}
+    .explained-code .code-line.has-note:hover,.explained-code .code-line.active{background:rgba(120,214,186,.16);border-left-color:#78d6ba}
+    .explained-code .code-line:focus-visible{outline:2px solid #78d6ba;outline-offset:-2px}
+    .explained-code .code-note{display:none}
+    .code-tooltip{position:fixed;z-index:50;padding:10px 13px;border:1px solid #cfe4da;border-radius:11px;background:#fff;color:var(--ink);font-size:13.5px;line-height:1.5;box-shadow:0 12px 30px rgba(23,59,67,.18);pointer-events:none}
+    .code-tooltip[hidden]{display:none}
+    .code-tooltip code{padding:.1em .3em;border-radius:5px;background:#edf3f0;font:.92em ui-monospace,SFMono-Regular,Menlo,monospace}
+    html[data-theme="dark"] .code-tooltip{background:#1d2b2e;border-color:#35514f;color:#e5efed}
+    html[data-theme="dark"] .code-tooltip code{background:#2a3d40}
     .image-error{display:inline-block;padding:8px 10px;border-radius:8px;background:#fff0ed;color:#8b4b3c;font-size:12px}
     .topic-summary-actions{display:flex;justify-content:flex-end;margin:0 0 12px}.topic-summary-actions[hidden]{display:none}.summary-trigger{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid #b8d8ce;border-radius:10px;background:#e8f5ef;color:#145b52;font:inherit;font-size:13px;font-weight:750;cursor:pointer}.summary-trigger:disabled{opacity:.6;cursor:wait}.summary-dialog{width:min(680px,calc(100vw - 28px));max-height:min(82vh,800px);padding:0;border:1px solid #d8e5df;border-radius:20px;background:#fff;color:#173b43;box-shadow:0 24px 80px rgba(10,35,35,.28)}.summary-dialog::backdrop{background:rgba(12,27,30,.62);backdrop-filter:blur(3px)}.summary-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 24px 14px;border-bottom:1px solid #e1e8e5}.summary-head h2{margin:0;font-size:22px}.summary-close{width:38px;height:38px;border:0;border-radius:10px;background:#edf3f0;color:#173b43;font-size:24px;cursor:pointer}.summary-body{max-height:calc(82vh - 100px);overflow:auto;padding:20px 24px 24px}.summary-notice{margin:0 0 18px;padding:13px 15px;border:1px solid #e5d49b;border-radius:12px;background:#fff8df;color:#574719;font-size:13px;line-height:1.55}.summary-status{color:#42636a}.summary-content{line-height:1.7;overflow-wrap:anywhere}.summary-content:empty{display:none}.summary-content h1,.summary-content h2,.summary-content h3{margin:1em 0 .45em}.summary-content p{margin:.7em 0}.summary-content ul,.summary-content ol{padding-left:1.4em}.summary-error{color:#9a3e35}
     @media(max-width:620px){.markdown-image.image-left,.markdown-image.image-right{float:none!important;display:block;width:min(100%,420px)!important;max-width:100%;margin:1rem auto}.markdown-image.image-center{width:min(100%,420px)}}
@@ -206,6 +221,19 @@
       return `<section class="knowledge-test" aria-labelledby="${questionId}-title"><h3 id="${questionId}-title">Teste de conhecimento</h3><p class="question">${escapeHtml(quiz.question)}</p><form class="quiz-form" data-correct="${correctIndex}" data-correct-feedback="${escapeHtml(quiz.correctFeedback || "Correto!")}" data-incorrect-feedback="${escapeHtml(quiz.incorrectFeedback || "Ainda não. Revise o conteúdo e tente novamente.")}"><fieldset><legend class="sr-only">Selecione uma resposta</legend>${options}</fieldset><button type="submit">Conferir resposta</button><p class="quiz-feedback" role="status" aria-live="polite"></p></form></section>`;
     }
 
+    function renderExplainedCode(source, sourceUrl = markdownUrl) {
+      const lines = source.replace(/\r/g, "").replace(/\n+$/, "").split("\n");
+      const rendered = lines.map((line) => {
+        const separator = line.indexOf(" @@ ");
+        const code = separator < 0 ? line : line.slice(0, separator).replace(/\s+$/, "");
+        const note = separator < 0 ? "" : line.slice(separator + 4).trim();
+        const codeHtml = `<span class="code-text">${escapeHtml(code) || " "}</span>`;
+        if (!note) return `<span class="code-line">${codeHtml}</span>`;
+        return `<span class="code-line has-note" tabindex="0">${codeHtml}<span class="code-note">${renderInline(note, sourceUrl)}</span></span>`;
+      }).join("");
+      return `<figure class="explained-code"><figcaption>Passe o mouse ou toque em uma linha para ver o que ela faz.</figcaption><pre><code>${rendered}</code></pre></figure>`;
+    }
+
     function isTableRow(line) {
       return /^\s*\|?.+\|.+\|?\s*$/.test(line);
     }
@@ -258,7 +286,9 @@
           if (inCode) {
             html.push(codeLanguage === "quiz" && includeQuizzes
               ? renderQuiz(codeLines.join("\n"), quizIndex++)
-              : `<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+              : codeLanguage === "explicado"
+                ? renderExplainedCode(codeLines.join("\n"), sourceUrl)
+                : `<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
             codeLines = [];
             codeLanguage = "";
           } else {
@@ -304,7 +334,9 @@
       flushParagraph(); closeList();
       if (inCode) html.push(codeLanguage === "quiz"
         ? renderQuiz(codeLines.join("\n"), quizIndex++)
-        : `<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+        : codeLanguage === "explicado"
+          ? renderExplainedCode(codeLines.join("\n"), sourceUrl)
+          : `<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
       return html.join("\n");
     }
 
@@ -448,9 +480,11 @@
       const renderer = new window.marked.Renderer();
       const renderCode = renderer.code;
       renderer.code = function (token) {
-        if (includeQuizzes && token.lang?.trim().split(/\s+/)[0].toLowerCase() === "quiz") {
+        const language = token.lang?.trim().split(/\s+/)[0].toLowerCase();
+        if (includeQuizzes && language === "quiz") {
           return renderQuiz(token.text, quizIndex++);
         }
+        if (language === "explicado") return renderExplainedCode(token.text, sourceUrl);
         return renderCode.call(this, token);
       };
       const rendered = window.marked.parse(protectedMath.markdown, {
@@ -528,6 +562,65 @@
       }
       updateQuizGate();
     });
+
+    const codeTooltip = document.createElement("div");
+    codeTooltip.className = "code-tooltip";
+    codeTooltip.id = "code-tooltip";
+    codeTooltip.setAttribute("role", "tooltip");
+    codeTooltip.hidden = true;
+    document.body.append(codeTooltip);
+    let activeCodeLine = null;
+
+    function showCodeNote(line) {
+      if (activeCodeLine === line) return;
+      hideCodeNote();
+      const note = line.querySelector(".code-note");
+      if (!note) return;
+      activeCodeLine = line;
+      line.classList.add("active");
+      line.setAttribute("aria-describedby", codeTooltip.id);
+      codeTooltip.innerHTML = note.innerHTML;
+      codeTooltip.hidden = false;
+      const lineBox = line.getBoundingClientRect();
+      const block = line.closest("pre")?.getBoundingClientRect() || lineBox;
+      const width = Math.min(420, window.innerWidth - 24);
+      codeTooltip.style.maxWidth = `${width}px`;
+      const tipBox = codeTooltip.getBoundingClientRect();
+      const left = Math.max(12, Math.min(block.left + 16, window.innerWidth - tipBox.width - 12));
+      const below = lineBox.bottom + 8;
+      const top = below + tipBox.height > window.innerHeight - 8 ? lineBox.top - tipBox.height - 8 : below;
+      codeTooltip.style.left = `${left}px`;
+      codeTooltip.style.top = `${Math.max(8, top)}px`;
+    }
+
+    function hideCodeNote() {
+      if (!activeCodeLine) return;
+      activeCodeLine.classList.remove("active");
+      activeCodeLine.removeAttribute("aria-describedby");
+      activeCodeLine = null;
+      codeTooltip.hidden = true;
+    }
+
+    for (const container of [lessonContainer, summaryContent]) {
+      container.addEventListener("mouseover", (event) => {
+        const line = event.target.closest(".code-line.has-note");
+        if (line) showCodeNote(line);
+      });
+      container.addEventListener("mouseout", (event) => {
+        const line = event.target.closest(".code-line.has-note");
+        if (line && !line.contains(event.relatedTarget) && document.activeElement !== line) hideCodeNote();
+      });
+      container.addEventListener("focusin", (event) => {
+        const line = event.target.closest(".code-line.has-note");
+        if (line) showCodeNote(line);
+      });
+      container.addEventListener("focusout", (event) => {
+        if (event.target.closest(".code-line.has-note")) hideCodeNote();
+      });
+    }
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") hideCodeNote(); });
+    window.addEventListener("scroll", hideCodeNote, { passive: true });
+    window.addEventListener("resize", hideCodeNote);
 
     function showError(message) {
       document.getElementById("topic-title").textContent = "Tópico indisponível";

@@ -96,6 +96,24 @@ int soma = a + b;
 ```
 ````
 
+### Código explicado linha a linha
+
+Para que o estudante veja a explicação de uma linha ao passar o mouse sobre ela (ou ao tocar nela, no celular), use um bloco `explicado`. A palavra depois de `explicado` indica a linguagem e é opcional. Em cada linha, escreva o código, depois ` @@ ` (espaço, duas arrobas, espaço) e a explicação:
+
+````markdown
+```explicado c
+int soma = 0; @@ Cria a variável `soma` e começa com zero.
+for (int i = 0; i < n; i++) { @@ Repete o bloco para cada posição do vetor.
+    soma += v[i]; @@ Acrescenta o valor da posição atual à soma.
+}
+```
+````
+
+- Linhas sem ` @@ ` aparecem normalmente, sem explicação (por exemplo, linhas em branco ou chaves).
+- A explicação aceita `código em linha`, **negrito** e *itálico*.
+- As linhas são numeradas automaticamente; não escreva números no código.
+- Escreva cada explicação em uma única linha do arquivo.
+
 ### Tabelas
 
 Separe as colunas com `|` e coloque uma linha de traços após o cabeçalho. Os dois-pontos controlam o alinhamento.
