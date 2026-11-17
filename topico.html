@@ -13,7 +13,7 @@
       document.documentElement.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
   </script>
-  <meta name="theme-color" content="#f6f7f5" />
+  <meta name="theme-color" content="#a5003d" />
   <link rel="icon" type="image/svg+xml" href="logo-d-lampada.svg" />
   <title>AEDS I — DECSI Learning</title>
   <style>
@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="auth.css" />
   <link rel="stylesheet" href="search.css" />
   <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="ufop-theme.css" />
   <style>
     .markdown::after{content:"";display:block;clear:both}
     .markdown h1,.markdown h2,.markdown h3{clear:both}
@@ -625,8 +626,8 @@
     function showError(message) {
       document.getElementById("topic-title").textContent = "Tópico indisponível";
       lessonContainer.innerHTML = `<p class="load-error">${escapeHtml(message)}</p>`;
-      const planHref = track?.plan || "index.html#trilhas";
-      const planName = track?.plan ? `Plano de ensino de ${track.title}` : "Voltar às trilhas";
+      const planHref = track?.plan || `trilha.html?id=${encodeURIComponent(trackId || "")}`;
+      const planName = `Plano de ensino de ${track?.title || "trilha"}`;
       document.getElementById("topic-navigation").innerHTML = `<a class="page-button" href="${planHref}"><span class="direction" aria-hidden="true">‹</span> ${planName}</a>`;
     }
 
@@ -685,8 +686,8 @@
           const previousPage = previousPages[previousPages.length - 1];
           navigation.innerHTML = `<a class="page-button" href="${topicUrl(previousTopic, previousPage)}"><span class="direction" aria-hidden="true">‹</span> ${escapeHtml(previousPage.title || previousTopic.title)}</a>`;
         } else {
-          const planHref = track.plan || "index.html#trilhas";
-          const planLabel = track.plan ? "Plano de ensino" : "Voltar às trilhas";
+          const planHref = track.plan || `trilha.html?id=${encodeURIComponent(trackId)}`;
+          const planLabel = "Plano de ensino";
           navigation.innerHTML = `<a class="page-button" href="${planHref}"><span class="direction" aria-hidden="true">‹</span> ${planLabel}</a>`;
         }
 

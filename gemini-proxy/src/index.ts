@@ -1,6 +1,7 @@
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1/interactions";
 const GEMINI_MODEL = "gemini-3.5-flash-lite";
 const PASSWORD_ITERATIONS = 100_000;
+const HISTORY_STEP_TYPES = new Set(["user_input", "model_output", "thought", "function_call", "function_result"]);
 
 function json(body: unknown, status: number, headers: HeadersInit = {}): Response {
 	return new Response(JSON.stringify(body), {
@@ -315,12 +316,25 @@ function extractAnswer(interaction: Record<string, unknown>): string {
 async function askGemini(request: Request, env: Env, cors: Headers): Promise<Response> {
 	if (!env.GEMINI_API_KEY) return json({ error: "A chave da Gemini API não está configurada." }, 503, cors);
 	const contentLength = Number(request.headers.get("Content-Length") || 0);
-	if (contentLength > 4096) return json({ error: "A pergunta é muito longa." }, 413, cors);
+	if (contentLength > 64 * 1024) return json({ error: "A conversa está longa demais. Inicie uma nova conversa." }, 413, cors);
 	const payload = await readJson(request);
 	const question = typeof payload?.question === "string" ? payload.question.trim() : "";
 	if (!question || question.length > 1500) {
 		return json({ error: "A pergunta deve ter entre 1 e 1.500 caracteres." }, 400, cors);
 	}
+	const history = payload?.history === undefined ? [] : payload.history;
+	if (!Array.isArray(history) || history.length > 32 || history.some((step) =>
+		!step || typeof step !== "object" || Array.isArray(step) || !HISTORY_STEP_TYPES.has(String((step as Record<string, unknown>).type || ""))
+	)) {
+		return json({ error: "O histórico da conversa está em um formato inválido." }, 400, cors);
+	}
+	let historyBytes: number;
+	try {
+		historyBytes = new TextEncoder().encode(JSON.stringify(history)).length;
+	} catch {
+		return json({ error: "O histórico da conversa não pôde ser processado." }, 400, cors);
+	}
+	if (historyBytes > 48 * 1024) return json({ error: "O contexto desta conversa ficou muito longo. Inicie uma nova conversa." }, 413, cors);
 
 	try {
 		const upstream = await fetch(GEMINI_URL, {
@@ -328,7 +342,10 @@ async function askGemini(request: Request, env: Env, cors: Headers): Promise<Res
 			headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
 			body: JSON.stringify({
 				model: GEMINI_MODEL,
-				input: question,
+				input: [
+					...history,
+					{ type: "user_input", content: [{ type: "text", text: question }] },
+				],
 				store: false,
 				generation_config: { thinking_level: "low", max_output_tokens: 1200 },
 			}),
@@ -345,7 +362,8 @@ async function askGemini(request: Request, env: Env, cors: Headers): Promise<Res
 		const interaction = await upstream.json() as Record<string, unknown>;
 		const answer = extractAnswer(interaction);
 		if (!answer) return json({ error: "O serviço de IA retornou uma resposta vazia." }, 502, cors);
-		return json({ answer }, 200, cors);
+		const steps = Array.isArray(interaction.steps) ? interaction.steps : [];
+		return json({ answer, steps }, 200, cors);
 	} catch (error) {
 		const message = error instanceof Error ? error.message.slice(0, 300) : "erro de rede desconhecido";
 		console.error("Gemini request failed", message);

@@ -13,7 +13,7 @@
       document.documentElement.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
   </script>
-  <meta name="theme-color" content="#f6f7f5" />
+  <meta name="theme-color" content="#a5003d" />
   <link rel="icon" type="image/svg+xml" href="logo-d-lampada.svg" />
   <title>DECSI Learning — Dashboard</title>
   <style>
@@ -125,6 +125,7 @@
   <link rel="stylesheet" href="auth.css" />
   <link rel="stylesheet" href="search.css" />
   <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="ufop-theme.css" />
 </head>
 <body>
   <div class="layout">
@@ -161,22 +162,7 @@
         <div><h1 id="dashboard-title">Seu progresso</h1><p>Acompanhe a conclusão dos tópicos em cada trilha.</p></div>
       </section>
       <section class="dashboard-summary" aria-label="Progresso por trilha">
-        <article class="dashboard-card" id="aeds-i-dashboard" aria-labelledby="aeds-i-dashboard-title">
-          <div class="dashboard-card-head"><h2 id="aeds-i-dashboard-title">AEDS I</h2><span class="dashboard-percent" data-dashboard-percent>Carregando…</span></div>
-          <p class="dashboard-completion" data-dashboard-completion></p>
-          <progress max="100" value="0" aria-label="Percentual de tópicos concluídos em AEDS I" data-dashboard-bar hidden></progress>
-          <ul class="dashboard-breakdown" data-dashboard-breakdown hidden><li>Em andamento<strong data-dashboard-active>0</strong></li><li>Não iniciados<strong data-dashboard-pending>0</strong></li></ul>
-          <p class="dashboard-empty" data-dashboard-empty hidden></p>
-          <a class="dashboard-card-link" href="aeds-i.html">Abrir trilha <span aria-hidden="true">→</span></a>
-        </article>
-        <article class="dashboard-card" id="aeds-ii-dashboard" aria-labelledby="aeds-ii-dashboard-title">
-          <div class="dashboard-card-head"><h2 id="aeds-ii-dashboard-title">AEDS II</h2><span class="dashboard-percent" data-dashboard-percent>Carregando…</span></div>
-          <p class="dashboard-completion" data-dashboard-completion></p>
-          <progress max="100" value="0" aria-label="Percentual de tópicos concluídos em AEDS II" data-dashboard-bar hidden></progress>
-          <ul class="dashboard-breakdown" data-dashboard-breakdown hidden><li>Em andamento<strong data-dashboard-active>0</strong></li><li>Não iniciados<strong data-dashboard-pending>0</strong></li></ul>
-          <p class="dashboard-empty" data-dashboard-empty hidden></p>
-          <a class="dashboard-card-link" href="aeds-ii.html">Abrir trilha <span aria-hidden="true">→</span></a>
-        </article>
+        <p class="dashboard-empty">Carregando progresso das trilhas…</p>
       </section>
     </main>
   </div>

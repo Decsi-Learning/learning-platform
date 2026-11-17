@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3F8C84"/>
-      <stop offset="1" stop-color="#2D716A"/>
+      <stop offset="0" stop-color="#A5003D"/>
+      <stop offset="1" stop-color="#7F002F"/>
     </linearGradient>
     <g id="d-shape">
       <path fill-rule="evenodd" d="M250 420H400C520 420 600 500 600 620C600 740 520 820 400 820H250Z M345 505V735H395C465 735 505 690 505 620C505 550 465 505 395 505Z"/>

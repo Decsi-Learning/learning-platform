@@ -13,7 +13,7 @@
       document.documentElement.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
   </script>
-  <meta name="theme-color" content="#f6f7f5" />
+  <meta name="theme-color" content="#a5003d" />
   <link rel="icon" type="image/svg+xml" href="logo-d-lampada.svg" />
   <title>DECSI Learning — Início</title>
   <style>
@@ -114,6 +114,7 @@
   <link rel="stylesheet" href="auth.css" />
   <link rel="stylesheet" href="search.css" />
   <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="ufop-theme.css" />
 </head>
 <body>
   <div class="layout">
@@ -144,11 +145,8 @@
           <input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" />
           <div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div>
         </div>
-        <div class="user"><button class="bell" aria-label="Notificações">♧</button><div class="avatar" aria-hidden="true">MC</div><div><div class="user-name">Olá, Marina</div><div class="user-role">Estudante</div></div></div>
+        <div class="user"><div class="avatar" aria-hidden="true">MC</div><div><div class="user-name">Olá, Marina</div><div class="user-role">Estudante</div></div></div>
       </header>
-      <section class="welcome">
-        <div><h1>Olá! 👋</h1><p>Escolha uma trilha para começar a explorar.</p></div>
-      </section>
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-content"><span class="eyebrow">Sua jornada continua</span><h2 id="hero-title">Pequenos passos levam a grandes conquistas.</h2><p id="hero-description">Retome de onde parou e siga avançando no seu ritmo. Seu próximo aprendizado está a um clique.</p><a class="button" id="resume-study" href="#trilhas">Continuar estudando <span aria-hidden="true">→</span></a></div>
         <div class="hero-art" aria-hidden="true"><div class="learning-art"><span class="leaf"></span><div class="book"></div><span class="spark">✦</span></div></div>
@@ -157,8 +155,7 @@
       <section id="trilhas" aria-labelledby="tracks-title">
           <div class="section-head"><div><h2 id="tracks-title">Escolha uma trilha</h2><p>Explore os conteúdos de Algoritmos e Estruturas de Dados</p></div></div>
           <div class="tracks">
-            <a class="track" href="aeds-i.html" aria-label="Abrir trilha AEDS I"><span class="track-icon a">Ⅰ</span><span><h3>AEDS I</h3><p class="track-description">Introdução à lógica, aos algoritmos e às estruturas de dados.</p><p class="track-count" id="aeds-i-count">Plano de ensino · Carregando tópicos…</p></span><span class="arrow" aria-hidden="true">›</span></a>
-            <a class="track" href="aeds-ii.html" aria-label="Abrir trilha AEDS II"><span class="track-icon b">Ⅱ</span><span><h3>AEDS II</h3><p class="track-description">Aprofunde seus conhecimentos em algoritmos e estruturas de dados.</p><p class="track-count" id="aeds-ii-count">Carregando tópicos…</p></span><span class="arrow" aria-hidden="true">›</span></a>
+            <p class="tracks-message">Carregando trilhas…</p>
           </div>
       </section>
     </main>
