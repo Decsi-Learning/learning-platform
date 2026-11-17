@@ -533,8 +533,8 @@
     function showError(message) {
       document.getElementById("topic-title").textContent = "Tópico indisponível";
       lessonContainer.innerHTML = `<p class="load-error">${escapeHtml(message)}</p>`;
-      const planHref = track?.plan || "index.html#trilhas";
-      const planName = track?.plan ? `Plano de ensino de ${track.title}` : "Voltar às trilhas";
+      const planHref = track?.plan || `trilha.html?id=${encodeURIComponent(trackId || "")}`;
+      const planName = `Plano de ensino de ${track?.title || "trilha"}`;
       document.getElementById("topic-navigation").innerHTML = `<a class="page-button" href="${planHref}"><span class="direction" aria-hidden="true">‹</span> ${planName}</a>`;
     }
 
@@ -593,8 +593,8 @@
           const previousPage = previousPages[previousPages.length - 1];
           navigation.innerHTML = `<a class="page-button" href="${topicUrl(previousTopic, previousPage)}"><span class="direction" aria-hidden="true">‹</span> ${escapeHtml(previousPage.title || previousTopic.title)}</a>`;
         } else {
-          const planHref = track.plan || "index.html#trilhas";
-          const planLabel = track.plan ? "Plano de ensino" : "Voltar às trilhas";
+          const planHref = track.plan || `trilha.html?id=${encodeURIComponent(trackId)}`;
+          const planLabel = "Plano de ensino";
           navigation.innerHTML = `<a class="page-button" href="${planHref}"><span class="direction" aria-hidden="true">‹</span> ${planLabel}</a>`;
         }
 

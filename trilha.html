@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    try {
+      const themePreference = localStorage.getItem("decsi.theme");
+      document.documentElement.dataset.theme = themePreference === "dark" || themePreference === "light" ? themePreference : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    } catch { document.documentElement.dataset.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+  </script>
+  <meta name="theme-color" content="#a5003d" />
+  <link rel="icon" type="image/svg+xml" href="logo-d-lampada.svg" />
+  <title>Trilha — DECSI Learning</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}.layout{min-height:100vh;display:grid;grid-template-columns:252px minmax(0,1fr)}.sidebar{position:sticky;top:0;z-index:5;height:100vh;padding:28px 18px;display:flex;flex-direction:column;border-right:1px solid var(--line)}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 34px;color:var(--ink);font-size:17px;font-weight:750;text-decoration:none}.brand-mark{width:38px;height:38px;object-fit:contain}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.nav-label{padding:0 12px;color:var(--muted);font-size:10px;font-weight:750;letter-spacing:.13em;text-transform:uppercase}.nav{display:grid;gap:5px}.nav a{display:flex;gap:12px;align-items:center;padding:11px 12px;border-radius:11px;color:var(--ink-soft);font-weight:600;text-decoration:none}.sidebar-bottom{margin-top:auto}.help-card{padding:17px;border-radius:16px;background:var(--theme-surface-raised)}.help-card p{font-size:12px;color:var(--ink-soft)}.help-card a{color:var(--teal-dark);font-size:12px;font-weight:700}main{min-width:0;padding:26px clamp(20px,4vw,56px) 56px}.topbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:20px;margin:-26px 0 30px;padding:10px 14px;border-radius:16px}.crumb{color:var(--muted);font-size:13px}.user{display:flex;align-items:center;gap:12px}.avatar{width:39px;height:39px;display:grid;place-items:center;border-radius:50%;background:var(--theme-accent-soft);color:var(--theme-accent-strong);font-weight:750}.user-name{font-size:13px;font-weight:700}.user-role{color:var(--muted);font-size:11px}.card{padding:clamp(24px,5vw,46px);border:1px solid var(--line);border-radius:22px;background:var(--white);box-shadow:var(--shadow)}.tag{display:inline-block;padding:6px 10px;border-radius:9px;background:var(--mint);color:var(--teal-dark);font-size:11px;font-weight:750;letter-spacing:.06em;text-transform:uppercase}h1{margin:15px 0 7px;font-size:clamp(32px,6vw,46px);line-height:1.1;letter-spacing:-.045em}.subtitle{margin:0;color:var(--soft);font-size:17px}.track-progress{margin-top:22px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--theme-surface-raised)}.track-progress-head{display:flex;justify-content:space-between;gap:12px;font-size:13px}.track-progress progress{display:block;width:100%;height:8px;margin:11px 0 5px;accent-color:var(--teal)}.track-progress p{margin:0;color:var(--muted);font-size:12px}.topic-list{display:grid;gap:12px;margin:24px 0 0;padding:0;list-style:none}.topic-item{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--theme-surface)}.topic-item a{color:var(--teal-dark);font-weight:750}.topic-item p{margin:5px 0 0;color:var(--soft);font-size:13px}.empty-message{padding:18px;border:1px dashed var(--line);border-radius:14px;color:var(--soft)}@media(max-width:900px){.layout{grid-template-columns:76px minmax(0,1fr)}.sidebar{padding:22px 11px}.brand{justify-content:center;padding:0 0 32px}.brand-text,.nav-label,.nav .label,.help-card{display:none}.nav a{justify-content:center;padding:12px}.sidebar-bottom{display:none}}@media(max-width:620px){.layout{display:block}.sidebar{position:sticky;top:0;z-index:7;height:63px;padding:8px 14px;flex-direction:row;align-items:center;justify-content:space-between}.brand{padding:0}.nav{display:flex;gap:3px}.nav a{padding:9px}.topbar{top:63px;margin:0 0 24px;padding:8px 10px}.crumb,.user-name,.user-role{display:none}.card{padding:22px 17px}}
+  </style>
+  <link rel="stylesheet" href="assistant.css" />
+  <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="search.css" />
+  <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="ufop-theme.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <a class="brand" href="index.html" aria-label="DECSI Learning, início"><img class="brand-mark" src="logo-d-lampada.svg" alt="" /><span class="brand-text">DECSI <small>learning</small></span></a>
+      <div><p class="nav-label">Menu</p><nav class="nav"><a href="index.html"><span class="icon">⌂</span><span class="label">Início</span></a><a href="dashboard.html"><span class="icon">▦</span><span class="label">Dashboard</span></a><a class="active" href="index.html#trilhas"><span class="icon">◈</span><span class="label">Minhas trilhas</span></a></nav></div>
+      <div class="sidebar-bottom"><div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="index.html#ajuda">Acessar central de ajuda →</a></div></div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <span class="crumb" id="track-breadcrumb">Portal de aprendizagem / Trilha</span>
+        <div class="global-search" role="search" aria-label="Buscar conteúdo"><span class="search-icon" aria-hidden="true">⌕</span><label class="visually-hidden" for="content-search">Buscar conteúdo da plataforma</label><input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" /><div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div></div>
+        <div class="user"><div class="avatar" aria-hidden="true">MC</div><div><div class="user-name">Olá, Marina</div><div class="user-role">Estudante</div></div></div>
+      </header>
+      <article class="card">
+        <span class="tag">Trilha de aprendizagem</span><h1 id="track-title">Carregando trilha…</h1><p class="subtitle" id="track-description"></p>
+        <div class="track-progress" id="track-progress" hidden><div class="track-progress-head"><strong>Seu progresso</strong><span id="progress-percent"></span></div><progress id="progress-bar" max="100" value="0"></progress><p id="progress-count"></p></div>
+        <ol class="topic-list" id="topic-list" aria-live="polite"><li class="empty-message">Carregando tópicos…</li></ol>
+      </article>
+    </main>
+  </div>
+  <script src="progress.js"></script><script src="auth.js" defer></script><script src="assistant.js" defer></script><script src="search.js" defer></script><script src="theme.js" defer></script>
+  <script>
+    (() => {
+      const params = new URLSearchParams(location.search);
+      const trackId = params.get("id") || params.get("trilha");
+      const list = document.getElementById("topic-list");
+      const topicHref = (topic) => `topico.html?${new URLSearchParams({trilha:trackId,id:topic.id})}`;
+
+      fetch("content/trilhas.json", {cache:"no-cache"}).then((response) => {
+        if (!response.ok) throw new Error("Não foi possível carregar o catálogo de trilhas.");
+        return response.json();
+      }).then(async (manifest) => {
+        const track = (manifest.tracks || []).find((item) => item.id === trackId);
+        if (!track) throw new Error("Esta trilha não está cadastrada.");
+        document.title = `${track.title} — DECSI Learning`;
+        document.getElementById("track-title").textContent = track.title;
+        document.getElementById("track-description").textContent = track.description || "Explore os tópicos disponíveis nesta trilha.";
+        document.getElementById("track-breadcrumb").textContent = `Portal de aprendizagem / ${track.title}`;
+        const response = await fetch(track.catalog || `content/${track.id}/topicos.json`, {cache:"no-cache"});
+        if (!response.ok) throw new Error("Ainda não foi possível carregar o catálogo de tópicos desta trilha.");
+        const catalog = await response.json();
+        const topics = Array.isArray(catalog.topics) ? catalog.topics : [];
+        if (!topics.length) {
+          list.replaceChildren(Object.assign(document.createElement("li"), {className:"empty-message", textContent:"Esta trilha ainda está sem conteúdo."}));
+          return;
+        }
+        const progress = await window.decsiProgress.getAll({[trackId]:topics});
+        const status = new Map(progress.topics.filter((item) => item.trackId === trackId).map((item) => [item.topicId,item.status]));
+        const completed = topics.filter((topic) => status.get(topic.id) === "completed").length;
+        const percent = Math.round(completed / topics.length * 100);
+        document.getElementById("progress-percent").textContent = `${percent}%`;
+        document.getElementById("progress-bar").value = percent;
+        document.getElementById("progress-count").textContent = `${completed} de ${topics.length} tópicos concluídos`;
+        document.getElementById("track-progress").hidden = false;
+        list.replaceChildren(...topics.map((topic) => {
+          const item = document.createElement("li");
+          item.className = "topic-item";
+          const link = document.createElement("a");
+          link.href = topicHref(topic);
+          link.textContent = topic.title || topic.id;
+          item.append(link);
+          if (topic.summary) item.append(Object.assign(document.createElement("p"), {textContent:topic.summary}));
+          return item;
+        }));
+      }).catch((error) => list.replaceChildren(Object.assign(document.createElement("li"), {className:"empty-message", textContent:error.message})));
+    })();
+  </script>
+</body>
+</html>

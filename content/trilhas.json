@@ -3,6 +3,8 @@
     {
       "id": "aeds-i",
       "title": "AEDS I",
+      "description": "Introdução à lógica, aos algoritmos e às estruturas de dados.",
+      "image": "assets/trilha-aeds-i.svg",
       "catalog": "content/aeds-i/topicos.json",
       "contentDirectory": "content/aeds-i/topicos/",
       "plan": "aeds-i.html"
@@ -10,9 +12,20 @@
     {
       "id": "aeds-ii",
       "title": "AEDS II",
+      "description": "Aprofunde seus conhecimentos em algoritmos e estruturas de dados.",
+      "image": "assets/trilha-aeds-ii.svg",
       "catalog": "content/aeds-ii/topicos.json",
       "contentDirectory": "content/aeds-ii/topicos/",
       "plan": "aeds-ii.html"
+    },
+    {
+      "id": "trilha-teste",
+      "title": "Trilha de Teste",
+      "description": "Trilha de exemplo para validar o cadastro de novos conteúdos.",
+      "image": "assets/trilha-generica.svg",
+      "catalog": "content/trilha-teste/topicos.json",
+      "contentDirectory": "content/trilha-teste/topicos/",
+      "plan": "trilha.html?id=trilha-teste"
     }
   ]
 }

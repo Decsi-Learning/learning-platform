@@ -1,159 +1,207 @@
 (() => {
-  const tracks = [
-    { id: "aeds-i", title: "AEDS I", label: "Plano de ensino · ", element: document.getElementById("aeds-i-count") },
-    { id: "aeds-ii", title: "AEDS II", label: "", element: document.getElementById("aeds-ii-count") },
-  ];
-  const action = document.getElementById("resume-study");
-  const title = document.getElementById("hero-title");
-  const description = document.getElementById("hero-description");
+  const homeTracks = document.querySelector(".tracks");
+  const dashboard = document.querySelector(".dashboard-summary");
+  const resumeAction = document.getElementById("resume-study");
+  const heroTitle = document.getElementById("hero-title");
+  const heroDescription = document.getElementById("hero-description");
 
-  function topicUrl(trackId, topic, pageId) {
+  const topicUrl = (trackId, topic, pageId) => {
     const params = new URLSearchParams({ trilha: trackId, id: topic.id });
-    const targetPageId = pageId || (Array.isArray(topic.pages) && topic.pages.length ? topic.pages[0].id : "");
-    if (targetPageId) {
-      params.set("pagina", targetPageId);
-    }
+    const page = pageId || (Array.isArray(topic.pages) && topic.pages.length ? topic.pages[0].id : "");
+    if (page) params.set("pagina", page);
     return `topico.html?${params.toString()}`;
+  };
+
+  const planUrl = (track) => track.plan || `trilha.html?id=${encodeURIComponent(track.id)}`;
+
+  function textElement(tag, className, text) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text) element.textContent = text;
+    return element;
   }
 
-  function setAction(href, label) {
-    action.href = href;
-    action.innerHTML = `${label} <span aria-hidden="true">→</span>`;
-    action.hidden = false;
-    action.style.display = "inline-flex";
+  function createTrackCard(track, topics, available, index) {
+    const card = document.createElement("a");
+    card.className = "track";
+    card.href = planUrl(track);
+    card.setAttribute("aria-label", `Abrir trilha ${track.title || track.id}`);
+
+    const image = document.createElement("img");
+    image.className = "track-visual";
+    image.src = track.image || "assets/trilha-generica.svg";
+    image.alt = "";
+    image.setAttribute("aria-hidden", "true");
+    image.addEventListener("error", () => {
+      image.src = "assets/trilha-generica.svg";
+    }, { once: true });
+    card.append(image);
+
+    const body = textElement("span", "track-body");
+    body.append(
+      textElement("span", "track-kicker", `Trilha ${String(index + 1).padStart(2, "0")}`),
+      textElement("h3", "", track.title || track.id),
+      textElement("span", "track-description", track.description || "Explore os conteúdos desta trilha de aprendizagem.")
+    );
+    const count = !available
+      ? "Conteúdo indisponível"
+      : topics.length
+        ? `${topics.length} ${topics.length === 1 ? "tópico" : "tópicos"} disponíveis`
+        : "Trilha sem conteúdo cadastrado";
+    body.append(textElement("span", "track-count", count));
+    const open = textElement("span", "track-open", "Explorar trilha");
+    open.append(textElement("span", "arrow", "↗"));
+    body.append(open);
+    card.append(body);
+    return card;
   }
 
-  function hideAction() {
-    action.hidden = true;
-    action.style.display = "none";
+  function renderHomeTracks(tracks, dataById) {
+    if (!homeTracks) return;
+    homeTracks.replaceChildren();
+    tracks.forEach((track, index) => {
+      const data = dataById.get(track.id);
+      homeTracks.append(createTrackCard(track, data.topics, data.available, index));
+    });
+    if (!tracks.length) homeTracks.append(textElement("p", "tracks-message", "Nenhuma trilha cadastrada ainda."));
+  }
+
+  function renderDashboard(tracks, dataById, progressState) {
+    if (!dashboard) return;
+    dashboard.replaceChildren();
+    const records = new Map(progressState.topics.map((item) => [`${item.trackId}:${item.topicId}`, item]));
+
+    for (const track of tracks) {
+      const { topics, available } = dataById.get(track.id);
+      const card = textElement("article", "dashboard-card");
+      card.id = `${track.id}-dashboard`;
+      const heading = textElement("div", "dashboard-card-head");
+      const headingId = `${track.id}-dashboard-title`;
+      const title = textElement("h2", "", track.title || track.id);
+      title.id = headingId;
+      heading.append(title);
+      card.setAttribute("aria-labelledby", headingId);
+
+      if (!available || topics.length === 0) {
+        const empty = textElement("p", "dashboard-empty", !available
+          ? "Não foi possível carregar o conteúdo desta trilha."
+          : "Esta trilha ainda está sem conteúdo.");
+        card.append(heading, empty);
+      } else {
+        const completed = topics.filter((topic) => records.get(`${track.id}:${topic.id}`)?.status === "completed").length;
+        const active = topics.filter((topic) => records.get(`${track.id}:${topic.id}`)?.status === "in_progress").length;
+        const pending = topics.length - completed - active;
+        const percent = Math.round((completed / topics.length) * 100);
+        heading.append(textElement("span", "dashboard-percent", `${percent}%`));
+        card.append(heading);
+        card.append(textElement("p", "dashboard-completion", `${completed} de ${topics.length} ${topics.length === 1 ? "tópico concluído" : "tópicos concluídos"}`));
+        const bar = document.createElement("progress");
+        bar.max = 100;
+        bar.value = percent;
+        bar.setAttribute("aria-label", `Percentual de tópicos concluídos em ${track.title || track.id}`);
+        card.append(bar);
+        const breakdown = textElement("ul", "dashboard-breakdown");
+        for (const [label, value] of [["Em andamento", active], ["Não iniciados", pending]]) {
+          const item = textElement("li", "", label);
+          item.append(textElement("strong", "", String(value)));
+          breakdown.append(item);
+        }
+        card.append(breakdown);
+      }
+
+      const link = document.createElement("a");
+      link.className = "dashboard-card-link";
+      link.href = planUrl(track);
+      link.append(document.createTextNode("Abrir trilha "));
+      link.append(textElement("span", "", "→"));
+      card.append(link);
+      dashboard.append(card);
+    }
+  }
+
+  function configureResume(tracks, dataById, progressState) {
+    if (!resumeAction || !heroTitle || !heroDescription) return;
+    const allTopics = tracks.flatMap((track) => (dataById.get(track.id)?.topics || []).map((topic) => ({ track, topic })));
+    if (!allTopics.length) {
+      heroTitle.textContent = "Suas trilhas estão sendo preparadas.";
+      heroDescription.textContent = "Volte em breve para começar seus estudos.";
+      resumeAction.hidden = true;
+      resumeAction.style.display = "none";
+      return;
+    }
+
+    const byTopic = new Map(progressState.topics.map((record) => [`${record.trackId}:${record.topicId}`, record]));
+    const inProgress = progressState.topics
+      .filter((record) => record.status === "in_progress")
+      .sort((a, b) => Date.parse(b.lastAccessedAt || "") - Date.parse(a.lastAccessedAt || ""));
+    const latest = inProgress.find((record) => allTopics.some(({ track, topic }) => track.id === record.trackId && topic.id === record.topicId));
+    if (latest) {
+      const entry = allTopics.find(({ track, topic }) => track.id === latest.trackId && topic.id === latest.topicId);
+      const lastPage = progressState.pages
+        .filter((page) => page.trackId === latest.trackId && page.topicId === latest.topicId)
+        .sort((a, b) => Date.parse(b.lastAccessedAt || "") - Date.parse(a.lastAccessedAt || ""))[0];
+      heroTitle.textContent = "Sua jornada continua.";
+      heroDescription.textContent = `Continue ${entry.track.title} pelo tópico “${entry.topic.title}”, acessado mais recentemente.`;
+      resumeAction.href = topicUrl(entry.track.id, entry.topic, lastPage?.pageId);
+      resumeAction.firstChild.textContent = "Continuar estudando ";
+      return;
+    }
+
+    const next = allTopics.find(({ track, topic }) => byTopic.get(`${track.id}:${topic.id}`)?.status !== "completed");
+    if (next) {
+      const started = progressState.topics.length > 0;
+      heroTitle.textContent = started ? "Pronto para o próximo tópico?" : "Vamos começar a estudar.";
+      heroDescription.textContent = started
+        ? `O próximo tópico disponível é “${next.topic.title}”, em ${next.track.title}.`
+        : `Comece pela trilha ${next.track.title}, no tópico “${next.topic.title}”.`;
+      resumeAction.href = topicUrl(next.track.id, next.topic);
+      resumeAction.firstChild.textContent = started ? "Começar próximo tópico " : "Começar a estudar ";
+      return;
+    }
+
+    heroTitle.textContent = "Trilhas concluídas!";
+    heroDescription.textContent = "Você concluiu todos os tópicos disponíveis. Parabéns pela sua jornada!";
+    resumeAction.hidden = true;
+    resumeAction.style.display = "none";
   }
 
   async function initialize() {
-    const topicsByTrack = {};
-    const catalogAvailable = {};
-    await Promise.all(tracks.map(async (track) => {
+    const response = await fetch("content/trilhas.json", { cache: "no-cache" });
+    if (!response.ok) throw new Error("Não foi possível carregar as trilhas.");
+    const manifest = await response.json();
+    const tracks = Array.isArray(manifest.tracks) ? manifest.tracks : [];
+    const entries = await Promise.all(tracks.map(async (track) => {
       try {
-        const response = await fetch(`content/${track.id}/topicos.json`);
-        if (!response.ok) throw new Error("Catalog unavailable");
-        const data = await response.json();
-        const topics = Array.isArray(data.topics) ? data.topics : [];
-        topicsByTrack[track.id] = topics;
-        catalogAvailable[track.id] = true;
+        const catalogPath = track.catalog || `content/${track.id}/topicos.json`;
+        const result = await fetch(catalogPath, { cache: "no-cache" });
+        if (!result.ok) throw new Error("Catálogo indisponível");
+        const catalog = await result.json();
+        return [track.id, { topics: Array.isArray(catalog.topics) ? catalog.topics : [], available: true }];
       } catch {
-        topicsByTrack[track.id] = [];
-        catalogAvailable[track.id] = false;
-        if (track.element) track.element.textContent = "Conteúdo indisponível";
+        return [track.id, { topics: [], available: false }];
       }
     }));
-
-    const allTopics = tracks.flatMap((track) => (topicsByTrack[track.id] || []).map((topic) => ({ track, topic })));
-    const progressState = allTopics.length
+    const dataById = new Map(entries);
+    const topicsByTrack = Object.fromEntries(entries.map(([id, data]) => [id, data.topics]));
+    const progressState = window.decsiProgress
       ? await window.decsiProgress.getAll(topicsByTrack)
       : { topics: [], pages: [] };
-    const progressByTopic = new Map(progressState.topics.map((record) => [
-      `${record.trackId}:${record.topicId}`,
-      record,
-    ]));
 
-    for (const track of tracks) {
-      const topics = topicsByTrack[track.id] || [];
-      const card = document.getElementById(`${track.id}-dashboard`);
-
-      if (!catalogAvailable[track.id]) {
-        if (track.element) track.element.textContent = "Conteúdo indisponível";
-        if (card) {
-          card.querySelector("[data-dashboard-percent]").textContent = "";
-          card.querySelector("[data-dashboard-completion]").textContent = "";
-          card.querySelector("[data-dashboard-bar]").hidden = true;
-          card.querySelector("[data-dashboard-breakdown]").hidden = true;
-          const empty = card.querySelector("[data-dashboard-empty]");
-          empty.hidden = false;
-          empty.textContent = "Não foi possível carregar o conteúdo da trilha.";
-        }
-        continue;
-      }
-
-      if (topics.length === 0) {
-        if (track.element) track.element.textContent = `${track.label}Trilha sem conteúdo cadastrado`;
-        if (card) {
-          card.querySelector("[data-dashboard-percent]").textContent = "";
-          card.querySelector("[data-dashboard-completion]").textContent = "";
-          card.querySelector("[data-dashboard-bar]").hidden = true;
-          card.querySelector("[data-dashboard-breakdown]").hidden = true;
-          const empty = card.querySelector("[data-dashboard-empty]");
-          empty.hidden = false;
-          empty.textContent = "Esta trilha ainda está sem conteúdo.";
-        }
-        continue;
-      }
-
-      const completed = topics.filter((topic) => progressByTopic.get(`${track.id}:${topic.id}`)?.status === "completed").length;
-      const active = topics.filter((topic) => progressByTopic.get(`${track.id}:${topic.id}`)?.status === "in_progress").length;
-      const pending = topics.length - completed - active;
-      const percentage = Math.round((completed / topics.length) * 100);
-      const countLabel = `${topics.length} ${topics.length === 1 ? "tópico" : "tópicos"}`;
-      if (track.element) track.element.textContent = `${track.label}${countLabel} · Conteúdo disponível`;
-      if (card) {
-        card.querySelector("[data-dashboard-percent]").textContent = `${percentage}%`;
-        card.querySelector("[data-dashboard-completion]").textContent = `${completed} de ${topics.length} ${topics.length === 1 ? "tópico concluído" : "tópicos concluídos"}`;
-        const bar = card.querySelector("[data-dashboard-bar]");
-        bar.value = percentage;
-        bar.hidden = false;
-        const breakdown = card.querySelector("[data-dashboard-breakdown]");
-        breakdown.querySelector("[data-dashboard-active]").textContent = active;
-        breakdown.querySelector("[data-dashboard-pending]").textContent = pending;
-        breakdown.hidden = false;
-        card.querySelector("[data-dashboard-empty]").hidden = true;
-      }
-    }
-
-    if (!title || !description || !action) return;
-
-    if (!allTopics.length) {
-      title.textContent = "Suas trilhas estão sendo preparadas.";
-      description.textContent = "Volte em breve para começar seus estudos.";
-      hideAction();
-      return;
-    }
-
-    const progress = progressState.topics;
-    const recordsByTopic = progressByTopic;
-    const inProgress = progress
-      .filter((record) => record.status === "in_progress")
-      .sort((left, right) => Date.parse(right.lastAccessedAt || "") - Date.parse(left.lastAccessedAt || ""));
-    const latest = inProgress.find((record) => allTopics.some(({ track, topic }) => track.id === record.trackId && topic.id === record.topicId));
-
-    if (latest) {
-      const { track, topic } = allTopics.find(({ track, topic }) => track.id === latest.trackId && topic.id === latest.topicId);
-      const lastPage = progressState.pages
-        .filter((page) => page.trackId === latest.trackId && page.topicId === latest.topicId)
-        .sort((left, right) => Date.parse(right.lastAccessedAt || "") - Date.parse(left.lastAccessedAt || ""))[0];
-      title.textContent = "Sua jornada continua.";
-      description.textContent = `Continue ${track.title} pelo tópico “${topic.title}”, acessado mais recentemente.`;
-      setAction(topicUrl(track.id, topic, lastPage?.pageId), "Continuar estudando");
-      return;
-    }
-
-    const next = allTopics.find(({ track, topic }) => recordsByTopic.get(`${track.id}:${topic.id}`)?.status !== "completed");
-    if (next) {
-      const hasAnyProgress = progress.length > 0;
-      title.textContent = hasAnyProgress ? "Pronto para o próximo tópico?" : "Vamos começar a estudar.";
-      description.textContent = hasAnyProgress
-        ? `O próximo tópico disponível é “${next.topic.title}”, em ${next.track.title}.`
-        : `Comece pela trilha ${next.track.title}, no tópico “${next.topic.title}”.`;
-      setAction(topicUrl(next.track.id, next.topic), hasAnyProgress ? "Começar próximo tópico" : "Começar a estudar");
-      return;
-    }
-
-    title.textContent = "Trilhas concluídas!";
-    description.textContent = "Você concluiu todos os tópicos disponíveis. Parabéns pela sua jornada!";
-    hideAction();
+    renderHomeTracks(tracks, dataById);
+    renderDashboard(tracks, dataById, progressState);
+    configureResume(tracks, dataById, progressState);
   }
 
   initialize().catch(() => {
-    if (!title || !description || !action) return;
-    title.textContent = "Não foi possível carregar seu progresso.";
-    description.textContent = "Tente atualizar a página para continuar seus estudos.";
-    hideAction();
+    if (homeTracks) homeTracks.replaceChildren(textElement("p", "tracks-message", "Não foi possível carregar as trilhas. Atualize a página para tentar novamente."));
+    if (dashboard) dashboard.replaceChildren(textElement("p", "dashboard-empty", "Não foi possível carregar o conteúdo das trilhas."));
+    if (heroTitle && heroDescription) {
+      heroTitle.textContent = "Não foi possível carregar seu progresso.";
+      heroDescription.textContent = "Atualize a página para continuar seus estudos.";
+    }
+    if (resumeAction) {
+      resumeAction.hidden = true;
+      resumeAction.style.display = "none";
+    }
   });
 })();
