@@ -4,11 +4,13 @@
   const EMAIL_KEY = "decsi.sessionEmail";
   const FIRST_NAME_KEY = "decsi.sessionFirstName";
   const LAST_NAME_KEY = "decsi.sessionLastName";
+  const ROLE_KEY = "decsi.sessionRole";
   const getToken = () => sessionStorage.getItem(TOKEN_KEY);
   const getProfile = () => ({
     email: sessionStorage.getItem(EMAIL_KEY) || "",
     firstName: sessionStorage.getItem(FIRST_NAME_KEY) || "",
     lastName: sessionStorage.getItem(LAST_NAME_KEY) || "",
+    role: sessionStorage.getItem(ROLE_KEY) || "student",
   });
 
   function storeSession(token, profile) {
@@ -16,6 +18,7 @@
     sessionStorage.setItem(EMAIL_KEY, profile.email || "");
     sessionStorage.setItem(FIRST_NAME_KEY, profile.firstName || "");
     sessionStorage.setItem(LAST_NAME_KEY, profile.lastName || "");
+    sessionStorage.setItem(ROLE_KEY, profile.role === "admin" ? "admin" : "student");
   }
 
   function clearSession() {
@@ -23,6 +26,7 @@
     sessionStorage.removeItem(EMAIL_KEY);
     sessionStorage.removeItem(FIRST_NAME_KEY);
     sessionStorage.removeItem(LAST_NAME_KEY);
+    sessionStorage.removeItem(ROLE_KEY);
   }
 
   function clearProgressCache() {
@@ -40,9 +44,15 @@
   function updateHeader(profile) {
     const email = profile?.email || "";
     const createAccountLink = document.querySelector('.nav a[href="cadastro.html"]');
+    const adminLink = document.querySelector('.nav a[href="admin-users.html"]');
+    const accountRole = profile?.role === "admin" ? "admin" : "student";
     if (createAccountLink) {
       createAccountLink.hidden = Boolean(email);
       createAccountLink.style.display = email ? "none" : "";
+    }
+    if (adminLink) {
+      adminLink.hidden = accountRole !== "admin";
+      adminLink.style.display = accountRole === "admin" ? "" : "none";
     }
 
     const user = document.querySelector(".user");
@@ -51,10 +61,10 @@
     const lastName = profile?.lastName || "";
     const fullName = [firstName, lastName].filter(Boolean).join(" ");
     const name = user.querySelector(".user-name");
-    const role = user.querySelector(".user-role");
+    const userRole = user.querySelector(".user-role");
     const avatar = user.querySelector(".avatar");
     if (name) name.textContent = email ? `Olá, ${fullName || email.split("@")[0]}` : "Olá, visitante";
-    if (role) role.textContent = email ? "Estudante" : "Visitante";
+    if (userRole) userRole.textContent = email ? (profile?.role === "admin" ? "Administrador" : "Estudante") : "Visitante";
     if (avatar) avatar.textContent = email ? (firstName ? `${firstName[0]}${lastName[0] || ""}` : email[0]).toUpperCase() : "?";
 
     user.querySelector(".auth-action")?.remove();
@@ -139,7 +149,8 @@
         if (!response.ok) throw new Error(result.error || "Não foi possível entrar.");
         clearProgressCache();
         storeSession(result.token, result.user);
-        window.location.replace("index.html");
+        const nextPage = new URLSearchParams(window.location.search).get("next");
+        window.location.replace(nextPage === "forum.html" ? "forum.html" : "index.html");
       } catch (error) {
         status.textContent = error.message || "Não foi possível conectar ao serviço de login.";
         status.classList.add("error");
