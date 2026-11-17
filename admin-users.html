@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    try { const saved = localStorage.getItem("decsi.theme"); document.documentElement.dataset.theme = saved === "dark" || saved === "light" ? saved : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); } catch { document.documentElement.dataset.theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+  </script>
+  <meta name="theme-color" content="#a5003d" />
+  <link rel="icon" type="image/svg+xml" href="logo-d-lampada.svg" />
+  <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="search.css" />
+  <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="ufop-theme.css" />
+  <link rel="stylesheet" href="forum-notifications.css" />
+  <link rel="stylesheet" href="forum.css" />
+  <link rel="stylesheet" href="admin-users.css" />
+  <title>Usuários — DECSI Learning</title>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <a class="brand" href="index.html" aria-label="DECSI Learning, início"><img class="brand-mark" src="logo-d-lampada.svg" alt="" /><span class="brand-text">DECSI <small>learning</small></span></a>
+      <div><p class="nav-label">Menu</p><nav class="nav">
+        <a href="index.html"><span class="nav-icon">⌂</span><span class="label">Início</span></a>
+        <a href="dashboard.html"><span class="nav-icon">▦</span><span class="label">Dashboard</span></a>
+        <a href="index.html#trilhas"><span class="nav-icon">◈</span><span class="label">Minhas trilhas</span></a>
+        <a href="forum.html"><span class="nav-icon">▤</span><span class="label">Fórum</span></a>
+        <a class="active" href="admin-users.html" aria-current="page" hidden style="display:none"><span class="nav-icon">♙</span><span class="label">Usuários</span></a>
+      </nav></div>
+      <div class="sidebar-bottom"><div class="help-card"><strong>Área administrativa</strong><p>Consulte as contas cadastradas na plataforma.</p></div></div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <span class="crumb">Portal de aprendizagem&nbsp; / &nbsp;Administração&nbsp; / &nbsp;Usuários</span>
+        <div class="global-search" role="search" aria-label="Buscar conteúdo"><span class="search-icon" aria-hidden="true">⌕</span><label class="visually-hidden" for="content-search">Buscar conteúdo</label><input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" /><div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div></div>
+        <div class="header-actions"><div class="notification-host" data-notification-host></div><div class="user"><div class="avatar" aria-hidden="true">?</div><div><div class="user-name">Olá, visitante</div><div class="user-role">Visitante</div></div></div></div>
+      </header>
+      <section class="admin-intro"><div><span class="tag">Administração</span><h1>Usuários cadastrados</h1><p class="subtitle">Cadastre contas e gerencie os perfis de acesso.</p></div><div class="admin-intro-actions"><span class="user-total" id="user-total" aria-live="polite"></span><button class="admin-primary-button" id="add-user" type="button">Cadastrar usuário <span aria-hidden="true">＋</span></button></div></section>
+      <div class="admin-message" id="admin-message" role="status" aria-live="polite">Carregando usuários…</div>
+      <section class="users-panel" aria-label="Lista de usuários">
+        <div class="users-table-wrap"><table class="users-table"><thead><tr><th scope="col">Nome</th><th scope="col">E-mail</th><th scope="col">Perfil</th><th scope="col">Cadastro</th><th scope="col"><span class="visually-hidden">Ações</span></th></tr></thead><tbody id="users-list"></tbody></table></div>
+      </section>
+    </main>
+  </div>
+  <dialog class="user-dialog" id="user-dialog" aria-labelledby="user-dialog-title">
+    <form id="user-form">
+      <div class="user-dialog-head"><div><span class="tag">Administração</span><h2 id="user-dialog-title">Cadastrar usuário</h2></div><button class="icon-button" type="button" data-close-user-dialog aria-label="Fechar">×</button></div>
+      <div class="user-fields"><label>Nome<input name="firstName" maxlength="80" autocomplete="given-name" required /></label><label>Sobrenome<input name="lastName" maxlength="80" autocomplete="family-name" required /></label></div>
+      <label>E-mail<input name="email" type="email" maxlength="254" autocomplete="email" required /></label>
+      <label>Perfil<select name="role" required><option value="student">Estudante</option><option value="admin">Administrador</option></select></label>
+      <label>Senha inicial <span class="password-hint" id="password-hint">Mínimo de 12 caracteres.</span><input name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password" /></label>
+      <p class="user-dialog-error" id="user-dialog-error" role="alert"></p>
+      <div class="user-dialog-actions"><button type="button" class="secondary-button" data-close-user-dialog>Cancelar</button><button class="admin-primary-button" id="save-user" type="submit">Cadastrar usuário</button></div>
+    </form>
+  </dialog>
+  <script src="auth.js" defer></script><script src="search.js" defer></script><script src="theme.js" defer></script><script src="forum-notifications.js" defer></script><script src="admin-users.js" defer></script>
+</body>
+</html>
