@@ -147,3 +147,6 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# arquivos temporários dos geradores de animação
+tools/animacoes/tmp/

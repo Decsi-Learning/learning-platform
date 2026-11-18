@@ -1,0 +1,123 @@
+/* Blocos extras das aulas: slides, demo, video, exercicio, estrutura e pseudocodigo.
+   O HTML é gerado por js/renderer.js. As cores vêm das variáveis do tema (claro e escuro). */
+
+/* No tema escuro, o estilo de código inline (theme.css) vazava para dentro dos blocos de código,
+   pintando cada linha com um fundo claro. Dentro de <pre> o fundo deve ser o do próprio bloco. */
+html[data-theme="dark"] .markdown pre code,
+html[data-theme="dark"] .markdown .demo-state code { background: transparent; }
+
+/* Código: diagramas de estrutura e pseudocódigo */
+.markdown pre.estrutura,
+.markdown pre.pseudocodigo { white-space: pre; line-height: 1.5; overflow: auto; }
+.markdown pre.estrutura { background: var(--paper); color: var(--ink); border: 1px solid var(--line); }
+.markdown pre.pseudocodigo { border-left: 4px solid var(--teal); }
+
+/* Vídeo (moldura 16:9 ou espaço reservado) */
+.markdown .video-frame { position: relative; aspect-ratio: 16 / 9; margin: 1.2em 0; border-radius: 14px; overflow: hidden; background: var(--paper); border: 1px dashed var(--line); }
+.markdown .video-embed { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.markdown .video-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 16px; text-align: center; color: var(--soft); }
+.markdown .video-placeholder strong { color: var(--ink); font-size: 1.05em; }
+
+/* Slides e demonstrações passo a passo */
+.markdown .stepper { margin: 1.4em 0; padding: clamp(16px, 3vw, 24px); border: 1px solid var(--line); border-radius: 16px; background: var(--mint); }
+.markdown .stepper:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.markdown .stepper-title { margin: 0 0 10px; color: var(--teal); font-size: 12px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.markdown .stepper-panels { min-height: 140px; }
+.markdown .stepper-panel[hidden] { display: none; }
+.markdown .stepper-panel h4 { margin: 0 0 10px; font-size: 1.2em; color: var(--ink); }
+.markdown .stepper-panel ul { margin: .4em 0; padding-left: 1.4em; }
+.markdown .stepper-panel li + li { margin-top: .4em; }
+.markdown .demo-caption { margin: 0 0 10px; font-weight: 650; }
+.markdown .demo-state { margin: 0; padding: 14px; overflow: auto; border-radius: 10px; background: #173b43; color: #fff; font: .9em/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre; }
+.markdown .demo-state code { color: inherit; background: transparent; padding: 0; }
+.markdown .stepper[data-kind="carrossel"] { max-width: 600px; margin-inline: auto; }
+.markdown .stepper[data-kind="carrossel"] .stepper-panels { min-height: 0; }
+/* todas as imagens ocupam a mesma caixa (proporção fixa), então a página não pula entre os passos */
+.markdown .stepper[data-kind="carrossel"] .markdown-image,
+.markdown .stepper[data-kind="carrossel"] .carrossel-img { display: block; width: 100%; max-width: 100%; height: auto; aspect-ratio: 632 / 445; object-fit: contain; margin: 0 auto; box-shadow: none; border-radius: 10px; }
+.markdown .stepper-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; }
+.markdown .stepper-controls button { padding: 9px 14px; border: 0; border-radius: 10px; background: var(--theme-action, var(--teal)); color: var(--theme-action-text, #fff); font: inherit; font-size: 13px; font-weight: 750; cursor: pointer; }
+.markdown .stepper-controls button:disabled { opacity: .45; cursor: not-allowed; }
+.markdown .stepper-counter { color: var(--soft); font-size: 13px; font-weight: 700; }
+
+/* Exercícios com gabarito */
+.markdown .exercise { margin: 1.2em 0; padding: clamp(16px, 3vw, 22px); border: 1px solid var(--line); border-radius: 14px; background: var(--white); }
+.markdown .exercise h4 { margin: 0 0 8px; font-size: 1.1em; color: var(--ink); }
+.markdown .exercise-statement { margin: 0 0 12px; white-space: pre-wrap; }
+.markdown .exercise-solution summary { cursor: pointer; color: var(--teal); font-weight: 750; }
+.markdown .exercise-answer { margin-top: 10px; padding: 12px 14px; border-radius: 10px; background: var(--mint); color: var(--ink); white-space: pre-wrap; }
+
+/* Código em C + animação do que acontece (bloco "codigo") */
+.markdown .stepper.codigo { container-type: inline-size; background: var(--paper); }
+.markdown .codigo-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: start; }
+@container (min-width: 620px) {
+  /* animação com muitas colunas (mais de 8) fica em cima, em tamanho grande; as outras ficam ao lado do código */
+  .markdown .stepper.codigo:not([data-layout="stack"]) .codigo-body { grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); }
+  .markdown .stepper.codigo[data-layout="wide"] .codigo-body { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr); }
+  .markdown .stepper.codigo[data-layout="wide"] .codigo-code { font-size: 11.5px; }
+  .markdown .stepper.codigo:not([data-layout="stack"]) .codigo-code { order: 1; }
+  .markdown .stepper.codigo:not([data-layout="stack"]) .codigo-screen { order: 2; position: sticky; top: 12px; }
+}
+.markdown .codigo-code { position: relative; max-height: 560px; }
+
+/* A "tela" da animação: sempre escura, como no vídeo, nos dois temas */
+.markdown .codigo-screen { container-type: inline-size; padding: 16px 14px 14px; border-radius: 14px; background: #1d1e22; color: #f2f2f2; }
+.markdown .codigo-screen .stepper-panels { min-height: 0; }
+.markdown .cv-rows { --w: min(46px, calc((100cqw - 4px) / var(--cols, 8))); --rh: calc(var(--w) * 1.9);
+  width: calc(var(--cols, 8) * var(--w)); max-width: 100%; margin: 0 auto; min-height: calc(var(--rows, 1) * var(--rh)); }
+.markdown .cr { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: calc(var(--w) * .3); height: var(--rh); }
+.markdown .cg { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+.markdown .cg.pos { position: absolute; bottom: 0; left: calc(var(--s) * var(--w)); width: calc(var(--n) * var(--w)); }
+.markdown .cg-label { order: 2; margin-top: 2px; font-size: max(9.5px, calc(var(--w) * .22)); line-height: 1.1; color: #98a0ac; letter-spacing: .04em; }
+
+/* colchetes [ ] em volta de cada grupo */
+.markdown .cb { position: relative; display: flex; align-items: flex-end; justify-content: center; min-width: calc(var(--w) * .8); min-height: calc(var(--w) * 1.1); padding: 0 calc(var(--w) * .13); }
+.markdown .cb::before, .markdown .cb::after { content: ""; position: absolute; top: 0; bottom: 0; width: calc(var(--w) * .16); border: 2px solid #8a909b; transition: border-color .2s; }
+.markdown .cb::before { left: 0; border-right: 0; }
+.markdown .cb::after { right: 0; border-left: 0; }
+.markdown .cg.on .cb::before, .markdown .cg.on .cb::after { border-color: #ffd43b; }
+
+/* os bonequinhos: a cor identifica o número */
+.markdown .sp { --c: #ff6b6b; position: relative; flex: none; width: calc(var(--w) * .74); height: calc(var(--w) * .66); margin: 0 calc(var(--w) * .07) calc(var(--w) * .1);
+  background: var(--c); border-radius: 36% 36% 20% 20%; box-shadow: inset 0 calc(var(--w) * -.09) 0 rgba(0, 0, 0, .2), inset 0 calc(var(--w) * .06) 0 rgba(255, 255, 255, .35); }
+.markdown .sp::before { content: ""; position: absolute; left: 24%; top: 34%; width: 15%; height: 20%; background: #1b1b2f; box-shadow: calc(var(--w) * .27) 0 0 #1b1b2f; }
+.markdown .sp::after { content: ""; position: absolute; left: 36%; top: 66%; width: 28%; height: 10%; background: #1b1b2f; }
+.markdown .sp.f1::after { height: 18%; width: 18%; left: 41%; top: 62%; border-radius: 50%; }
+.markdown .sp.f2::after { width: 22%; left: 39%; top: 68%; }
+.markdown .sp.f3::after { width: 34%; left: 33%; top: 64%; height: 14%; background: transparent; border: 0 solid #1b1b2f; border-bottom-width: 3px; border-radius: 0 0 50% 50%; }
+.markdown .sp b { position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); font: 800 max(11px, calc(var(--w) * .36))/1 ui-monospace, Consolas, monospace; color: #fff; text-shadow: 0 1px 0 #000; }
+.markdown .sp.c0 { --c: #c9a27a; } .markdown .sp.c8 { --c: #d86fe8; } .markdown .sp.c9 { --c: #ff8fb8; } .markdown .sp.c10 { --c: #b6e04a; } .markdown .sp.c11 { --c: #7fd6ff; }
+.markdown .sp.c1 { --c: #ff6b6b; } .markdown .sp.c2 { --c: #ff9d5c; } .markdown .sp.c3 { --c: #ffd166; }
+.markdown .sp.c4 { --c: #6fd36f; } .markdown .sp.c5 { --c: #4fd1c5; } .markdown .sp.c6 { --c: #5b9dff; } .markdown .sp.c7 { --c: #a078ff; }
+.markdown .sp.cmp b { color: #ffd43b; }
+.markdown .sp.cmp { outline: 2px solid #ffd43b; outline-offset: 2px; }
+.markdown .sp.pick { outline: 2px solid #7ee787; outline-offset: 2px; animation: cv-pulo .7s ease-out; }
+@keyframes cv-pulo { 0% { transform: translateY(0); } 35% { transform: translateY(calc(var(--w) * -.28)); } 100% { transform: translateY(0); } }
+
+.markdown .cv-panel { animation: cv-entra .25s ease-out; }
+@keyframes cv-entra { from { opacity: .35; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .markdown .cv-panel, .markdown .sp.pick { animation: none; } }
+
+.markdown .cv-caption { margin: 14px 0 8px; font-size: 15px; line-height: 1.5; font-weight: 600; color: #fff; }
+.markdown .cv-caption code, .markdown .cv-caption strong { background: #2c2f37; color: #ffd43b; padding: 1px 6px; border-radius: 5px; font-weight: 700; }
+.markdown .cv-vars { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 6px; }
+.markdown .cv-vars span { padding: 2px 9px; border-radius: 6px; background: #2a2c33; font: 12.5px ui-monospace, Consolas, monospace; color: #d6dae1; }
+.markdown .cv-vars em { color: #8ec5ff; font-style: normal; }
+.markdown .cv-stack { margin: 0; font-size: 12px; color: #8b93a0; }
+
+/* o código ao lado, com a linha atual destacada */
+.markdown .codigo-code { margin: 0; padding: 12px 0; overflow: auto; border-radius: 14px; background: #1d1e22; color: #e6e6e6; font: 12.5px/1.6 ui-monospace, SFMono-Regular, Consolas, Menlo, monospace; }
+.markdown .codigo-code code { display: block; padding: 0; background: transparent; color: inherit; font: inherit; }
+html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .markdown .codigo-screen code { background: transparent; }
+.markdown .cline { display: flex; min-width: max-content; border-left: 3px solid transparent; }
+.markdown .cline.on { background: rgba(255, 212, 59, .17); border-left-color: #ffd43b; }
+.markdown .ln { flex: none; width: 2.8em; padding-right: 12px; text-align: right; color: #646b76; user-select: none; }
+.markdown .lc { white-space: pre; padding-right: 14px; }
+.markdown .tk-c { color: #7f8794; font-style: italic; } .markdown .tk-s { color: #a5e075; } .markdown .tk-p { color: #ff7ab2; }
+.markdown .tk-n { color: #ffb86c; } .markdown .tk-t { color: #5ccfe6; } .markdown .tk-k { color: #c792ea; } .markdown .tk-f { color: #82aaff; }
+.markdown .stepper-controls button.play { background: #ffd43b; color: #1d1e22; }
+.markdown .stepper-controls button.play.playing { background: #ff9d5c; }
+@container (max-width: 520px) { .markdown .stepper-controls { flex-wrap: wrap; justify-content: center; } }
+.markdown .sp.ghost { opacity: .28; filter: grayscale(1); }
+/* rótulo comprido: o bichinho continua do mesmo tamanho; só abrimos espaço dos lados para o texto caber */
+.markdown .sp.wide { margin-left: calc(var(--w) * ((var(--len) * .23 - .74) / 2 + .07)); margin-right: calc(var(--w) * ((var(--len) * .23 - .74) / 2 + .07)); }

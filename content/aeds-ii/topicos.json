@@ -40,7 +40,38 @@
       "id": "registros-tamanho-variavel",
       "title": "Registros de tamanho variável",
       "summary": "Representação e armazenamento de registros com tamanho variável.",
-      "file": null
+      "pages": [
+        {
+          "id": "delimitando-campos-e-registros",
+          "title": "Delimitando campos e registros",
+          "summary": "Por que variar o tamanho, técnicas de campo, métodos de registro e o problema do separador.",
+          "file": "registros-tamanho-variavel/delimitando-campos-e-registros.md"
+        },
+        {
+          "id": "lendo-e-localizando-registros",
+          "title": "Lendo e localizando registros",
+          "summary": "Leitura com prefixo ou delimitador, byte offset e atualização de registros variáveis.",
+          "file": "registros-tamanho-variavel/lendo-e-localizando-registros.md"
+        },
+        {
+          "id": "arquivo-misto-blob-e-comparacao",
+          "title": "Arquivo misto, BLOB e comparação",
+          "summary": "Registros de tipos diferentes, campos grandes, blocos e comparação com o tamanho fixo.",
+          "file": "registros-tamanho-variavel/arquivo-misto-blob-e-comparacao.md"
+        },
+        {
+          "id": "exercicios-avaliativos-registros-tamanho-variavel",
+          "title": "Exercícios avaliativos",
+          "summary": "Exercícios com gabarito sobre todo o tópico.",
+          "file": "registros-tamanho-variavel/exercicios-avaliativos-registros-tamanho-variavel.md"
+        },
+        {
+          "id": "slides-registros-tamanho-variavel",
+          "title": "Slides e vídeo",
+          "summary": "Apresentação do tópico, vídeo explicativo e referências.",
+          "file": "registros-tamanho-variavel/slides-registros-tamanho-variavel.md"
+        }
+      ]
     },
     {
       "id": "ordenacao-em-disco",

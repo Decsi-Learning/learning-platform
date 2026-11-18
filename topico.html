@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="theme.css" />
   <link rel="stylesheet" href="ufop-theme.css" />
   <link rel="stylesheet" href="forum-notifications.css" />
+  <link rel="stylesheet" href="blocks.css" />
   <style>
     .markdown::after{content:"";display:block;clear:both}
     .markdown h1,.markdown h2,.markdown h3{clear:both}
@@ -110,6 +111,7 @@
   <script src="progress.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked@18.0.13/lib/marked.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>
+  <script src="js/renderer.js"></script>
   <script>
     window.MathJax = {
       tex: {
@@ -238,6 +240,11 @@
       return `<figure class="explained-code"><figcaption>Passe o mouse ou toque em uma linha para ver o que ela faz.</figcaption><pre><code>${rendered}</code></pre></figure>`;
     }
 
+    // Blocos extras das aulas (slides, demo, video, exercicio, estrutura, pseudocodigo): ver js/renderer.js
+    function renderLessonBlock(language, source) {
+      return window.LessonRenderer ? window.LessonRenderer.renderBlock(language, source, { defer: true }) : null;
+    }
+
     function isTableRow(line) {
       return /^\s*\|?.+\|.+\|?\s*$/.test(line);
     }
@@ -292,7 +299,7 @@
               ? renderQuiz(codeLines.join("\n"), quizIndex++)
               : codeLanguage === "explicado"
                 ? renderExplainedCode(codeLines.join("\n"), sourceUrl)
-                : `<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+                : (renderLessonBlock(codeLanguage, codeLines.join("\n")) ?? `<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`));
             codeLines = [];
             codeLanguage = "";
           } else {
@@ -340,7 +347,7 @@
         ? renderQuiz(codeLines.join("\n"), quizIndex++)
         : codeLanguage === "explicado"
           ? renderExplainedCode(codeLines.join("\n"), sourceUrl)
-          : `<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+          : (renderLessonBlock(codeLanguage, codeLines.join("\n")) ?? `<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`));
       return html.join("\n");
     }
 
@@ -480,6 +487,7 @@
     function renderMarkdownInto(markdown, target, sourceUrl = markdownUrl, includeQuizzes = false) {
       if (!window.marked?.parse || !window.DOMPurify?.sanitize) {
         target.innerHTML = renderBasicMarkdown(markdown, sourceUrl, includeQuizzes);
+        activateLessonBlocks(target);
         return;
       }
       const protectedMath = protectMath(markdown);
@@ -492,6 +500,8 @@
           return renderQuiz(token.text, quizIndex++);
         }
         if (language === "explicado") return renderExplainedCode(token.text, sourceUrl);
+        const lessonBlock = renderLessonBlock(language, token.text);
+        if (lessonBlock !== null) return lessonBlock;
         return renderCode.call(this, token);
       };
       const rendered = window.marked.parse(protectedMath.markdown, {
@@ -504,7 +514,15 @@
       restoreMath(template.content, protectedMath.formulas);
       enhanceMarkdownContent(template.content, sourceUrl);
       target.replaceChildren(template.content);
+      activateLessonBlocks(target);
       typesetMarkdownMath(target);
+    }
+
+    // Depois de inserir o conteúdo: cria os iframes de vídeo (o DOMPurify os remove) e liga os botões dos slides.
+    function activateLessonBlocks(target) {
+      if (!window.LessonRenderer) return;
+      window.LessonRenderer.hydrateVideoEmbeds(target);
+      window.LessonRenderer.attachInteractions(target);
     }
 
     function updateQuizGate() {
@@ -734,7 +752,7 @@
           return null;
         }
         const contentDirectory = track.contentDirectory || `content/${trackId}/topicos/`;
-        markdownUrl = new URL(`${contentDirectory.replace(/\/?$/, "/")}${encodeURIComponent(page.file)}`, window.location.href);
+        markdownUrl = new URL(`${contentDirectory.replace(/\/?$/, "/")}${page.file.split("/").map(encodeURIComponent).join("/")}`, window.location.href);
         return fetch(markdownUrl);
       })
       .then((response) => {
