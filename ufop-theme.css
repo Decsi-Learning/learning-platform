@@ -740,3 +740,27 @@ html[data-theme="dark"] .auth-action { background: rgba(255, 255, 255, .055); co
   .header-menu-trigger { width: 36px; height: 36px; border-radius: 10px; }
   .header-menu-panel { top: calc(100% + 7px); }
 }
+
+/* O destaque da jornada usa o mesmo banner permanente do fórum. */
+.hero{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);align-items:center;min-height:290px;margin:0 0 24px;padding:26px 30px;overflow:hidden;border:1px solid var(--theme-border);border-radius:20px;background:var(--theme-surface);box-shadow:var(--theme-shadow)}
+.hero:after{display:none}
+.hero:before{content:"";position:absolute;inset:0;z-index:1;width:auto;pointer-events:none;background:linear-gradient(90deg,var(--theme-surface) 0%,color-mix(in srgb,var(--theme-surface) 96%,transparent) 38%,color-mix(in srgb,var(--theme-surface) 56%,transparent) 65%,transparent 100%);-webkit-backdrop-filter:none;backdrop-filter:none;-webkit-mask-image:none;mask-image:none}
+.hero-content{position:relative;z-index:2;max-width:470px}
+.hero-art{position:absolute;inset:0 0 0 auto;z-index:0;display:block;width:62%;min-width:0;overflow:hidden;border:0;border-radius:0;background:transparent;box-shadow:none}
+.hero h2{margin:13px 0 5px;font-size:clamp(32px,5vw,44px);line-height:1.2;letter-spacing:-.04em}
+.hero p{max-width:470px;margin:0 0 18px;font-size:15px;line-height:1.55}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:0;padding:6px 10px;border-radius:9px;background:var(--theme-accent-soft);color:var(--theme-accent-strong);font-size:11px;font-weight:750;letter-spacing:.06em}
+.hero .eyebrow:before{display:none}
+.hero .button{min-height:46px;padding:0 17px;border:1px solid var(--theme-action);border-radius:12px;font-size:13px;gap:10px}
+.study-scene{position:absolute;inset:0;width:100%;max-width:none;height:100%;display:block;object-fit:cover;object-position:center 52%}
+.study-scene-night{display:none}
+html[data-theme="dark"] .study-scene-day{display:none}
+html[data-theme="dark"] .study-scene-night{display:block}
+html[data-theme="dark"] .hero{background:var(--theme-surface)}
+html[data-theme="dark"] .hero:before{background:linear-gradient(90deg,var(--theme-surface) 0%,color-mix(in srgb,var(--theme-surface) 96%,transparent) 38%,color-mix(in srgb,var(--theme-surface) 56%,transparent) 65%,transparent 100%)}
+@media(max-width:760px){
+  .hero{grid-template-columns:minmax(0,1fr);min-height:0;padding:21px 20px 0}
+  .hero:before{display:none}
+  .hero-content{padding-bottom:20px}
+  .hero-art{position:relative;inset:auto;grid-column:1;grid-row:2;width:calc(100% + 40px);height:190px;margin:0 -20px;}
+}

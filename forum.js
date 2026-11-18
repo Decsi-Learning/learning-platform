@@ -132,14 +132,27 @@
   }
 
   async function loadPosts() {
-    status.textContent = "Carregando publicações…"; feed.replaceChildren();
+    status.hidden = false; status.textContent = "Carregando publicações…"; feed.replaceChildren();
     const params = new URLSearchParams({ order: $("#sort-filter").value });
     if (trackFilter.value) params.set("track", trackFilter.value);
     if (topicFilter.value) params.set("topic", topicFilter.value);
     try {
       posts = (await request(`/forum/posts?${params}`)).posts || [];
       for (const post of posts) feed.append(renderPost(post));
-      status.textContent = posts.length ? `${posts.length} publicação${posts.length === 1 ? "" : "ões"}` : "Ainda não há publicações por aqui. Comece a conversa!";
+      status.hidden = !posts.length;
+      status.textContent = posts.length ? `${posts.length} publicação${posts.length === 1 ? "" : "ões"}` : "";
+      if (!posts.length && (trackFilter.value || topicFilter.value)) {
+        feed.innerHTML = `<div class="forum-error-state"><strong>Nenhuma publicação encontrada com esses filtros</strong><p>Experimente selecionar outra trilha ou conteúdo.</p></div>`;
+      } else if (!posts.length) {
+        feed.innerHTML = `<article class="forum-empty">
+          <div class="forum-empty-copy">
+            <span class="forum-empty-kicker">Fórum de estudos</span>
+            <h2>Qual dúvida você trouxe hoje?</h2>
+            <p>Abra a conversa, compartilhe sua pergunta e aprenda junto com a comunidade.</p>
+            <button class="button" type="button" data-forum-create-first><span data-lucide="plus"></span> Criar publicação</button>
+          </div>
+        </article>`;
+      }
       const selected = new URLSearchParams(location.search).get("post");
       if (selected) document.querySelector(`[data-post-id="${CSS.escape(selected)}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (error) {
@@ -148,16 +161,20 @@
         : error.message === "Método não permitido."
           ? "O serviço do fórum ainda precisa ser atualizado. Aplique a migração do banco e publique o Worker para carregar as publicações."
           : error.message;
-      status.textContent = message;
-      feed.innerHTML = `<div class="forum-empty"><span data-lucide="circle-alert"></span><strong>Não foi possível carregar o fórum</strong><p>${escapeText(message)}</p></div>`;
+      status.hidden = false; status.textContent = message;
+      feed.innerHTML = `<div class="forum-error-state"><span data-lucide="circle-alert"></span><strong>Não foi possível carregar o fórum</strong><p>${escapeText(message)}</p></div>`;
     }
   }
 
   function escapeText(value) { const node = document.createElement("span"); node.textContent = value; return node.innerHTML; }
 
-  $("#new-post-button").addEventListener("click", () => {
+  function openNewPost() {
     if (!token()) { location.href = "login.html?next=forum.html"; return; }
     $("#post-dialog-title").textContent = "Criar publicação"; form.dataset.mode = "create"; form.dataset.id = ""; form.reset(); $("#post-error").textContent = ""; dialog.showModal();
+  }
+  $("#new-post-button").addEventListener("click", openNewPost);
+  feed.addEventListener("click", (event) => {
+    if (event.target.closest("[data-forum-create-first]")) openNewPost();
   });
   document.querySelectorAll("[data-close-dialog]").forEach((button) => button.addEventListener("click", () => dialog.close()));
   document.querySelectorAll("[data-close-moderation]").forEach((button) => button.addEventListener("click", () => moderationDialog.close()));
