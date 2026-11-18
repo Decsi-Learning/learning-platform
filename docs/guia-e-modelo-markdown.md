@@ -194,6 +194,68 @@ Uma página pode conter várias questões. O sistema mostra o feedback após a r
 
 Essa opção exige uma resposta selecionada em cada pergunta; ela não exige que a resposta esteja correta. Só use o bloqueio em páginas que contenham ao menos um bloco `quiz`.
 
+### Blocos extras: slides, demonstração, vídeo e exercício
+
+Além do `quiz`, a página entende estes blocos. Todos usam três crases seguidas do nome e um JSON válido; se o JSON estiver errado, aparece uma mensagem de erro no lugar do bloco. O código está em `js/renderer.js` e o visual em `blocks.css`.
+
+**Slides**, um carrossel com botões e setas do teclado:
+
+````markdown
+```slides
+{ "slides": [ { "title": "Título do slide", "bullets": ["ponto 1", "ponto 2"] } ] }
+```
+````
+
+**Demonstração passo a passo**, com uma legenda e um estado em texto monoespaçado por passo:
+
+````markdown
+```demo
+{ "title": "Nome da demo", "steps": [ { "caption": "O que acontece", "state": "texto\nmultilinha" } ] }
+```
+````
+
+**Carrossel de imagens**, um passo por imagem, com os mesmos botões do `demo`. O `src` é um caminho relativo ao `.md` (por exemplo `img/passo1.png`) ou uma URL `https`. O `alt` descreve a imagem para quem usa leitor de tela e é opcional.
+
+````markdown
+```carrossel
+{ "title": "Nome do carrossel", "images": [ { "src": "img/passo1.png", "alt": "Passo 1: ..." }, { "src": "img/passo2.png", "alt": "Passo 2: ..." } ] }
+```
+````
+
+**Vídeo.** Com `"url": null` aparece o espaço reservado "Vídeo explicativo em breve". Para publicar, troque `null` por uma URL de *embed*; só são aceitos `https://www.youtube.com/embed/ID`, `https://www.youtube-nocookie.com/embed/ID` e `https://player.vimeo.com/video/ID`. (Um link comum de YouTube no texto continua sendo só um link; este bloco é que incorpora o player.)
+
+````markdown
+```video
+{ "title": "Vídeo explicativo", "url": null }
+```
+````
+
+**Exercício com gabarito**: o enunciado aparece e o gabarito abre ao clicar em "Ver gabarito". Nos campos de texto não use crases nem HTML.
+
+````markdown
+```exercicio
+{ "title": "Exercício 1", "statement": "Enunciado", "answer": "Resolução passo a passo" }
+```
+````
+
+**Diagramas e pseudocódigo.** Use um bloco `estrutura` para diagramas de layout de dados (fundo claro) e um bloco `pseudocodigo` para algoritmos (fundo escuro). Ambos mantêm os espaços e usam fonte monoespaçada.
+
+**Código em C com animação ao lado** (bloco `codigo`). Mostra o código com a linha atual em destaque e, ao lado, o que acontece naquele passo (bonequinhos coloridos em grupos `[ ]`, legenda em linguagem simples, valores das variáveis). Em telas estreitas a animação fica em cima do código. Tem os botões Anterior, Próximo e Executar (reprodução automática).
+
+````markdown
+```codigo
+{ "title": "Nome", "code": "int a = 1;\nint b = a + 2;",
+  "steps": [ { "line": 1, "caption": "O que acontece (aceita `código`)", "vars": { "a": 1 },
+               "rows": [ [ { "s": 0, "n": 2, "i": [3, [1, "p"]], "l": "rótulo", "a": 1 } ] ] } ] }
+```
+````
+
+- `code`: o programa em C, como vai aparecer (as linhas são numeradas a partir de 1).
+- Cada passo tem `line` (linha destacada), `caption`, `vars` (opcional) e `rows` (opcional): uma lista de linhas, cada uma com grupos. Um grupo é `{ "i": [itens], "s": coluna, "n": largura, "l": rótulo, "a": 1 }`; `s` e `n` posicionam o grupo numa grade (sem eles, os grupos ficam lado a lado e centralizados); `a: 1` destaca o grupo ativo. Cada item é um número ou `[número, marca]`, com marca `"c"` (comparando) ou `"p"` (sendo copiado). A cor do bonequinho depende do número.
+- **Não escreva os passos à mão.** Eles são gerados a partir de uma execução real do programa: veja `tools/animacoes/` (`mergesort.c` + `gerar-mergesort.js`). O código `.c` mostrado é o mesmo que foi executado; as linhas `T(...)` do rastreador não aparecem na aula. Rode `node tools/animacoes/gerar-mergesort.js` (precisa de `gcc`) e cole o conteúdo de `saida/mergesort.json` no bloco. O mesmo vale para o merge sort externo (`mergesort-externo.c` + `gerar-externo.js`, que trabalha com arquivos de verdade na pasta `tools/animacoes/tmp`). No `.c`, as linhas `T("nome", ...)` marcam um passo (apontam para a próxima linha visível), as linhas `H(...)` e o trecho entre `//---OCULTO---` e `//---FIM-OCULTO---` só existem para o rastreador e somem da aula. Se a animação tiver mais de 8 colunas, ela aparece em cima do código (em vez de ao lado) para os bonequinhos não ficarem pequenos.
+
+**Testes automáticos.** Com o Node 18 ou mais novo, rode na raiz do projeto `node --test "tests/*.test.js"`. Eles conferem o renderizador dos blocos acima e a estrutura de cada tópico publicado de AEDS II (seções, quizzes, exercícios com gabarito e vídeo reservado).
+
 ## Modelo copiável de aula
 
 Copie o trecho abaixo para um novo arquivo `.md` e substitua os textos entre colchetes. Remova seções que não forem necessárias.
