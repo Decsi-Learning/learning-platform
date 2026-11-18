@@ -38,26 +38,26 @@
     <aside class="sidebar" aria-label="Navegação principal">
       <a class="brand" href="index.html" aria-label="DECSI Learning, início"><img class="brand-mark" src="logo-d-lampada.svg" alt="" /><span class="brand-text">DECSI <small>learning</small></span></a>
       <div><p class="nav-label">Menu</p><nav class="nav">
-        <a href="index.html"><span class="nav-icon">⌂</span><span class="label">Início</span></a>
-        <a href="dashboard.html"><span class="nav-icon">▦</span><span class="label">Dashboard</span></a>
-        <a class="active" href="index.html#trilhas" aria-current="page"><span class="nav-icon">◈</span><span class="label">Minhas trilhas</span></a>
-        <a href="forum.html"><span class="nav-icon">▤</span><span class="label">Fórum</span></a>
-        <a href="admin-users.html" hidden style="display:none"><span class="nav-icon">♙</span><span class="label">Usuários</span></a>
+        <a href="index.html"><span class="nav-icon" data-lucide="house"></span><span class="label">Início</span></a>
+        <a href="dashboard.html"><span class="nav-icon" data-lucide="layout-dashboard"></span><span class="label">Dashboard</span></a>
+        <a class="active" href="index.html#trilhas" aria-current="page"><span class="nav-icon" data-lucide="book-open"></span><span class="label">Minhas trilhas</span></a>
+        <a href="forum.html"><span class="nav-icon" data-lucide="message-square"></span><span class="label">Fórum</span></a>
+        <a href="admin-users.html" hidden style="display:none"><span class="nav-icon" data-lucide="users-round"></span><span class="label">Usuários</span></a>
       </nav></div>
-      <div class="sidebar-bottom"><div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="index.html#ajuda">Acessar central de ajuda →</a></div></div>
+      <div class="sidebar-bottom"><div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="index.html#ajuda">Acessar central de ajuda <span data-lucide="arrow-right"></span></a></div></div>
     </aside>
   <main>
     <header class="topbar">
       <span class="crumb">Portal de aprendizagem&nbsp; / &nbsp;AEDS II</span>
         <div class="global-search" role="search" aria-label="Buscar conteúdo">
-          <span class="search-icon" aria-hidden="true">⌕</span>
+          <span class="search-icon" data-lucide="search"></span>
           <label class="visually-hidden" for="content-search">Buscar conteúdo da plataforma</label>
           <input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" />
           <div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div>
         </div>
       <div class="user"><div class="avatar" aria-hidden="true">MC</div><div><div class="user-name">Olá, Marina</div><div class="user-role">Estudante</div></div></div>
     </header>
-    <a class="back" href="index.html"><span aria-hidden="true">←</span> Voltar às trilhas</a>
+    <a class="back" href="index.html"><span data-lucide="arrow-left"></span> Voltar às trilhas</a>
     <article class="card">
       <span class="tag">Trilha de aprendizagem</span>
       <h1>AEDS II</h1>
@@ -67,7 +67,7 @@
       <div class="track-progress" role="group" aria-label="Progresso da trilha AEDS II"><div class="track-progress-head"><strong>Avanço de AEDS II</strong><span id="track-progress-label">Calculando…</span></div><progress id="track-progress-bar" max="100" value="0" aria-label="Percentual de avanço da trilha AEDS II"></progress><p id="track-progress-count">Carregando páginas…</p></div>
       <section aria-labelledby="topics-title"><h2 id="topics-title">Conteúdo da trilha</h2><ol class="topic-list" id="topic-list" aria-live="polite"><li>Carregando tópicos…</li></ol></section>
       <nav class="page-navigation" aria-label="Navegação do plano de ensino">
-        <a class="page-button" href="index.html"><span class="direction" aria-hidden="true">‹</span> Início</a>
+        <a class="page-button" href="index.html"><span class="direction" data-lucide="chevron-left"></span> Início</a>
         <a class="page-button next" id="first-topic-link" href="aeds-ii.html" aria-disabled="true">Aguardando tópicos</a>
       </nav>
     </article>
@@ -91,7 +91,7 @@
         const items = Array.isArray(topics) ? topics : [];
         topicCount.textContent = `${items.length} ${items.length === 1 ? "tópico" : "tópicos"}`;
         if (items.length === 0) {
-          topicList.innerHTML = '<li class="empty" role="status"><span class="empty-icon" aria-hidden="true">✦</span><div><strong>Conteúdo em preparação</strong><p>Os tópicos desta trilha aparecerão aqui quando forem adicionados.</p></div></li>';
+          topicList.innerHTML = '<li class="empty" role="status"><span class="empty-icon" data-lucide="book-open"></span><div><strong>Conteúdo em preparação</strong><p>Os tópicos desta trilha aparecerão aqui quando forem adicionados.</p></div></li>';
           firstTopicLink.textContent = "Nenhum tópico disponível";
           return;
         }
@@ -106,7 +106,7 @@
           return `<li><a href="topico.html?trilha=aeds-ii&id=${encodeURIComponent(topic.id)}">${escapeHtml(topic.title)}</a><div class="topic-progress"><div class="topic-progress-head"><strong>Avanço do tópico</strong><span>${progress.completedPages}/${progress.totalPages} páginas · ${progress.percent}%</span></div><progress max="100" value="${progress.percent}" aria-label="Avanço de ${escapeHtml(topic.title)}"></progress><p>${escapeHtml(topic.summary || "")}</p></div></li>`;
         }).join("");
         firstTopicLink.href = `topico.html?trilha=aeds-ii&id=${encodeURIComponent(items[0].id)}`;
-        firstTopicLink.innerHTML = `${escapeHtml(items[0].title)} <span class="direction" aria-hidden="true">›</span>`;
+        firstTopicLink.innerHTML = `${escapeHtml(items[0].title)} <span class="direction" data-lucide="chevron-right"></span>`;
         firstTopicLink.removeAttribute("aria-disabled");
       })
       .catch(() => {
@@ -120,5 +120,6 @@
   <script src="search.js" defer></script>
   <script src="theme.js" defer></script>
   <script src="forum-notifications.js" defer></script>
+  <script src="lucide-icons.js" defer></script>
 </body>
 </html>

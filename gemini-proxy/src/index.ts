@@ -191,6 +191,7 @@ async function loginUser(request: Request, env: Env, cors: Headers): Promise<Res
 			? await verifyPassword(password, user.password)
 			: (await hashPassword(password), false);
 		if (!user || !passwordMatches) return json({ error: "E-mail ou senha incorretos." }, 401, cors);
+		await env.chat_db.prepare("UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?").bind(user.id).run();
 
 		const now = Math.floor(Date.now() / 1000);
 		const expiresAt = now + 60 * 60 * 24;
@@ -203,6 +204,7 @@ async function loginUser(request: Request, env: Env, cors: Headers): Promise<Res
 		if (/no such table:\s*users/i.test(message)) {
 			return json({ error: "A tabela users ainda não existe no D1." }, 503, cors);
 		}
+		if (/no such column:.*(?:role|last_login_at)/i.test(message)) return json({ error: "A migração de perfis e último login ainda não foi aplicada ao D1." }, 503, cors);
 		console.error("Login storage error", message.slice(0, 300));
 		return json({ error: "Não foi possível validar o login. Tente novamente." }, 500, cors);
 	}
@@ -233,11 +235,11 @@ async function listAdminUsers(request: Request, env: Env, cors: Headers): Promis
 	try {
 		const account = await env.chat_db.prepare("SELECT role FROM users WHERE id = ?").bind(user.id).first<{ role: string }>();
 		if (account?.role !== "admin") return json({ error: "Esta área é exclusiva para administradores." }, 403, cors);
-		const result = await env.chat_db.prepare("SELECT id, first_name, last_name, email, role, created_at FROM users ORDER BY created_at DESC, id DESC").all();
+		const result = await env.chat_db.prepare("SELECT id, first_name, last_name, email, role, created_at, last_login_at FROM users ORDER BY created_at DESC, id DESC").all();
 		return json({ users: result.results || [] }, 200, cors);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : "";
-		if (/no such column:.*(?:role|created_at)/i.test(message)) return json({ error: "A migração de perfis ainda não foi aplicada ao banco." }, 503, cors);
+		if (/no such column:.*(?:role|created_at|last_login_at)/i.test(message)) return json({ error: "A migração de perfis e último login ainda não foi aplicada ao banco." }, 503, cors);
 		console.error("Admin user list error", message.slice(0, 250));
 		return json({ error: "Não foi possível carregar a lista de usuários." }, 500, cors);
 	}

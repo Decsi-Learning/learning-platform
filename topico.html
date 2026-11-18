@@ -65,19 +65,19 @@
     <aside class="sidebar" aria-label="Navegação principal">
       <a class="brand" href="index.html" aria-label="DECSI Learning, início"><img class="brand-mark" src="logo-d-lampada.svg" alt="" /><span class="brand-text">DECSI <small>learning</small></span></a>
       <div><p class="nav-label">Menu</p><nav class="nav">
-        <a href="index.html"><span class="nav-icon">⌂</span><span class="label">Início</span></a>
-        <a href="dashboard.html"><span class="nav-icon">▦</span><span class="label">Dashboard</span></a>
-        <a class="active" href="index.html#trilhas" aria-current="page"><span class="nav-icon">◈</span><span class="label">Minhas trilhas</span></a>
-        <a href="forum.html"><span class="nav-icon">▤</span><span class="label">Fórum</span></a>
-        <a href="admin-users.html" hidden style="display:none"><span class="nav-icon">♙</span><span class="label">Usuários</span></a>
+        <a href="index.html"><span class="nav-icon" data-lucide="house"></span><span class="label">Início</span></a>
+        <a href="dashboard.html"><span class="nav-icon" data-lucide="layout-dashboard"></span><span class="label">Dashboard</span></a>
+        <a class="active" href="index.html#trilhas" aria-current="page"><span class="nav-icon" data-lucide="book-open"></span><span class="label">Minhas trilhas</span></a>
+        <a href="forum.html"><span class="nav-icon" data-lucide="message-square"></span><span class="label">Fórum</span></a>
+        <a href="admin-users.html" hidden style="display:none"><span class="nav-icon" data-lucide="users-round"></span><span class="label">Usuários</span></a>
       </nav></div>
-      <div class="sidebar-bottom"><div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="index.html#ajuda">Acessar central de ajuda →</a></div></div>
+      <div class="sidebar-bottom"><div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="index.html#ajuda">Acessar central de ajuda <span data-lucide="arrow-right"></span></a></div></div>
     </aside>
   <main>
     <header class="topbar">
       <span class="crumb" id="topic-breadcrumb">Portal de aprendizagem&nbsp; / &nbsp;AEDS I</span>
         <div class="global-search" role="search" aria-label="Buscar conteúdo">
-          <span class="search-icon" aria-hidden="true">⌕</span>
+          <span class="search-icon" data-lucide="search"></span>
           <label class="visually-hidden" for="content-search">Buscar conteúdo da plataforma</label>
           <input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" />
           <div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div>
@@ -90,7 +90,7 @@
       <p class="subtitle" id="topic-description">Introdução à lógica, aos algoritmos e às estruturas de dados.</p>
       <div class="rule"></div>
       <p class="count">Texto de estudo</p>
-      <div class="topic-summary-actions" id="topic-summary-actions" hidden><button class="summary-trigger" id="summarize-topic" type="button" disabled><span aria-hidden="true">✦</span> Resumir conteúdo</button></div>
+      <div class="topic-summary-actions" id="topic-summary-actions" hidden><button class="summary-trigger" id="summarize-topic" type="button" disabled><span data-lucide="sparkles"></span> Resumir conteúdo</button></div>
       <section class="topic" aria-labelledby="topic-title">
         <h2 id="topic-title">Conteúdo</h2>
         <div id="lesson-content" class="markdown" aria-live="polite">Carregando conteúdo…</div>
@@ -100,7 +100,7 @@
   </main>
   </div>
   <dialog class="summary-dialog" id="summary-dialog" aria-labelledby="summary-title">
-    <header class="summary-head"><h2 id="summary-title">Resumo do conteúdo</h2><button class="summary-close" id="summary-close" type="button" aria-label="Fechar resumo">×</button></header>
+    <header class="summary-head"><h2 id="summary-title">Resumo do conteúdo</h2><button class="summary-close" id="summary-close" type="button" aria-label="Fechar resumo"><span data-lucide="x"></span></button></header>
     <div class="summary-body">
       <p class="summary-notice"><strong>Use este resumo como apoio.</strong> O conteúdo da aula foi elaborado com cuidado para orientar seu aprendizado. Um resumo pode deixar de fora explicações, nuances e exemplos importantes; depender apenas dele pode comprometer sua aprendizagem. Recomendamos estudar também o material completo.</p>
       <p class="summary-status" id="summary-status" role="status" aria-live="polite"></p>
@@ -201,10 +201,10 @@
           const mediaType = url.match(/\.(pdf|mp4|webm|ogv)(?:$|[?#])/i)?.[1].toLowerCase();
           if (!mediaType) return `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
           if (mediaType === "pdf") {
-            return `<section class="resource"><div class="resource-head"><div><h2>${label}</h2><p>Visualização do PDF</p></div><a class="resource-link" href="${url}" target="_blank" rel="noopener">Abrir em nova aba ↗</a></div><iframe class="pdf-viewer" src="${url}" title="${label}" loading="lazy"></iframe></section>`;
+            return `<section class="resource"><div class="resource-head"><div><h2>${label}</h2><p>Visualização do PDF</p></div><a class="resource-link" href="${url}" target="_blank" rel="noopener">Abrir em nova aba <span data-lucide="arrow-up-right"></span></a></div><iframe class="pdf-viewer" src="${url}" title="${label}" loading="lazy"></iframe></section>`;
           }
           const videoType = mediaType === "mp4" ? "video/mp4" : mediaType === "webm" ? "video/webm" : "video/ogg";
-          return `<section class="resource"><div class="resource-head"><div><h2>${label}</h2><p>Reprodução de vídeo</p></div><a class="resource-link" href="${url}" target="_blank" rel="noopener">Abrir em nova aba ↗</a></div><video class="video-viewer" controls playsinline preload="metadata" aria-label="${label}"><source src="${url}" type="${videoType}">Seu navegador não consegue reproduzir este vídeo.</video></section>`;
+          return `<section class="resource"><div class="resource-head"><div><h2>${label}</h2><p>Reprodução de vídeo</p></div><a class="resource-link" href="${url}" target="_blank" rel="noopener">Abrir em nova aba <span data-lucide="arrow-up-right"></span></a></div><video class="video-viewer" controls playsinline preload="metadata" aria-label="${label}"><source src="${url}" type="${videoType}">Seu navegador não consegue reproduzir este vídeo.</video></section>`;
         });
       return inline.replace(/@@CODE(\d+)@@/g, (_match, index) => codeSpans[Number(index)]);
     }
@@ -381,7 +381,10 @@
       openLink.href = url;
       openLink.target = "_blank";
       openLink.rel = "noopener";
-      openLink.textContent = "Abrir em nova aba ↗";
+      openLink.append(document.createTextNode("Abrir em nova aba "));
+      const openIcon = document.createElement("span");
+      openIcon.dataset.lucide = "arrow-up-right";
+      openLink.append(openIcon);
       header.append(text, openLink);
       section.append(header);
 
@@ -631,7 +634,7 @@
       lessonContainer.innerHTML = `<p class="load-error">${escapeHtml(message)}</p>`;
       const planHref = track?.plan || `trilha.html?id=${encodeURIComponent(trackId || "")}`;
       const planName = `Plano de ensino de ${track?.title || "trilha"}`;
-      document.getElementById("topic-navigation").innerHTML = `<a class="page-button" href="${planHref}"><span class="direction" aria-hidden="true">‹</span> ${planName}</a>`;
+      document.getElementById("topic-navigation").innerHTML = `<a class="page-button" href="${planHref}"><span class="direction" data-lucide="chevron-left"></span> ${planName}</a>`;
     }
 
     if (!trackId) showError("Trilha inválida. Volte ao início e escolha uma trilha.");
@@ -682,28 +685,28 @@
         const navigation = document.getElementById("topic-navigation");
         if (pageIndex > 0) {
           const previousPage = pages[pageIndex - 1];
-          navigation.innerHTML = `<a class="page-button" href="${topicUrl(topic, previousPage)}"><span class="direction" aria-hidden="true">‹</span> ${escapeHtml(previousPage.title || topic.title)}</a>`;
+          navigation.innerHTML = `<a class="page-button" href="${topicUrl(topic, previousPage)}"><span class="direction" data-lucide="chevron-left"></span> ${escapeHtml(previousPage.title || topic.title)}</a>`;
         } else if (topicIndex > 0) {
           const previousTopic = topics[topicIndex - 1];
           const previousPages = Array.isArray(previousTopic.pages) && previousTopic.pages.length ? previousTopic.pages : [previousTopic];
           const previousPage = previousPages[previousPages.length - 1];
-          navigation.innerHTML = `<a class="page-button" href="${topicUrl(previousTopic, previousPage)}"><span class="direction" aria-hidden="true">‹</span> ${escapeHtml(previousPage.title || previousTopic.title)}</a>`;
+          navigation.innerHTML = `<a class="page-button" href="${topicUrl(previousTopic, previousPage)}"><span class="direction" data-lucide="chevron-left"></span> ${escapeHtml(previousPage.title || previousTopic.title)}</a>`;
         } else {
           const planHref = track.plan || `trilha.html?id=${encodeURIComponent(trackId)}`;
           const planLabel = "Plano de ensino";
-          navigation.innerHTML = `<a class="page-button" href="${planHref}"><span class="direction" aria-hidden="true">‹</span> ${planLabel}</a>`;
+          navigation.innerHTML = `<a class="page-button" href="${planHref}"><span class="direction" data-lucide="chevron-left"></span> ${planLabel}</a>`;
         }
 
         if (pageIndex < pages.length - 1) {
           const nextPage = pages[pageIndex + 1];
-          navigation.insertAdjacentHTML("beforeend", `<a class="page-button next" href="${topicUrl(topic, nextPage)}">${escapeHtml(nextPage.title || topic.title)} <span class="direction" aria-hidden="true">›</span></a>`);
+          navigation.insertAdjacentHTML("beforeend", `<a class="page-button next" href="${topicUrl(topic, nextPage)}">${escapeHtml(nextPage.title || topic.title)} <span class="direction" data-lucide="chevron-right"></span></a>`);
         } else {
           const completionKey = `decsi-learning:${trackId}:${topic.id}:concluido`;
           const nextTopic = topics[topicIndex + 1];
           const finishButton = document.createElement("button");
           finishButton.className = "page-button finish";
           finishButton.type = "button";
-          finishButton.innerHTML = 'Finalizar tópico <span class="direction" aria-hidden="true">✓</span>';
+          finishButton.innerHTML = 'Finalizar tópico <span class="direction" data-lucide="check"></span>';
           finishButton.addEventListener("click", async () => {
             finishButton.disabled = true;
             finishButton.innerHTML = 'Salvando progresso…';
@@ -712,12 +715,12 @@
               const nextPages = Array.isArray(nextTopic.pages) && nextTopic.pages.length ? nextTopic.pages : [nextTopic];
               window.location.href = topicUrl(nextTopic, nextPages[0]);
             } else {
-              finishButton.innerHTML = 'Tópico finalizado <span class="direction" aria-hidden="true">✓</span>';
+              finishButton.innerHTML = 'Tópico finalizado <span class="direction" data-lucide="check"></span>';
               finishButton.dataset.topicFinished = "true";
             }
           });
           if (localStorage.getItem(completionKey) === "true" && !nextTopic) {
-            finishButton.innerHTML = 'Tópico finalizado <span class="direction" aria-hidden="true">✓</span>';
+            finishButton.innerHTML = 'Tópico finalizado <span class="direction" data-lucide="check"></span>';
             finishButton.dataset.topicFinished = "true";
             finishButton.disabled = true;
           }
@@ -755,5 +758,6 @@
   <script src="search.js" defer></script>
   <script src="theme.js" defer></script>
   <script src="forum-notifications.js" defer></script>
+  <script src="lucide-icons.js" defer></script>
 </body>
 </html>

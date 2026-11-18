@@ -39,19 +39,19 @@
     <aside class="sidebar" aria-label="Navegação principal">
       <a class="brand" href="index.html" aria-label="DECSI Learning, início"><img class="brand-mark" src="logo-d-lampada.svg" alt="" /><span class="brand-text">DECSI <small>learning</small></span></a>
       <div><p class="nav-label">Menu</p><nav class="nav">
-        <a href="index.html"><span class="nav-icon">⌂</span><span class="label">Início</span></a>
-        <a href="dashboard.html"><span class="nav-icon">▦</span><span class="label">Dashboard</span></a>
-        <a class="active" href="index.html#trilhas" aria-current="page"><span class="nav-icon">◈</span><span class="label">Minhas trilhas</span></a>
-        <a href="forum.html"><span class="nav-icon">▤</span><span class="label">Fórum</span></a>
-        <a href="admin-users.html" hidden style="display:none"><span class="nav-icon">♙</span><span class="label">Usuários</span></a>
+        <a href="index.html"><span class="nav-icon" data-lucide="house"></span><span class="label">Início</span></a>
+        <a href="dashboard.html"><span class="nav-icon" data-lucide="layout-dashboard"></span><span class="label">Dashboard</span></a>
+        <a class="active" href="index.html#trilhas" aria-current="page"><span class="nav-icon" data-lucide="book-open"></span><span class="label">Minhas trilhas</span></a>
+        <a href="forum.html"><span class="nav-icon" data-lucide="message-square"></span><span class="label">Fórum</span></a>
+        <a href="admin-users.html" hidden style="display:none"><span class="nav-icon" data-lucide="users-round"></span><span class="label">Usuários</span></a>
       </nav></div>
-      <div class="sidebar-bottom"><div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="index.html#ajuda">Acessar central de ajuda →</a></div></div>
+      <div class="sidebar-bottom"><div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="index.html#ajuda">Acessar central de ajuda <span data-lucide="arrow-right"></span></a></div></div>
     </aside>
   <main>
     <header class="topbar">
       <span class="crumb">Portal de aprendizagem&nbsp; / &nbsp;AEDS I&nbsp; / &nbsp;Plano de ensino</span>
         <div class="global-search" role="search" aria-label="Buscar conteúdo">
-          <span class="search-icon" aria-hidden="true">⌕</span>
+          <span class="search-icon" data-lucide="search"></span>
           <label class="visually-hidden" for="content-search">Buscar conteúdo da plataforma</label>
           <input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" />
           <div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div>
@@ -78,7 +78,7 @@
         </div>
       </section>
       <nav class="page-navigation" aria-label="Navegação do plano de ensino">
-        <a class="page-button" href="index.html"><span class="direction" aria-hidden="true">‹</span> Início</a>
+        <a class="page-button" href="index.html"><span class="direction" data-lucide="chevron-left"></span> Início</a>
         <a class="page-button next" id="first-topic-link" href="aeds-i.html" aria-disabled="true">Carregando tópicos…</a>
       </nav>
     </article>
@@ -115,7 +115,7 @@
         }).join("");
         document.querySelector(".count").textContent = `Plano da trilha · ${topics.length} ${topics.length === 1 ? "tópico disponível" : "tópicos disponíveis"}`;
         firstTopicLink.href = `topico.html?trilha=aeds-i&id=${encodeURIComponent(topics[0].id)}`;
-        firstTopicLink.innerHTML = `${escapeHtml(topics[0].title)} <span class="direction" aria-hidden="true">›</span>`;
+        firstTopicLink.innerHTML = `${escapeHtml(topics[0].title)} <span class="direction" data-lucide="chevron-right"></span>`;
         firstTopicLink.removeAttribute("aria-disabled");
       })
       .catch(() => {
@@ -128,5 +128,6 @@
   <script src="search.js" defer></script>
   <script src="theme.js" defer></script>
   <script src="forum-notifications.js" defer></script>
+  <script src="lucide-icons.js" defer></script>
 </body>
 </html>
