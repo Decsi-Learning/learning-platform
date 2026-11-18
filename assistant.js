@@ -83,9 +83,12 @@
     status.textContent = "O assistente está digitando…";
 
     try {
+      const sessionToken = sessionStorage.getItem("decsi.sessionToken");
+      const requestHeaders = new Headers({ "Content-Type": "application/json" });
+      if (sessionToken) requestHeaders.set("Authorization", `Bearer ${sessionToken}`);
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: requestHeaders,
         body: JSON.stringify({ question, history: getConversationHistory() })
       });
       const result = await response.json();

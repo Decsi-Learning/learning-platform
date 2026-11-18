@@ -134,6 +134,9 @@
       return;
     }
 
+    resumeAction.hidden = false;
+    resumeAction.style.display = "";
+
     const byTopic = new Map(progressState.topics.map((record) => [`${record.trackId}:${record.topicId}`, record]));
     const inProgress = progressState.topics
       .filter((record) => record.status === "in_progress")

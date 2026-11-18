@@ -98,6 +98,8 @@
       updateHeader(null);
       return;
     }
+    const savedProfile = getProfile();
+    if (savedProfile.email) updateHeader(savedProfile);
     try {
       const response = await fetch(`${API_ROOT}/me`, {
         headers: { Authorization: `Bearer ${token}` },
