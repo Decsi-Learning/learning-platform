@@ -69,3 +69,10 @@ Clique em **Executar**. Repare que o programa lê o código do tipo primeiro e s
 ## Vídeo-resumo do tópico
 
 [Resumo em vídeo: Arquivo misto, BLOB e comparação](videos/arquivos_mistos_e_blobs.mp4)
+
+## Exercícios de fixação desta página
+
+1. Como o programa distingue um registro de aluno de um registro de disciplina em um arquivo misto?
+2. Por que um BLOB costuma ficar fora do registro?
+3. Em que casos o registro variável é melhor que o fixo?
+4. Por que reaproveitar os buracos é mais difícil com registros variáveis?

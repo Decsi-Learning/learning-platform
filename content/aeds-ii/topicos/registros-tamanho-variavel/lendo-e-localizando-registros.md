@@ -82,3 +82,10 @@ Agora os registros começam com 2 bytes de prefixo, como na demonstração. O pr
 ## Vídeo-resumo do tópico
 
 [Resumo em vídeo: Lendo e localizando registros](videos/lendo_registros.mp4)
+
+## Exercícios de fixação desta página
+
+1. Em um arquivo com prefixo de 2 bytes, o primeiro registro tem 30 bytes de dados. Em que byte começa o segundo registro?
+2. Por que ler com o prefixo é mais barato do que ler byte por byte até o delimitador?
+3. Como um índice de byte offsets permite ir direto ao registro n?
+4. O que fazer quando o registro atualizado fica maior que o espaço do antigo?
