@@ -35,7 +35,13 @@
         <div class="global-search" role="search" aria-label="Buscar conteúdo"><span class="search-icon" data-lucide="search"></span><label class="visually-hidden" for="content-search">Buscar conteúdo</label><input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" /><div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div></div>
         <div class="header-actions"><div class="notification-host" data-notification-host></div><div class="user"><div class="avatar" aria-hidden="true"><span data-lucide="user-round"></span></div><div><div class="user-name">Olá, visitante</div><div class="user-role">Visitante</div></div></div></div>
       </header>
-      <section class="forum-intro"><div><span class="tag">Comunidade de aprendizagem</span><h1>Fórum</h1><p class="subtitle">Pergunte, compartilhe ideias e aprenda em conjunto.</p></div><button class="button" type="button" id="new-post-button">Criar publicação <span data-lucide="plus"></span></button></section>
+      <section class="forum-intro">
+        <div class="forum-intro-copy"><span class="tag">Comunidade de aprendizagem</span><h1>Fórum</h1><p class="subtitle">Pergunte, compartilhe ideias e aprenda em conjunto.</p><button class="button" type="button" id="new-post-button">Criar publicação <span data-lucide="plus"></span></button></div>
+        <div class="forum-intro-art" aria-hidden="true">
+          <img class="forum-intro-scene forum-intro-scene-day" src="assets/illustrations/forum-day.webp" alt="" />
+          <img class="forum-intro-scene forum-intro-scene-night" src="assets/illustrations/forum-night.webp" alt="" />
+        </div>
+      </section>
       <section class="forum-controls" aria-label="Filtros do fórum"><label>Trilha<select id="track-filter"><option value="">Todas as trilhas</option></select></label><label>Conteúdo<select id="topic-filter"><option value="">Todos os conteúdos</option></select></label><label>Ordenar<select id="sort-filter"><option value="recent">Mais recentes</option><option value="active">Mais comentadas</option></select></label></section>
       <p class="forum-status" id="forum-status" role="status" aria-live="polite">Carregando publicações…</p>
       <section class="forum-feed" id="forum-feed" aria-label="Publicações do fórum"></section>
