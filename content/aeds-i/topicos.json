@@ -62,12 +62,43 @@
     }
   ]
 },
+  {
+  "id": "analise-de-complexidade",
+  "title": "Análise de Complexidade",
+  "summary": "Estudo da eficiência dos algoritmos por meio da análise de tempo, espaço e crescimento assintótico.",
+  "pages": [
     {
-      "id": "analise-complexidade",
-      "title": "Análise de complexidade de algoritmos",
-      "summary": "Análise assintótica de funções, definições e propriedades; melhor caso, pior caso e caso médio.",
-      "file": null
+      "id": "fundamentos-analise-complexidade",
+      "title": "Fundamentos da Análise de Complexidade",
+      "summary": "Conceitos fundamentais e importância da análise de algoritmos.",
+      "file": "analise-de-complexidade/fundamentos-analise-complexidade.md"
     },
+    {
+      "id": "medidas-tempo-espaco",
+      "title": "Medidas de Tempo e Espaço",
+      "summary": "Análise do consumo de tempo e memória dos algoritmos.",
+      "file": "analise-de-complexidade/medidas-tempo-espaco.md"
+    },
+    {
+      "id": "analise-assintotica",
+      "title": "Análise Assintótica",
+      "summary": "Notações O, Ω e Θ e suas aplicações.",
+      "file": "analise-de-complexidade/analise-assintotica.md"
+    },
+    {
+      "id": "hierarquia-funcoes-classes",
+      "title": "Hierarquia de Funções e Classes de Problemas",
+      "summary": "Comparação do crescimento de funções e introdução às classes de problemas.",
+      "file": "analise-de-complexidade/hierarquia-funcoes-classes.md"
+    },
+    {
+      "id": "exercicios-avaliativos-complexidade",
+      "title": "Exercícios Avaliativos",
+      "summary": "Exercícios para praticar os conceitos de análise de complexidade.",
+      "file": "analise-de-complexidade/exercicios-avaliativos-complexidade.md"
+    }
+  ]
+  },
     {
       "id": "tipos-abstratos-dados",
       "title": "Tipos Abstratos de Dados",
