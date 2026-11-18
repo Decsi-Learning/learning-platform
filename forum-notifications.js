@@ -5,17 +5,21 @@
   const user = header?.querySelector(".user");
   if (!header || !user) return;
   if (!host) {
-    const slot = document.createElement("div"); slot.className = "notification-host"; slot.dataset.notificationHost = ""; user.before(slot);
+    const slot = document.createElement("div"); slot.className = "notification-host"; slot.dataset.notificationHost = ""; user.after(slot);
   }
   const mount = document.querySelector("[data-notification-host]");
+  user.after(mount);
   if (!header.querySelector(".header-actions")) {
-    const actions = document.createElement("div"); actions.className = "header-actions"; mount.before(actions); actions.append(mount, user);
+    const actions = document.createElement("div"); actions.className = "header-actions"; mount.before(actions); actions.append(user, mount);
   }
+  const actions = header.querySelector(".header-actions");
+  const accountMenu = header.querySelector(".header-menu");
+  if (actions && accountMenu && accountMenu.parentElement !== actions) actions.append(accountMenu);
   const token = sessionStorage.getItem("decsi.sessionToken");
   if (!token) return;
 
   const button = document.createElement("button");
-  button.type = "button"; button.className = "notification-button"; button.setAttribute("aria-label", "Notificações"); button.setAttribute("aria-expanded", "false"); button.innerHTML = '<span aria-hidden="true">🔔</span><span class="notification-count" hidden></span>';
+  button.type = "button"; button.className = "notification-button"; button.setAttribute("aria-label", "Notificações"); button.setAttribute("aria-expanded", "false"); button.innerHTML = '<span data-lucide="bell"></span><span class="notification-count" hidden></span>';
   const panel = document.createElement("section"); panel.className = "notification-panel"; panel.hidden = true; panel.setAttribute("aria-label", "Notificações");
   const panelHead = document.createElement("div"); panelHead.className = "notification-panel-head";
   const title = document.createElement("strong"); title.textContent = "Notificações";

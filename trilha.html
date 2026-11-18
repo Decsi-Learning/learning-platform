@@ -26,13 +26,13 @@
   <div class="layout">
     <aside class="sidebar" aria-label="Navegação principal">
       <a class="brand" href="index.html" aria-label="DECSI Learning, início"><img class="brand-mark" src="logo-d-lampada.svg" alt="" /><span class="brand-text">DECSI <small>learning</small></span></a>
-      <div><p class="nav-label">Menu</p><nav class="nav"><a href="index.html"><span class="icon">⌂</span><span class="label">Início</span></a><a href="dashboard.html"><span class="icon">▦</span><span class="label">Dashboard</span></a><a class="active" href="index.html#trilhas"><span class="icon">◈</span><span class="label">Minhas trilhas</span></a><a href="forum.html"><span class="icon">▤</span><span class="label">Fórum</span></a><a href="admin-users.html" hidden style="display:none"><span class="icon">♙</span><span class="label">Usuários</span></a></nav></div>
-      <div class="sidebar-bottom"><div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="index.html#ajuda">Acessar central de ajuda →</a></div></div>
+      <div><p class="nav-label">Menu</p><nav class="nav"><a href="index.html"><span class="icon" data-lucide="house"></span><span class="label">Início</span></a><a href="dashboard.html"><span class="icon" data-lucide="layout-dashboard"></span><span class="label">Dashboard</span></a><a class="active" href="index.html#trilhas"><span class="icon" data-lucide="book-open"></span><span class="label">Minhas trilhas</span></a><a href="forum.html"><span class="icon" data-lucide="message-square"></span><span class="label">Fórum</span></a><a href="admin-users.html" hidden style="display:none"><span class="icon" data-lucide="users-round"></span><span class="label">Usuários</span></a></nav></div>
+      <div class="sidebar-bottom"><div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="index.html#ajuda">Acessar central de ajuda <span data-lucide="arrow-right"></span></a></div></div>
     </aside>
     <main>
       <header class="topbar">
         <span class="crumb" id="track-breadcrumb">Portal de aprendizagem / Trilha</span>
-        <div class="global-search" role="search" aria-label="Buscar conteúdo"><span class="search-icon" aria-hidden="true">⌕</span><label class="visually-hidden" for="content-search">Buscar conteúdo da plataforma</label><input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" /><div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div></div>
+        <div class="global-search" role="search" aria-label="Buscar conteúdo"><span class="search-icon" data-lucide="search"></span><label class="visually-hidden" for="content-search">Buscar conteúdo da plataforma</label><input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" /><div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div></div>
         <div class="user"><div class="avatar" aria-hidden="true">MC</div><div><div class="user-name">Olá, Marina</div><div class="user-role">Estudante</div></div></div>
       </header>
       <article class="card">
@@ -89,5 +89,6 @@
       }).catch((error) => list.replaceChildren(Object.assign(document.createElement("li"), {className:"empty-message", textContent:error.message})));
     })();
   </script>
+  <script src="lucide-icons.js" defer></script>
 </body>
 </html>

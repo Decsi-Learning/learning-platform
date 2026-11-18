@@ -126,16 +126,16 @@
       <div>
         <p class="nav-label">Menu</p>
         <nav class="nav">
-          <a class="active" href="#inicio"><span class="icon">⌂</span><span class="label">Início</span></a>
-          <a href="dashboard.html"><span class="icon">▦</span><span class="label">Dashboard</span></a>
-          <a href="#trilhas"><span class="icon">◈</span><span class="label">Minhas trilhas</span></a>
-          <a href="forum.html"><span class="icon">▤</span><span class="label">Fórum</span></a>
-          <a href="admin-users.html" hidden style="display:none"><span class="icon">♙</span><span class="label">Usuários</span></a>
-          <a href="cadastro.html" hidden><span class="icon">＋</span><span class="label">Criar conta</span></a>
+          <a class="active" href="#inicio"><span class="icon" data-lucide="house"></span><span class="label">Início</span></a>
+          <a href="dashboard.html"><span class="icon" data-lucide="layout-dashboard"></span><span class="label">Dashboard</span></a>
+          <a href="#trilhas"><span class="icon" data-lucide="book-open"></span><span class="label">Minhas trilhas</span></a>
+          <a href="forum.html"><span class="icon" data-lucide="message-square"></span><span class="label">Fórum</span></a>
+          <a href="admin-users.html" hidden style="display:none"><span class="icon" data-lucide="users-round"></span><span class="label">Usuários</span></a>
+          <a href="cadastro.html" hidden><span class="icon" data-lucide="user-round-plus"></span><span class="label">Criar conta</span></a>
         </nav>
       </div>
       <div class="sidebar-bottom">
-        <div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="#ajuda">Acessar central de ajuda →</a></div>
+        <div class="help-card"><strong>Precisa de ajuda?</strong><p>Estamos aqui para apoiar sua jornada de aprendizagem.</p><a href="#ajuda">Acessar central de ajuda <span data-lucide="arrow-right"></span></a></div>
       </div>
     </aside>
 
@@ -143,7 +143,7 @@
       <header class="topbar">
         <span class="crumb">Portal de aprendizagem&nbsp; / &nbsp;Início</span>
         <div class="global-search" role="search" aria-label="Buscar conteúdo">
-          <span class="search-icon" aria-hidden="true">⌕</span>
+          <span class="search-icon" data-lucide="search"></span>
           <label class="visually-hidden" for="content-search">Buscar conteúdo da plataforma</label>
           <input id="content-search" data-content-search type="search" placeholder="Buscar conteúdo…" autocomplete="off" aria-autocomplete="list" aria-controls="content-search-results" aria-expanded="false" />
           <div class="search-results" id="content-search-results" data-search-results role="listbox" aria-label="Resultados da busca" hidden></div>
@@ -151,8 +151,11 @@
         <div class="user"><div class="avatar" aria-hidden="true">MC</div><div><div class="user-name">Olá, Marina</div><div class="user-role">Estudante</div></div></div>
       </header>
       <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-content"><span class="eyebrow">Sua jornada continua</span><h2 id="hero-title">Pequenos passos levam a grandes conquistas.</h2><p id="hero-description">Retome de onde parou e siga avançando no seu ritmo. Seu próximo aprendizado está a um clique.</p><a class="button" id="resume-study" href="#trilhas">Continuar estudando <span aria-hidden="true">→</span></a></div>
-        <div class="hero-art" aria-hidden="true"><div class="learning-art"><span class="leaf"></span><div class="book"></div><span class="spark">✦</span></div></div>
+        <div class="hero-content"><span class="eyebrow">Sua jornada continua</span><h2 id="hero-title">Pequenos passos levam a grandes conquistas.</h2><p id="hero-description">Retome de onde parou e siga avançando no seu ritmo. Seu próximo aprendizado está a um clique.</p><a class="button" id="resume-study" href="#trilhas">Continuar estudando <span data-lucide="arrow-right"></span></a></div>
+        <div class="hero-art" aria-hidden="true">
+          <img class="study-scene study-scene-day" src="assets/illustrations/study-day.png" alt="" />
+          <img class="study-scene study-scene-night" src="assets/illustrations/study-night.png" alt="" />
+        </div>
       </section>
 
       <section id="trilhas" aria-labelledby="tracks-title">
@@ -170,5 +173,6 @@
   <script src="search.js" defer></script>
   <script src="theme.js" defer></script>
   <script src="forum-notifications.js" defer></script>
+  <script src="lucide-icons.js" defer></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
       <section class="assistant-panel" id="site-assistant-panel" aria-labelledby="site-assistant-title" hidden>
         <header class="assistant-head">
           <div><h2 id="site-assistant-title">Assistente de estudos</h2><p>Uso até 8 trocas desta página como contexto; a Gemini não as armazena.</p></div>
-          <button class="assistant-close" id="site-assistant-close" type="button" aria-label="Fechar assistente">×</button>
+          <button class="assistant-close" id="site-assistant-close" type="button" aria-label="Fechar assistente"><span data-lucide="x"></span></button>
         </header>
         <div class="assistant-transcript" id="site-assistant-transcript" aria-live="polite"></div>
         <p class="assistant-status" id="site-assistant-status" role="status" aria-live="polite">O assistente está pronto para responder.</p>
@@ -16,7 +16,7 @@
         </form>
       </section>
       <button class="assistant-launcher" id="site-assistant-launcher" type="button" aria-label="Abrir assistente de estudos" aria-expanded="false" aria-controls="site-assistant-panel">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.3-3.3A7.5 7.5 0 1 1 20 11.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 11.5h7M8.5 14.5h4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span class="assistant-icon" data-lucide="sparkles"></span>
       </button>
     </div>
   `);

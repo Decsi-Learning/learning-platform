@@ -50,7 +50,9 @@
         : "Trilha sem conteúdo cadastrado";
     body.append(textElement("span", "track-count", count));
     const open = textElement("span", "track-open", "Explorar trilha");
-    open.append(textElement("span", "arrow", "↗"));
+    const openIcon = textElement("span", "arrow");
+    openIcon.dataset.lucide = "arrow-up-right";
+    open.append(openIcon);
     body.append(open);
     card.append(body);
     return card;
@@ -113,7 +115,9 @@
       link.className = "dashboard-card-link";
       link.href = planUrl(track);
       link.append(document.createTextNode("Abrir trilha "));
-      link.append(textElement("span", "", "→"));
+      const arrow = textElement("span", "dashboard-link-icon");
+      arrow.dataset.lucide = "arrow-right";
+      link.append(arrow);
       card.append(link);
       dashboard.append(card);
     }

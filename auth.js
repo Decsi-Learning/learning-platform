@@ -68,23 +68,27 @@
     if (avatar) avatar.textContent = email ? (firstName ? `${firstName[0]}${lastName[0] || ""}` : email[0]).toUpperCase() : "?";
 
     user.querySelector(".auth-action")?.remove();
+    document.querySelector(".header-menu-panel .auth-action")?.remove();
+    const accountMenu = document.querySelector(".header-menu-panel");
     if (email) {
       const logout = document.createElement("button");
       logout.type = "button";
       logout.className = "auth-action";
+      logout.setAttribute("role", "menuitem");
       logout.textContent = "Sair";
       logout.addEventListener("click", () => {
         clearSession();
         clearProgressCache();
         window.location.reload();
       });
-      user.append(logout);
+      (accountMenu || user).append(logout);
     } else {
       const login = document.createElement("a");
       login.className = "auth-action";
+      login.setAttribute("role", "menuitem");
       login.href = "login.html";
       login.textContent = "Entrar";
-      user.append(login);
+      (accountMenu || user).append(login);
     }
   }
 

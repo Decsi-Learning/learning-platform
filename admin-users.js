@@ -25,6 +25,12 @@
     return Number.isNaN(date.getTime()) ? "—" : new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(date);
   }
 
+  function formattedDateTime(value) {
+    if (!value) return "Sem registro";
+    const date = new Date(`${value}${value.endsWith("Z") ? "" : "Z"}`);
+    return Number.isNaN(date.getTime()) ? "—" : new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(date);
+  }
+
   function cell(text) {
     const element = document.createElement("td");
     element.textContent = text || "—";
@@ -42,7 +48,7 @@
       badge.className = `profile-badge${user.role === "admin" ? " is-admin" : ""}`;
       badge.textContent = user.role === "admin" ? "Administrador" : "Estudante";
       profile.append(badge);
-      row.append(profile, cell(formattedDate(user.created_at)));
+      row.append(profile, cell(formattedDate(user.created_at)), cell(formattedDateTime(user.last_login_at)));
       const actions = document.createElement("td");
       actions.className = "user-actions-cell";
       const edit = document.createElement("button");

@@ -94,7 +94,9 @@
     head.append(authorLine, date);
     const body = document.createElement("p"); body.className = "content-text"; body.textContent = reply.body;
     const actions = document.createElement("div"); actions.className = "content-actions";
-    const helpful = button(`♡ Útil · ${reply.helpful_count || 0}`, `helpful-button${reply.helpful_by_me ? " is-helpful" : ""}`, "helpful", "Marcar resposta como útil");
+    const helpful = button(`Útil · ${reply.helpful_count || 0}`, `helpful-button${reply.helpful_by_me ? " is-helpful" : ""}`, "helpful", "Marcar resposta como útil");
+    const heart = document.createElement("span"); heart.dataset.lucide = "heart"; heart.className = "helpful-icon";
+    helpful.prepend(heart);
     helpful.disabled = !token(); actions.append(helpful);
     appendMenuActions(actions, "reply", reply, Boolean(reply.is_mine));
     article.append(head, body, actions);
@@ -147,7 +149,7 @@
           ? "O serviço do fórum ainda precisa ser atualizado. Aplique a migração do banco e publique o Worker para carregar as publicações."
           : error.message;
       status.textContent = message;
-      feed.innerHTML = `<div class="forum-empty"><span aria-hidden="true">▤</span><strong>Não foi possível carregar o fórum</strong><p>${escapeText(message)}</p></div>`;
+      feed.innerHTML = `<div class="forum-empty"><span data-lucide="circle-alert"></span><strong>Não foi possível carregar o fórum</strong><p>${escapeText(message)}</p></div>`;
     }
   }
 
