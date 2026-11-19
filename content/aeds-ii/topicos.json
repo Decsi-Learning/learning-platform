@@ -34,7 +34,7 @@
       "id": "registros-tamanho-fixo",
       "title": "Registros de tamanho fixo",
       "summary": "Representação e armazenamento de registros com tamanho constante.",
-      "file": null
+      "file": "registros_tamanho_fixo.md"
     },
     {
       "id": "registros-tamanho-variavel",
