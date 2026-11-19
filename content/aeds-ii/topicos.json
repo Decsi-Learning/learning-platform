@@ -16,6 +16,7 @@
       "id": "arquivos",
       "title": "Arquivos",
       "summary": "Conceitos e estruturas de arquivos para armazenamento e processamento de dados.",
+      "requiresQuizAnswers": true,
       "file": "topico2_arquivos.md"
     },
     {

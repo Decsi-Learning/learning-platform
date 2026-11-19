@@ -83,6 +83,7 @@ Funciona como uma **Lista Encadeada**: os blocos podem ficar espalhados em qualq
 Cria-se um **Bloco de Índice** especial que funciona como um sumário (um vetor de ponteiros), guardando os endereços de todos os blocos de dados daquele arquivo.
 * **Vantagem:** Permite acesso direto rápido sem sofrer com fragmentação externa. É a base de como os Sistemas de Arquivos modernos e as **Árvores B** funcionam!
 
+![Alocação Encadeada](img-Top1-3/alocacaoindexada.png)
 ---
 
 ## 4. Cabeçalho de Arquivo (*File Header*)
