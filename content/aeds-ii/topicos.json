@@ -126,7 +126,7 @@
       "id": "arvore-trie",
       "title": "Árvore Trie",
       "summary": "Árvore de prefixos: inserção, busca, remoção, complexidade e variações.",
-      "file": "arvore-trie.md"
+      "file": "arvore-trie/arvore-trie.md"
     }
   ]
 }
