@@ -226,7 +226,271 @@
     return renderStepper("carrossel", title, `<p class="stepper-title">${escapeHtml(title)}</p>`, panels);
   }
 
-  const BLOCK_RENDERERS = { video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo };
+  // ---- Bloco "roteamento": Trie binária de rotas; o aluno escolhe o endereço e acompanha o maior prefixo comum ----
+  // { "title": "...", "bits": 4, "endereco": "1011", "rotas": [{ "prefixo": "", "saida": "A" }, { "prefixo": "1", "saida": "B" }] }
+  const BINARIO = /^[01]*$/;
+
+  function renderRoteamento(source) {
+    const data = parseJson(source);
+    if (!data || !Array.isArray(data.rotas) || data.rotas.length < 1) return blockError("Este bloco de roteamento tem um erro de formato.");
+    const bits = Number.isInteger(data.bits) && data.bits >= 1 && data.bits <= 6 ? data.bits : 4;
+    const rotas = new Map();
+    for (const rota of data.rotas) {
+      const prefixo = rota && typeof rota.prefixo === "string" ? rota.prefixo : null;
+      if (prefixo === null || !BINARIO.test(prefixo) || prefixo.length > bits || !rota.saida) {
+        return blockError("Cada rota precisa de um prefixo com 0 e 1 (até " + bits + " bits) e de uma saída.");
+      }
+      rotas.set(prefixo, String(rota.saida));
+    }
+    const construir = data.modo === "construcao";   // "construcao": mostra a Trie sendo montada, rota por rota
+    const endereco = typeof data.endereco === "string" && BINARIO.test(data.endereco) && data.endereco.length === bits ? data.endereco : "1".repeat(bits);
+
+    // nós da Trie: todos os prefixos das rotas; "fantasmas": filhos que não existem (aparecem quando a busca para)
+    const nos = new Set([""]);
+    for (const prefixo of rotas.keys()) for (let k = 1; k <= prefixo.length; k++) nos.add(prefixo.slice(0, k));
+    const fantasmas = [];
+    if (!construir) for (const p of nos) if (p.length < bits) for (const b of "01") if (!nos.has(p + b)) fantasmas.push(p + b);
+
+    const W = 34 * 2 ** Math.min(bits, 4);   // cada nó do último nível ganha uma faixa de 34 unidades
+    const H = 26 + bits * 62 + 36;
+    const x = (p) => (W * ((p ? parseInt(p, 2) : 0) + 0.5)) / 2 ** p.length;
+    const y = (p) => 26 + p.length * 62;
+    const r = (p) => (p.length >= 4 ? 13 : 16);
+    const aresta = (p, cls) => {
+      const pai = p.slice(0, -1);
+      const mx = (x(pai) + x(p)) / 2, my = (y(pai) + y(p)) / 2;
+      const lado = p.endsWith("0") ? -9 : 9;
+      return '<g class="rt-edge' + cls + '" data-p="' + p + '"><line x1="' + x(pai) + '" y1="' + y(pai) + '" x2="' + x(p) + '" y2="' + y(p) + '"></line>' +
+        '<text class="rt-bitlbl" x="' + (mx + lado) + '" y="' + (my + 4) + '">' + p.slice(-1) + "</text></g>";
+    };
+    const ordenados = Array.from(nos).sort((a, b) => a.length - b.length || a.localeCompare(b));
+    let svg = "";
+    for (const p of ordenados) if (p) svg += aresta(p, construir ? " rt-hidden" : "");
+    for (const p of fantasmas) svg += aresta(p, " rt-ghost");
+    for (const p of ordenados) {
+      const saida = rotas.get(p);
+      const rotulo = saida !== undefined && !construir ? escapeHtml(saida) : p ? "" : "raiz";
+      const cls = construir ? (p ? " rt-hidden" : "") : saida !== undefined ? " rt-has" : "";
+      svg += '<g class="rt-node' + cls + '" data-p="' + p + '"' + (saida !== undefined ? ' data-s="' + escapeHtml(saida) + '"' : "") + '><circle cx="' + x(p) + '" cy="' + y(p) + '" r="' + r(p) + '"></circle>' +
+        '<text class="rt-name" x="' + x(p) + '" y="' + (y(p) + 5) + '">' + rotulo + "</text>" +
+        (p ? '<text class="rt-pref" x="' + x(p) + '" y="' + (y(p) + r(p) + 13) + '">' + p + "</text>" : "") + "</g>";
+    }
+    for (const p of fantasmas) {
+      svg += '<g class="rt-node rt-ghost" data-p="' + p + '"><circle cx="' + x(p) + '" cy="' + y(p) + '" r="' + r(p) + '"></circle>' +
+        '<text class="rt-name" x="' + x(p) + '" y="' + (y(p) + 3) + '">NULL</text></g>';
+    }
+
+    const entradas = Array.from(rotas.entries());
+    if (!construir) entradas.sort((a, b) => a[0].length - b[0].length || a[0].localeCompare(b[0]));
+    const linhas = entradas
+      .map(([p, s]) => '<tr data-p="' + p + '" data-s="' + escapeHtml(s) + '"><td><code>' + (p || "(vazio)") + "</code>" + (p ? "" : " <small>padrão</small>") + "</td><td>" + escapeHtml(s) + "</td></tr>").join("");
+    const botoes = Array.from(endereco).map((b, i) => '<button type="button" class="rt-bit" data-i="' + i + '" aria-label="Bit ' + i + '">' + b + "</button>").join("");
+    const title = String(data.title || (construir ? "Construindo a Trie de rotas" : "Roteamento com maior prefixo comum"));
+    const svgHtml = '<svg class="rt-tree" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Trie binária com as rotas cadastradas">' + svg + "</svg>";
+    const tabela = '<table class="rt-table"><thead><tr><th>Prefixo</th><th>Saída</th></tr></thead><tbody>' + linhas + "</tbody></table>";
+
+    if (construir) {
+      return '<section class="roteamento rt-build" data-kind="roteamento" aria-label="' + escapeHtml(title) + '">' +
+        '<p class="stepper-title">' + escapeHtml(title) + "</p>" +
+        '<div class="rt-top"><div class="rt-addr"><span class="rt-lbl">Prefixo sendo inserido</span><div class="rt-bits rt-pbits"><span class="rt-vazio">—</span></div></div>' +
+        '<div class="rt-actions"><button type="button" data-rt="play" class="rt-play" data-label="▶ Construir">▶ Construir</button><button type="button" data-rt="step">Próximo passo ›</button><button type="button" data-rt="reset">Reiniciar</button></div></div>' +
+        '<div class="rt-body">' + svgHtml + '<div class="rt-side">' + tabela +
+        '<p class="rt-best">Nós na Trie: <strong>1</strong><span class="rt-count"> (só a raiz)</span></p></div></div>' +
+        '<p class="rt-msg" aria-live="polite">A Trie começa só com a raiz. Clique em <strong>Construir</strong> ou em <strong>Próximo passo</strong> para inserir as rotas da tabela, uma por vez.</p>' +
+        '<ol class="rt-log"></ol></section>';
+    }
+
+    return '<section class="roteamento" data-kind="roteamento" aria-label="' + escapeHtml(title) + '">' +
+      '<p class="stepper-title">' + escapeHtml(title) + "</p>" +
+      '<div class="rt-top"><div class="rt-addr"><span class="rt-lbl">Endereço do pacote (clique em um bit para trocá-lo)</span><div class="rt-bits">' + botoes + "</div></div>" +
+      '<div class="rt-actions"><button type="button" data-rt="play" class="rt-play" data-label="▶ Rotear">▶ Rotear</button><button type="button" data-rt="step">Próximo passo ›</button><button type="button" data-rt="reset">Reiniciar</button></div></div>' +
+      '<div class="rt-body">' + svgHtml + '<div class="rt-side">' + tabela +
+      '<p class="rt-best">Melhor rota até agora: <strong>—</strong></p></div></div>' +
+      '<p class="rt-msg" aria-live="polite">Escolha um endereço e clique em <strong>Rotear</strong> ou em <strong>Próximo passo</strong>.</p>' +
+      '<ol class="rt-log"></ol></section>';
+  }
+
+  // Passos da busca pelo maior prefixo comum, calculados a partir do que está desenhado no bloco.
+  function passosRoteamento(el) {
+    const endereco = Array.from(el.querySelectorAll(".rt-bit")).map((b) => b.textContent).join("");
+    const nos = new Set(Array.from(el.querySelectorAll(".rt-node:not(.rt-ghost)")).map((g) => g.dataset.p));
+    const rotas = new Map(Array.from(el.querySelectorAll(".rt-table tbody tr")).map((tr) => [tr.dataset.p, tr.dataset.s]));
+    const cod = (t) => "<code>" + escapeHtml(t || "(vazio)") + "</code>";
+    const passos = [];
+    let atual = "";
+    let melhor = rotas.has("") ? "" : null;
+    passos.push({ atual, melhor, bit: -1, msg: "O pacote chega à raiz. " + (melhor !== null
+      ? "O prefixo vazio é a <strong>rota padrão</strong>: por enquanto, a melhor rota é <strong>" + escapeHtml(rotas.get("")) + "</strong>."
+      : "Não há rota padrão: por enquanto, nenhuma rota combina.") });
+    let parou = false;
+    for (let i = 0; i < endereco.length; i++) {
+      const b = endereco[i];
+      const filho = atual + b;
+      if (!nos.has(filho)) {
+        passos.push({ atual, melhor, bit: i, ghost: filho, msg: "Bit " + i + " = " + b + ": o prefixo " + cod(filho) + " não existe na Trie (o filho é <code>NULL</code>). Nenhuma rota é mais longa, então a busca para aqui." });
+        parou = true;
+        break;
+      }
+      atual = filho;
+      if (rotas.has(atual)) {
+        melhor = atual;
+        passos.push({ atual, melhor, bit: i, msg: "Bit " + i + " = " + b + ": descemos para " + cod(atual) + ". Esse nó tem rota (<strong>" + escapeHtml(rotas.get(atual)) + "</strong>) com um prefixo mais longo: ela passa a ser a melhor." });
+      } else {
+        passos.push({ atual, melhor, bit: i, msg: "Bit " + i + " = " + b + ": descemos para " + cod(atual) + ". Esse nó não tem rota própria (só existe porque leva a outras rotas); a melhor rota não muda." });
+      }
+    }
+    if (!parou) passos.push({ atual, melhor, bit: endereco.length - 1, msg: "Os " + endereco.length + " bits do endereço acabaram: não há como descer mais." });
+    const ultimo = passos[passos.length - 1];
+    passos.push({ ...ultimo, fim: true, msg: melhor !== null
+      ? "Resultado: o pacote " + escapeHtml(endereco) + " sai pela <strong>saída " + escapeHtml(rotas.get(melhor)) + "</strong>, porque " + cod(melhor) + " é o maior prefixo cadastrado que combina com o endereço."
+      : "Resultado: nenhuma rota combina com " + escapeHtml(endereco) + " e não há rota padrão, então o pacote é descartado." });
+    return passos;
+  }
+
+  // Passos da construção: insere as rotas na ordem da tabela, criando ou reaproveitando nós.
+  function passosConstrucao(el) {
+    const linhas = Array.from(el.querySelectorAll(".rt-table tbody tr")).map((tr) => [tr.dataset.p, tr.dataset.s]);
+    const cod = (t) => "<code>" + escapeHtml(t) + "</code>";
+    const existe = new Set([""]);
+    const marcado = new Map();
+    const passos = [];
+    const foto = (extra) => passos.push({ existe: new Set(existe), marcado: new Map(marcado), ...extra });
+    linhas.forEach(([prefixo, saida], j) => {
+      const s = "<strong>" + escapeHtml(saida) + "</strong>";
+      if (!prefixo) {
+        marcado.set("", saida);
+        foto({ linha: j, prefixo, atual: "", bit: -1, marcou: true, msg: "Rota " + cod("(vazio)") + " → " + s + ": o prefixo vazio é a própria raiz. Ela guarda a saída " + s + ", a <strong>rota padrão</strong>." });
+        return;
+      }
+      foto({ linha: j, prefixo, atual: "", bit: -1, msg: "Nova rota: prefixo " + cod(prefixo) + " → saída " + s + ". Começamos pela raiz e seguimos os bits do prefixo." });
+      let atual = "";
+      for (let i = 0; i < prefixo.length; i++) {
+        const b = prefixo[i];
+        const filho = atual + b;
+        if (existe.has(filho)) {
+          atual = filho;
+          foto({ linha: j, prefixo, atual, bit: i, msg: "Bit " + i + " = " + b + ": o nó " + cod(filho) + " <strong>já existe</strong>. Reaproveitamos e descemos para ele." });
+        } else {
+          existe.add(filho);
+          atual = filho;
+          foto({ linha: j, prefixo, atual, bit: i, novo: filho, msg: "Bit " + i + " = " + b + ": não há filho " + b + " aqui. <strong>Criamos</strong> o nó " + cod(filho) + " e descemos para ele." });
+        }
+      }
+      marcado.set(prefixo, saida);
+      foto({ linha: j, prefixo, atual, bit: prefixo.length, marcou: true, msg: "Fim do prefixo: o nó " + cod(prefixo) + " passa a guardar a saída " + s + "." });
+    });
+    const semRota = existe.size - marcado.size;
+    foto({ linha: linhas.length, prefixo: "", atual: null, bit: -1, fim: true, msg: "Pronto: " + linhas.length + " rotas, " + existe.size + " nós." +
+      (semRota ? " Os " + semRota + " nós sem letra não são rotas: existem só para levar a prefixos mais longos." : "") + " Agora a Trie pode ser usada para rotear pacotes." });
+    return passos;
+  }
+
+  function mostrarConstrucao(el, n) {
+    const passos = el.__rtPassos || (el.__rtPassos = passosConstrucao(el));
+    const k = Math.min(n, passos.length - 1);
+    el.__rtPasso = k;
+    const passo = k >= 0 ? passos[k] : null;
+    const existe = passo ? passo.existe : new Set([""]);
+    const marcado = passo ? passo.marcado : new Map();
+    const caminho = (p) => !!passo && passo.atual !== null && passo.atual.startsWith(p);
+    el.querySelectorAll(".rt-node").forEach((g) => {
+      const p = g.dataset.p;
+      g.classList.toggle("rt-hidden", !existe.has(p));
+      g.classList.toggle("rt-has", marcado.has(p));
+      g.classList.toggle("rt-on", caminho(p));
+      g.classList.toggle("rt-cur", !!passo && passo.atual === p);
+      g.classList.toggle("rt-new", !!passo && passo.novo === p);
+      g.classList.toggle("rt-win", !!passo && !!passo.marcou && passo.atual === p);
+      g.querySelector(".rt-name").textContent = marcado.has(p) ? marcado.get(p) : p ? "" : "raiz";
+    });
+    el.querySelectorAll(".rt-edge").forEach((e) => {
+      e.classList.toggle("rt-hidden", !existe.has(e.dataset.p));
+      e.classList.toggle("rt-on", caminho(e.dataset.p));
+    });
+    el.querySelectorAll(".rt-table tbody tr").forEach((tr, j) => {
+      tr.classList.toggle("rt-done", !!passo && j < passo.linha);
+      tr.classList.toggle("rt-match", !!passo && j === passo.linha);
+      tr.classList.toggle("rt-wait", !passo || j > passo.linha);
+    });
+    const pbits = el.querySelector(".rt-pbits");
+    pbits.innerHTML = passo && passo.prefixo
+      ? Array.from(passo.prefixo).map((b, i) => '<span class="rt-bit' + (i === passo.bit ? " rt-cur" : i < passo.bit ? " rt-done" : "") + '">' + b + "</span>").join("")
+      : '<span class="rt-vazio">' + (passo && !passo.fim ? "(vazio)" : "—") + "</span>";
+    const semRota = existe.size - marcado.size;
+    el.querySelector(".rt-best strong").textContent = String(existe.size);
+    el.querySelector(".rt-count").textContent = existe.size === 1 ? " (só a raiz)" : " (" + marcado.size + " com rota, " + semRota + " sem rota)";
+    el.querySelector(".rt-msg").innerHTML = passo ? passo.msg : "A Trie começa só com a raiz. Clique em <strong>Construir</strong> ou em <strong>Próximo passo</strong> para inserir as rotas da tabela, uma por vez.";
+    el.querySelector(".rt-log").innerHTML = passos.slice(0, Math.max(k, 0)).map((p) => "<li>" + p.msg + "</li>").join("");
+    el.classList.toggle("rt-fim", !!passo && !!passo.fim);
+    el.querySelector('[data-rt="step"]').disabled = !!passo && !!passo.fim;
+    return !!passo && !!passo.fim;
+  }
+
+  function mostrarRoteamento(el, n) {
+    if (el.classList.contains("rt-build")) return mostrarConstrucao(el, n);
+    const passos = el.__rtPassos || (el.__rtPassos = passosRoteamento(el));
+    const k = Math.min(n, passos.length - 1);
+    el.__rtPasso = k;
+    const passo = k >= 0 ? passos[k] : null;
+    const noCaminho = (p) => passo && passo.atual.startsWith(p);
+    el.querySelectorAll(".rt-node").forEach((g) => {
+      const p = g.dataset.p;
+      g.classList.toggle("rt-on", !!passo && noCaminho(p) && !g.classList.contains("rt-ghost"));
+      g.classList.toggle("rt-cur", !!passo && passo.atual === p && !g.classList.contains("rt-ghost"));
+      g.classList.toggle("rt-win", !!passo && passo.melhor === p);
+      g.classList.toggle("rt-show", !!passo && passo.ghost === p);
+    });
+    el.querySelectorAll(".rt-edge").forEach((e) => {
+      const p = e.dataset.p;
+      e.classList.toggle("rt-on", !!passo && !e.classList.contains("rt-ghost") && noCaminho(p));
+      e.classList.toggle("rt-show", !!passo && passo.ghost === p);
+    });
+    el.querySelectorAll(".rt-bit").forEach((b, i) => {
+      b.classList.toggle("rt-cur", !!passo && passo.bit === i && !passo.fim);
+      b.classList.toggle("rt-done", !!passo && i < passo.bit);
+    });
+    el.querySelectorAll(".rt-table tbody tr").forEach((tr) => {
+      tr.classList.toggle("rt-match", !!passo && noCaminho(tr.dataset.p));
+      tr.classList.toggle("rt-win", !!passo && passo.melhor === tr.dataset.p);
+    });
+    const rotas = new Map(Array.from(el.querySelectorAll(".rt-table tbody tr")).map((tr) => [tr.dataset.p, tr.dataset.s]));
+    const best = el.querySelector(".rt-best strong");
+    best.textContent = passo && passo.melhor !== null ? rotas.get(passo.melhor) + " (prefixo " + (passo.melhor || "vazio") + ")" : "—";
+    el.querySelector(".rt-msg").innerHTML = passo ? passo.msg : "Escolha um endereço e clique em <strong>Rotear</strong> ou em <strong>Próximo passo</strong>.";
+    el.querySelector(".rt-log").innerHTML = passos.slice(0, Math.max(k, 0)).map((p) => "<li>" + p.msg + "</li>").join("");
+    el.classList.toggle("rt-fim", !!passo && !!passo.fim);
+    el.querySelector('[data-rt="step"]').disabled = !!passo && !!passo.fim;
+    return !!passo && !!passo.fim;
+  }
+
+  function pararRoteamento(el) {
+    if (el.__rtTimer) { clearInterval(el.__rtTimer); el.__rtTimer = null; }
+    const play = el.querySelector('[data-rt="play"]');
+    if (play) { play.textContent = play.dataset.label || "▶ Rotear"; play.classList.remove("playing"); }
+  }
+
+  function acaoRoteamento(el, acao, alvo) {
+    if (acao === "bit") {
+      pararRoteamento(el);
+      alvo.textContent = alvo.textContent === "1" ? "0" : "1";
+      el.__rtPassos = null;
+      mostrarRoteamento(el, -1);
+      return;
+    }
+    if (acao === "reset") { pararRoteamento(el); el.__rtPassos = null; mostrarRoteamento(el, -1); return; }
+    if (acao === "step") { pararRoteamento(el); mostrarRoteamento(el, (el.__rtPasso ?? -1) + 1); return; }
+    if (acao === "play") {
+      if (el.__rtTimer) { pararRoteamento(el); return; }
+      if (el.classList.contains("rt-fim") || el.__rtPasso === undefined || el.__rtPasso < 0) mostrarRoteamento(el, 0);
+      const play = el.querySelector('[data-rt="play"]');
+      play.textContent = "⏸ Pausar"; play.classList.add("playing");
+      el.__rtTimer = setInterval(() => {
+        if (mostrarRoteamento(el, el.__rtPasso + 1)) pararRoteamento(el);
+      }, 1400);
+    }
+  }
+
+  const BLOCK_RENDERERS = { video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento };
 
   // Ponte para o renderizador do site: devolve o HTML do bloco, ou null se a linguagem não é nossa.
   function renderBlock(language, source, options = {}) {
@@ -297,6 +561,12 @@
     if (root.__lessonInteractions) return;
     root.__lessonInteractions = true;
     root.addEventListener("click", (event) => {
+      const rt = event.target.closest(".roteamento [data-rt], .roteamento .rt-bit");
+      if (rt) {
+        if (rt.disabled) return;
+        acaoRoteamento(rt.closest(".roteamento"), rt.classList.contains("rt-bit") ? "bit" : rt.dataset.rt, rt);
+        return;
+      }
       const button = event.target.closest("[data-stepper]");
       if (!button || button.disabled) return;
       const stepper = button.closest(".stepper");
