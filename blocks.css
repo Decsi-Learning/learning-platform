@@ -188,3 +188,20 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 .markdown .rt-table tr.rt-wait td { opacity: .45; }
 .markdown .rt-table tr.rt-done td:last-child::after { content: " ✓"; color: #16a34a; font-weight: 800; }
 @media (prefers-reduced-motion: reduce) { .markdown .rt-node.rt-new circle { animation: none; } }
+
+/* Patricia (bloco "patricia"): reaproveita o visual do roteamento; aqui só o que é próprio dela */
+.markdown .pt-tree .pt-vazia { fill: var(--soft); font-size: 14px; }
+.markdown .pt-int circle { fill: var(--paper); }
+.markdown .pt-int .pt-small { fill: var(--soft); font-size: 9px; }
+.markdown .pt-int .rt-name { font-size: 15px; }
+.markdown .pt-leaf rect { fill: #dcfce7; stroke: #16a34a; stroke-width: 2.5; transition: stroke .25s, stroke-width .25s; }
+.markdown .pt-leaf .pt-nome { fill: #14532d; font-family: Arial, Helvetica, sans-serif; font-size: 11.5px; font-weight: 700; }
+.markdown .pt-leaf .pt-bits { fill: #15803d; font-size: 11px; }
+.markdown .pt-leaf.rt-on rect, .markdown .pt-leaf.pt-cmp rect { stroke: #f59e0b; stroke-width: 4; }
+.markdown .pt-leaf.rt-new rect { stroke: #16a34a; stroke-width: 4.5; animation: rt-nasce .6s ease-out; transform-box: fill-box; transform-origin: center; }
+.markdown .pt-int.rt-new circle { fill: #dcfce7; }
+.markdown .pt-int.rt-new .rt-name { fill: #14532d; }
+.markdown .rt-edge.rt-new line { stroke: #16a34a; opacity: 1; }
+.markdown span.rt-bit.pt-dif { border-color: #ef4444; background: #ef4444; color: #fff; }
+.markdown .pt-chave { align-self: center; margin-left: 10px; font-weight: 750; color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .markdown .pt-leaf.rt-new rect { animation: none; } }

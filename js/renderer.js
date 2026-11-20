@@ -427,6 +427,7 @@
   }
 
   function mostrarRoteamento(el, n) {
+    if (el.classList.contains("pt")) return mostrarPatricia(el, n);
     if (el.classList.contains("rt-build")) return mostrarConstrucao(el, n);
     const passos = el.__rtPassos || (el.__rtPassos = passosRoteamento(el));
     const k = Math.min(n, passos.length - 1);
@@ -490,7 +491,172 @@
     }
   }
 
-  const BLOCK_RENDERERS = { video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento };
+  // ---- Bloco "patricia": construção passo a passo de uma árvore Patricia (sem código) ----
+  // { "title": "...", "bits": 5, "chaves": [{ "nome": "notas.txt", "bits": "01101" }, ...] }
+  // Usa os mesmos botões e estilos do bloco "roteamento"; a árvore é redesenhada a cada passo,
+  // porque na Patricia um nó novo pode entrar acima de nós que já existiam.
+  function renderPatricia(source) {
+    const data = parseJson(source);
+    if (!data || !Array.isArray(data.chaves) || data.chaves.length < 1 || data.chaves.length > 10) return blockError("Este bloco Patricia precisa de 1 a 10 chaves.");
+    const bits = Number.isInteger(data.bits) && data.bits >= 2 && data.bits <= 8 ? data.bits : 5;
+    for (const c of data.chaves) {
+      if (!c || typeof c.nome !== "string" || !c.nome.trim() || typeof c.bits !== "string" || !BINARIO.test(c.bits) || c.bits.length !== bits) {
+        return blockError("Cada chave precisa de um nome e de " + bits + " bits (0 e 1).");
+      }
+    }
+    const title = String(data.title || "Construindo uma árvore Patricia");
+    const linhas = data.chaves.map((c) => '<tr data-nome="' + escapeHtml(c.nome) + '" data-bits="' + c.bits + '"><td>' + escapeHtml(c.nome) + "</td><td><code>" + c.bits + "</code></td></tr>").join("");
+    const inicial = "A árvore começa vazia. Clique em <strong>Construir</strong> ou em <strong>Próximo passo</strong> para inserir as chaves da tabela, uma por vez.";
+    return '<section class="roteamento rt-build pt" data-kind="patricia" data-bits="' + bits + '" aria-label="' + escapeHtml(title) + '">' +
+      '<p class="stepper-title">' + escapeHtml(title) + "</p>" +
+      '<div class="rt-top"><div class="rt-addr"><span class="rt-lbl">Chave sendo inserida</span><div class="rt-bits rt-pbits"><span class="rt-vazio">—</span></div></div>' +
+      '<div class="rt-actions"><button type="button" data-rt="play" class="rt-play" data-label="▶ Construir">▶ Construir</button><button type="button" data-rt="step">Próximo passo ›</button><button type="button" data-rt="reset">Reiniciar</button></div></div>' +
+      '<div class="rt-body"><svg class="rt-tree pt-tree" viewBox="0 0 400 120" role="img" aria-label="Árvore Patricia"><text class="pt-vazia" x="200" y="64">árvore vazia</text></svg>' +
+      '<div class="rt-side"><table class="rt-table"><thead><tr><th>Chave</th><th>Bits</th></tr></thead><tbody>' + linhas + "</tbody></table>" +
+      '<p class="rt-best">Folhas: <strong>0</strong><span class="rt-count"> · nós internos: 0</span></p></div></div>' +
+      '<p class="rt-msg" aria-live="polite">' + inicial + "</p>" +
+      '<ol class="rt-log"></ol></section>';
+  }
+
+  function passosPatricia(el) {
+    const chaves = Array.from(el.querySelectorAll(".rt-table tbody tr")).map((tr) => ({ nome: tr.dataset.nome, bits: tr.dataset.bits }));
+    const nb = Number(el.dataset.bits) || chaves[0].bits.length;
+    const bit = (i, b) => Number(b[i - 1]);
+    const cod = (t) => "<code>" + escapeHtml(t) + "</code>";
+    const nome = (c) => "<strong>" + escapeHtml(c.nome) + "</strong>";
+    let seq = 0;
+    let raiz = null;
+    const clone = (n) => (n === null ? null : n.t === "e" ? { ...n } : { ...n, esq: clone(n.esq), dir: clone(n.dir) });
+    const passos = [];
+    const foto = (extra) => passos.push({ raiz: clone(raiz), ...extra });
+
+    chaves.forEach((c, j) => {
+      const base = { linha: j, chave: c };
+      if (raiz === null) {
+        raiz = { t: "e", id: "f" + seq++, chave: c };
+        foto({ ...base, novos: [raiz.id], msg: "Primeira chave: " + nome(c) + " (" + cod(c.bits) + "). A árvore estava vazia, então ela vira uma <strong>folha</strong>, que é a raiz." });
+        return;
+      }
+      foto({ ...base, msg: "Nova chave: " + nome(c) + " (" + cod(c.bits) + "). Primeiro descemos até uma folha, seguindo os bits que os nós internos mandam testar." });
+      // 1) desce até uma folha
+      let p = raiz;
+      const caminho = [];
+      while (p.t === "i") {
+        const b = bit(p.idx, c.bits);
+        caminho.push(p.id);
+        foto({ ...base, caminho: caminho.slice(), atual: p.id, bitAtual: p.idx, msg: "Este nó testa o <strong>bit " + p.idx + "</strong>. Em " + cod(c.bits) + " ele vale " + b + ", então vamos para a " + (b ? "direita" : "esquerda") + "." });
+        p = b ? p.dir : p.esq;
+      }
+      caminho.push(p.id);
+      // 2) primeiro bit diferente
+      let i = 1;
+      while (i <= nb && bit(i, c.bits) === bit(i, p.chave.bits)) i++;
+      if (i > nb) {
+        foto({ ...base, caminho, atual: p.id, cmp: p.id, msg: "Chegamos à folha " + nome(p.chave) + " (" + cod(p.chave.bits) + "): os bits são <strong>todos iguais</strong>. A chave já está no índice, então nada é inserido." });
+        return;
+      }
+      foto({ ...base, caminho, atual: p.id, cmp: p.id, bitDif: i, msg: "Chegamos à folha " + nome(p.chave) + " (" + cod(p.chave.bits) + "). Comparando com " + cod(c.bits) + ", o primeiro bit diferente é o <strong>bit " + i + "</strong>. Precisamos de um nó interno que teste esse bit." });
+      // 3) acha o lugar: primeiro nó do caminho que é folha ou testa bit maior que i
+      let pai = null, lado = null, t = raiz;
+      const caminho2 = [];
+      while (t.t === "i" && t.idx < i) {
+        caminho2.push(t.id);
+        pai = t; lado = bit(t.idx, c.bits) ? "dir" : "esq"; t = t[lado];
+      }
+      caminho2.push(t.id);
+      const onde = pai === null ? "no lugar da <strong>raiz</strong>" : "logo abaixo do nó que testa o bit " + pai.idx;
+      const porque = t.t === "e" ? "porque ali há uma folha" : "porque o nó que estava ali testa o bit " + t.idx + ", maior que " + i;
+      foto({ ...base, caminho: caminho2, atual: t.id, bitDif: i, msg: "Descendo de novo a partir da raiz, o nó do bit " + i + " entra " + onde + ", " + porque + ". Assim os bits testados continuam crescentes de cima para baixo." });
+      // 4) cria o nó interno e a folha
+      const folha = { t: "e", id: "f" + seq++, chave: c };
+      const b = bit(i, c.bits);
+      const novo = { t: "i", id: "n" + seq++, idx: i, esq: b ? t : folha, dir: b ? folha : t };
+      if (pai === null) raiz = novo; else pai[lado] = novo;
+      foto({ ...base, novos: [novo.id, folha.id], bitDif: i, msg: "Criamos o nó interno que testa o <strong>bit " + i + "</strong> e a folha de " + nome(c) + ". Como o bit " + i + " de " + cod(c.bits) + " vale " + b + ", a nova folha fica à " + (b ? "direita" : "esquerda") + " e o que estava ali vai para o outro lado." });
+    });
+    let folhas = 0, internos = 0, altura = 0;
+    const conta = (n, d) => { if (!n) return; altura = Math.max(altura, d); if (n.t === "e") folhas++; else { internos++; conta(n.esq, d + 1); conta(n.dir, d + 1); } };
+    conta(raiz, 0);
+    foto({ linha: chaves.length, fim: true, msg: "Pronto: " + folhas + " chaves e " + internos + " nós internos. Para achar qualquer chave basta testar no máximo " + altura + " bits e fazer <strong>uma única comparação</strong> da chave inteira, na folha." });
+    return passos;
+  }
+
+  function desenhaPatricia(raiz, passo, ordem, alturaMax) {
+    if (!raiz) return { box: "0 0 400 120", svg: '<text class="pt-vazia" x="200" y="64">árvore vazia</text>' };
+    const LX = 92, LY = 82, W = Math.max(400, ordem.length * LX), H = 50 + alturaMax * LY + 34;
+    const x0 = (W - ordem.length * LX) / 2 + LX / 2;
+    const pos = new Map();
+    const mede = (n, d) => {
+      if (n.t === "e") { const x = x0 + ordem.indexOf(n.chave.bits) * LX; pos.set(n.id, [x, 36 + d * LY]); return [x, x]; }
+      const a = mede(n.esq, d + 1), b = mede(n.dir, d + 1);
+      pos.set(n.id, [(a[0] + b[1]) / 2, 36 + d * LY]);
+      return [a[0], b[1]];
+    };
+    mede(raiz, 0);
+    const caminho = new Set(passo.caminho || []);
+    const novos = new Set(passo.novos || []);
+    let arestas = "", nos = "";
+    const visita = (n) => {
+      const [x, y] = pos.get(n.id);
+      const cls = (caminho.has(n.id) ? " rt-on" : "") + (passo.atual === n.id ? " rt-cur" : "") + (novos.has(n.id) ? " rt-new" : "") + (passo.cmp === n.id ? " pt-cmp" : "");
+      if (n.t === "i") {
+        for (const [filho, b] of [[n.esq, "0"], [n.dir, "1"]]) {
+          const [fx, fy] = pos.get(filho.id);
+          const on = caminho.has(n.id) && caminho.has(filho.id);
+          arestas += '<g class="rt-edge' + (on ? " rt-on" : "") + (novos.has(filho.id) && novos.has(n.id) ? " rt-new" : "") + '"><line x1="' + x + '" y1="' + y + '" x2="' + fx + '" y2="' + (filho.t === "e" ? fy - 20 : fy) + '"></line>' +
+            '<text class="rt-bitlbl" x="' + ((x + fx) / 2 + (b === "0" ? -10 : 10)) + '" y="' + ((y + fy) / 2) + '">' + b + "</text></g>";
+          visita(filho);
+        }
+        nos += '<g class="rt-node pt-int' + cls + '"><circle cx="' + x + '" cy="' + y + '" r="20"></circle>' +
+          '<text class="pt-small" x="' + x + '" y="' + (y - 5) + '">bit</text><text class="rt-name" x="' + x + '" y="' + (y + 11) + '">' + n.idx + "</text></g>";
+      } else {
+        nos += '<g class="rt-node pt-leaf' + cls + '"><rect x="' + (x - 42) + '" y="' + (y - 20) + '" width="84" height="42" rx="9"></rect>' +
+          '<text class="pt-nome" x="' + x + '" y="' + (y - 3) + '">' + escapeHtml(n.chave.nome) + '</text><text class="pt-bits" x="' + x + '" y="' + (y + 14) + '">' + n.chave.bits + "</text></g>";
+      }
+    };
+    visita(raiz);
+    return { box: "0 0 " + W + " " + H, svg: arestas + nos };
+  }
+
+  function mostrarPatricia(el, n) {
+    const passos = el.__rtPassos || (el.__rtPassos = passosPatricia(el));
+    if (!el.__ptOrdem) {
+      // folhas sempre na mesma coluna: ordem crescente das chaves (é a ordem em que a Patricia as deixa)
+      el.__ptOrdem = Array.from(new Set(Array.from(el.querySelectorAll(".rt-table tbody tr")).map((tr) => tr.dataset.bits))).sort();
+      let h = 0;
+      const alt = (r, d) => { if (!r) return; h = Math.max(h, d); if (r.t === "i") { alt(r.esq, d + 1); alt(r.dir, d + 1); } };
+      passos.forEach((p) => alt(p.raiz, 0));
+      el.__ptAltura = h;
+    }
+    const k = Math.min(n, passos.length - 1);
+    el.__rtPasso = k;
+    const passo = k >= 0 ? passos[k] : { raiz: null, linha: -1 };
+    const desenho = desenhaPatricia(passo.raiz, passo, el.__ptOrdem, el.__ptAltura);
+    const svg = el.querySelector(".pt-tree");
+    svg.setAttribute("viewBox", desenho.box);
+    svg.innerHTML = desenho.svg;
+    el.querySelectorAll(".rt-table tbody tr").forEach((tr, j) => {
+      tr.classList.toggle("rt-done", k >= 0 && j < passo.linha);
+      tr.classList.toggle("rt-match", k >= 0 && j === passo.linha);
+      tr.classList.toggle("rt-wait", k < 0 || j > passo.linha);
+    });
+    const pbits = el.querySelector(".rt-pbits");
+    pbits.innerHTML = passo.chave
+      ? Array.from(passo.chave.bits).map((b, i) => '<span class="rt-bit' + (passo.bitAtual === i + 1 ? " rt-cur" : passo.bitDif === i + 1 ? " pt-dif" : "") + '" title="bit ' + (i + 1) + '">' + b + "</span>").join("") + '<span class="pt-chave">' + escapeHtml(passo.chave.nome) + "</span>"
+      : '<span class="rt-vazio">—</span>';
+    let folhas = 0, internos = 0;
+    const conta = (r) => { if (!r) return; if (r.t === "e") folhas++; else { internos++; conta(r.esq); conta(r.dir); } };
+    conta(passo.raiz);
+    el.querySelector(".rt-best strong").textContent = String(folhas);
+    el.querySelector(".rt-count").textContent = " · nós internos: " + internos;
+    el.querySelector(".rt-msg").innerHTML = k >= 0 ? passo.msg : "A árvore começa vazia. Clique em <strong>Construir</strong> ou em <strong>Próximo passo</strong> para inserir as chaves da tabela, uma por vez.";
+    el.querySelector(".rt-log").innerHTML = passos.slice(0, Math.max(k, 0)).map((p) => "<li>" + p.msg + "</li>").join("");
+    el.classList.toggle("rt-fim", !!passo.fim);
+    el.querySelector('[data-rt="step"]').disabled = !!passo.fim;
+    return !!passo.fim;
+  }
+
+  const BLOCK_RENDERERS = { video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia };
 
   // Ponte para o renderizador do site: devolve o HTML do bloco, ou null se a linguagem não é nossa.
   function renderBlock(language, source, options = {}) {

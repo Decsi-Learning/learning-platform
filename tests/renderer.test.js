@@ -349,3 +349,22 @@ test("roteamento block in construction mode starts with only the root visible an
   assert.doesNotMatch(html, /class="rt-bit"/);                            // sem botões de endereço
   assert.ok(html.indexOf('data-p="10" data-s="C"><td>') < html.indexOf('<tr data-p="" '), "tabela na ordem de inserção");
 });
+
+// ---- bloco "patricia": construção sem código ----
+test("patricia block lists the keys in insertion order and starts with an empty tree", () => {
+  const html = renderBlock("patricia", JSON.stringify({
+    title: "Índice", bits: 5,
+    chaves: [{ nome: "notas.txt", bits: "01101" }, { nome: "<b>x</b>", bits: "10010" }],
+  }));
+  assert.match(html, /data-kind="patricia" data-bits="5"/);
+  assert.match(html, /class="roteamento rt-build pt"/);
+  assert.match(html, /árvore vazia/);
+  assert.ok(html.indexOf('data-bits="01101"') < html.indexOf('data-bits="10010"'));
+  assert.doesNotMatch(html, /<b>x<\/b>/);
+});
+
+test("patricia block rejects keys with the wrong number of bits", () => {
+  assert.match(renderBlock("patricia", "{nope"), /quiz-error/);
+  assert.match(renderBlock("patricia", JSON.stringify({ bits: 5, chaves: [{ nome: "a", bits: "0101" }] })), /quiz-error/);
+  assert.match(renderBlock("patricia", JSON.stringify({ bits: 5, chaves: [{ nome: "", bits: "01010" }] })), /quiz-error/);
+});

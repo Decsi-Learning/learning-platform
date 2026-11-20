@@ -127,6 +127,12 @@
       "title": "Árvore Trie",
       "summary": "Árvore de prefixos: inserção, busca, remoção, complexidade e variações.",
       "file": "arvore-trie/arvore-trie.md"
+    },
+    {
+      "id": "arvore-patricia",
+      "title": "Árvore Patricia",
+      "summary": "Trie binária compacta: nós internos testam bits, folhas guardam chaves; pesquisa, inserção e complexidade.",
+      "file": "arvore-patricia/arvore-patricia.md"
     }
   ]
 }
