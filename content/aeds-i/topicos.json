@@ -98,13 +98,44 @@
       "file": "analise-de-complexidade/exercicios-avaliativos-complexidade.md"
     }
   ]
-  },
+},
+{
+  "id": "tipos-abstratos-de-dados",
+  "title": "Tipos Abstratos de Dados (TADs)",
+  "summary": "Estudo dos conceitos, especificações, operações e implementações dos Tipos Abstratos de Dados.",
+  "pages": [
     {
-      "id": "tipos-abstratos-dados",
-      "title": "Tipos Abstratos de Dados",
-      "summary": "Abstração e modelagem de problemas, definições e conceitos de Tipos Abstratos de Dados.",
-      "file": null
+      "id": "fundamentos-tads",
+      "title": "Fundamentos dos TADs",
+      "summary": "Conceitos fundamentais, características e importância dos Tipos Abstratos de Dados.",
+      "file": "tipos-abstratos-de-dados/fundamentos-tads.md"
     },
+    {
+      "id": "especificacao-interface-implementacao",
+      "title": "Especificação, Interface e Implementação",
+      "summary": "Separação entre o comportamento abstrato de um TAD e sua implementação concreta.",
+      "file": "tipos-abstratos-de-dados/especificacao-interface-implementacao.md"
+    },
+    {
+      "id": "tads-pilha-fila-lista-conjunto",
+      "title": "Exemplos de TADs: Pilha, Fila, Lista e Conjunto",
+      "summary": "Estudo de diferentes TADs, suas operações e características.",
+      "file": "tipos-abstratos-de-dados/tads-pilha-fila-lista-conjunto.md"
+    },
+    {
+      "id": "implementacao-e-complexidade-tads",
+      "title": "Implementação e Complexidade dos TADs",
+      "summary": "Análise das diferentes formas de implementação e seus impactos na eficiência.",
+      "file": "tipos-abstratos-de-dados/implementacao-e-complexidade-tads.md"
+    },
+    {
+      "id": "exercicios-avaliativos-tads",
+      "title": "Exercícios Avaliativos",
+      "summary": "Questões interativas para revisar e consolidar os conceitos estudados.",
+      "file": "tipos-abstratos-de-dados/exercicios-avaliativos-tads.md"
+    }
+  ]
+},
     {
       "id": "estruturas-dados-lineares-lista",
       "title": "Estruturas de Dados lineares - Lista",
