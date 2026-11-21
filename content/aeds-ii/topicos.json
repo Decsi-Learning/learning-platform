@@ -28,7 +28,7 @@
       "id": "organizacao-dados-arquivos",
       "title": "Organização de dados em arquivos",
       "summary": "Métodos de disposição e organização de dados em arquivos.",
-      "file": null
+      "file": "organizacao_dados_arquivos.md"
     },
     {
       "id": "registros-tamanho-fixo",
