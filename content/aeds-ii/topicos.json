@@ -16,6 +16,7 @@
       "id": "arquivos",
       "title": "Arquivos",
       "summary": "Conceitos e estruturas de arquivos para armazenamento e processamento de dados.",
+      "requiresQuizAnswers": true,
       "file": "topico2_arquivos.md"
     },
     {
@@ -28,13 +29,13 @@
       "id": "organizacao-dados-arquivos",
       "title": "Organização de dados em arquivos",
       "summary": "Métodos de disposição e organização de dados em arquivos.",
-      "file": null
+      "file": "organizacao_dados_arquivos.md"
     },
     {
       "id": "registros-tamanho-fixo",
       "title": "Registros de tamanho fixo",
       "summary": "Representação e armazenamento de registros com tamanho constante.",
-      "file": null
+      "file": "registros_tamanho_fixo.md"
     },
     {
       "id": "registros-tamanho-variavel",
@@ -126,7 +127,13 @@
       "id": "arvore-trie",
       "title": "Árvore Trie",
       "summary": "Árvore de prefixos: inserção, busca, remoção, complexidade e variações.",
-      "file": "arvore-trie.md"
+      "file": "arvore-trie/arvore-trie.md"
+    },
+    {
+      "id": "arvore-patricia",
+      "title": "Árvore Patricia",
+      "summary": "Trie binária compacta: nós internos testam bits, folhas guardam chaves; pesquisa, inserção e complexidade.",
+      "file": "arvore-patricia/arvore-patricia.md"
     }
   ]
 }
