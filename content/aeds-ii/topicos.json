@@ -152,7 +152,38 @@
       "id": "casamento-padroes-texto",
       "title": "Casamento de padrões em texto",
       "summary": "Força bruta, Shift-And, Boyer-Moore, Boyer-Moore-Horspool e Knuth-Morris-Pratt (KMP).",
-      "file": null
+      "pages": [
+        {
+          "id": "fundamentos-e-forca-bruta",
+          "title": "Fundamentos e força bruta",
+          "summary": "Vocabulário do casamento de padrões, categorias de algoritmos, força bruta em C e análise de custo.",
+          "file": "casamento-padroes-texto/fundamentos-e-forca-bruta.md"
+        },
+        {
+          "id": "knuth-morris-pratt",
+          "title": "Knuth-Morris-Pratt (KMP)",
+          "summary": "Bordas, construção da tabela de falha, busca sem voltar no texto e análise O(n + m).",
+          "file": "casamento-padroes-texto/knuth-morris-pratt.md"
+        },
+        {
+          "id": "boyer-moore-e-horspool",
+          "title": "Boyer-Moore e Horspool (BMH)",
+          "summary": "Comparação da direita para a esquerda, heurísticas da ocorrência e do sufixo bom, e simplificação BMH.",
+          "file": "casamento-padroes-texto/boyer-moore-e-horspool.md"
+        },
+        {
+          "id": "shift-and-e-comparacao",
+          "title": "Shift-And e comparação",
+          "summary": "Paralelismo de bits, máscaras de caracteres, busca aproximada e escolha prática entre os algoritmos.",
+          "file": "casamento-padroes-texto/shift-and-e-comparacao.md"
+        },
+        {
+          "id": "slides-casamento-padroes-texto",
+          "title": "Slides e vídeo",
+          "summary": "Apresentação do tópico, vídeo explicativo e referências.",
+          "file": "casamento-padroes-texto/slides-casamento-padroes-texto.md"
+        }
+      ]
     },
     {
       "id": "arvore-trie",
