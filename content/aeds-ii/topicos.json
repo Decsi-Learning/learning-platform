@@ -35,7 +35,38 @@
       "id": "registros-tamanho-fixo",
       "title": "Registros de tamanho fixo",
       "summary": "Representação e armazenamento de registros com tamanho constante.",
-      "file": "registros_tamanho_fixo.md"
+      "pages": [
+        {
+          "id": "campos-e-registros-fixos",
+          "title": "Campos e registros fixos",
+          "summary": "O que é um registro de tamanho fixo, struct em C, alinhamento e gravação em arquivo binário.",
+          "file": "registros-tamanho-fixo/campos-e-registros-fixos.md"
+        },
+        {
+          "id": "rrn-e-acesso-direto",
+          "title": "RRN e acesso direto",
+          "summary": "Cabeçalho, número relativo do registro, cálculo do offset e atualização no lugar.",
+          "file": "registros-tamanho-fixo/rrn-e-acesso-direto.md"
+        },
+        {
+          "id": "blocos-e-fragmentacao",
+          "title": "Blocos, fragmentação e limites",
+          "summary": "Fator de bloco, organização espalhada e não espalhada, fragmentação interna e quando usar tamanho fixo.",
+          "file": "registros-tamanho-fixo/blocos-e-fragmentacao.md"
+        },
+        {
+          "id": "exercicios-avaliativos-registros-tamanho-fixo",
+          "title": "Exercícios avaliativos",
+          "summary": "Exercícios com gabarito sobre todo o tópico.",
+          "file": "registros-tamanho-fixo/exercicios-avaliativos-registros-tamanho-fixo.md"
+        },
+        {
+          "id": "slides-registros-tamanho-fixo",
+          "title": "Slides e vídeo",
+          "summary": "Apresentação do tópico, vídeo explicativo e referências.",
+          "file": "registros-tamanho-fixo/slides-registros-tamanho-fixo.md"
+        }
+      ]
     },
     {
       "id": "registros-tamanho-variavel",
