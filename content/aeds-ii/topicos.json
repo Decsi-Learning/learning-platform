@@ -95,25 +95,25 @@
       "id": "rle",
       "title": "Run-Length Encoding (RLE)",
       "summary": "Substitui corridas de símbolos iguais por pares (contagem, símbolo).",
-      "file": "compressão/rle.md"
+      "file": "compressao/rle.md"
     },
     {
       "id": "huffman",
       "title": "Código de Huffman",
       "summary": "Códigos de prefixo de tamanho variável construídos com um Min-Heap.",
-      "file": "compressão/huffman.md"
+      "file": "compressao/huffman.md"
     },
     {
       "id": "lzw",
       "title": "LZW",
       "summary": "Compressão baseada em dicionário aprendido durante a leitura.",
-      "file": "compressão/lzw.md"
+      "file": "compressao/lzw.md"
     },
     {
       "id": "Exercicios-avaliativos-Compressão",
       "title": "Exercícios avaliativos",
       "summary": "Exercícios com gabarito sobre todo o tópico.",
-      "file": "compressão/exercicios-avaliativos-compressao.md"
+      "file": "compressao/exercicios-avaliativos-compressao.md"
     }
   ]
     },

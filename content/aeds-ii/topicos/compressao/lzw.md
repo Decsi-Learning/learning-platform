@@ -36,7 +36,7 @@ Para decodificar, lemos os códigos em ordem, mantendo o **código anterior**. A
 
 ### Codificação
 
-![Tabela com os passos da codificação LZW de ABABABA: o dicionário aprende AB, BA e ABA e a saída é 65, 66, 256 e 258](imagens/lzw-dicionario.svg)
+![Tabela com os passos da codificação LZW de ABABABA: o dicionário aprende AB, BA e ABA e a saída é 65, 66, 256 e 258](../img-Top10/lzw-dicionario.svg)
 
 ### Rastreamento da codificação de ABABABA
 

@@ -62,7 +62,7 @@ Para decodificar, basta repetir cada símbolo o número de vezes indicado.
 
 ### Exemplo visual
 
-![Passo a passo da codificação RLE de AAAABBBCCD: quatro corridas de símbolos iguais viram os pares (4, A), (3, B), (2, C) e (1, D)](imagens/rle-exemplo.svg)
+![Passo a passo da codificação RLE de AAAABBBCCD: quatro corridas de símbolos iguais viram os pares (4, A), (3, B), (2, C) e (1, D)](../img-Top10/rle-exemplo.svg)
 
 ### Pior caso
 

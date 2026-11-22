@@ -69,7 +69,7 @@ Para decodificar, lemos os bits a partir da raiz, descendo à esquerda em `0` e 
 
 ### Exemplo visual
 
-![Exemplo visual da codificação utilizando huffman de ABRACADABRA](imagens/huffman-arvore.svg)
+![Exemplo visual da codificação utilizando huffman de ABRACADABRA](../img-Top10/huffman-arvore.svg)
 
 ## Comparação e complexidade
 
