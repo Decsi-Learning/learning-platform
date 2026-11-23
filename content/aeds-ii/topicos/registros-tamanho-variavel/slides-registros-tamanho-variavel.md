@@ -42,4 +42,3 @@ Use os botões ou as setas do teclado para passar os slides.
 - THARP, A. L. *File Organization and Processing*, Wiley. Assuntos: registros de tamanho fixo e variável.
 - ALEXANDRE, R. F. Slides das aulas "Manipulação de arquivos de registros" (Estrutura de Dados II) e "Armazenamento de disco, estruturas de arquivo básicas e hashing" (Capítulo 17, Banco de Dados II), UFOP.
 
-> Os livros foram citados por assunto, e não por número de página, porque a paginação muda entre edições. Confira os capítulos na sua edição.

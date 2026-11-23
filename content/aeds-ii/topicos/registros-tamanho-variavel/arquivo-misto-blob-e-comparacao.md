@@ -48,7 +48,128 @@ O arquivo abaixo é misto. Cada linha é um registro, e o primeiro caractere é 
 Clique em **Executar**. Repare que o programa lê o código do tipo primeiro e só depois decide como interpretar os campos.
 
 ```codigo
-{"title":"Arquivo misto passo a passo","code":"#include <stdio.h>\n#include <string.h>\n\n/* Arquivo misto: cada linha é um registro e o primeiro caractere é o código do tipo.\n   'A' = aluno (nome;curso)    'D' = disciplina (nome;carga horária) */\nvoid lerMisto(FILE *f) {\n    char linha[64];\n    for (int n = 0; fgets(linha, sizeof(linha), f) != NULL; n++) {\n        linha[strcspn(linha, \"\\n\")] = '\\0';\n        char tipo = linha[0];\n        char *dados = linha + 2;\n        if (tipo == 'A') {\n            char nome[20], curso[20];\n            sscanf(dados, \"%19[^;];%19s\", nome, curso);\n            printf(\"aluno: nome = %s, curso = %s\\n\", nome, curso);\n        } else if (tipo == 'D') {\n            char nome[20];\n            int carga;\n            sscanf(dados, \"%19[^;];%d\", nome, &carga);\n            printf(\"disciplina: nome = %s, carga = %d horas\\n\", nome, carga);\n        } else {\n            printf(\"tipo desconhecido: %c\\n\", tipo);\n        }\n    }\n}\n\nint main(void) {\n    FILE *f = fopen(\"misto.txt\", \"w+\");\n    fputs(\"A Ana;Sistemas\\n\", f);\n    fputs(\"D AEDS2;60\\n\", f);\n    fputs(\"A Bruno;Civil\\n\", f);\n    fputs(\"D BD;45\\n\", f);\n    fputs(\"X ???\\n\", f);\n    rewind(f);\n    lerMisto(f);\n    fclose(f);\n    return 0;\n}","steps":[{"line":12,"caption":"Lemos o registro 0. O primeiro caractere é o código do tipo de registro: 'A'. O programa decide o que fazer a partir dele.","vars":{"n":0,"tipo":"'A'"},"rows":[[{"s":0,"n":5,"i":[["A","c",6],["D","",2],["A","",6],["D","",2],["X","",0]],"l":"arquivo (A = aluno, D = disciplina)"}]],"stack":"lerMisto ← main"},{"line":14,"caption":"O código 'A' quer dizer aluno. Então os dados são nome e curso, separados por ';'. O sscanf separa os dois campos: nome = Ana e curso = Sistemas.","vars":{"n":0},"rows":[[{"s":0,"n":5,"i":[["A","p",6],["D","",2],["A","",6],["D","",2],["X","",0]],"l":"arquivo (A = aluno, D = disciplina)"}],[{"i":[["Ana","p",5],["Sistemas","p",0]],"l":"campos de um aluno (nome; curso)"}]],"stack":"lerMisto ← main"},{"line":12,"caption":"Lemos o registro 1. O primeiro caractere é o código do tipo de registro: 'D'. O programa decide o que fazer a partir dele.","vars":{"n":1,"tipo":"'D'"},"rows":[[{"s":0,"n":5,"i":[["A","",6],["D","c",2],["A","",6],["D","",2],["X","",0]],"l":"arquivo (A = aluno, D = disciplina)"}]],"stack":"lerMisto ← main"},{"line":19,"caption":"O código 'D' quer dizer disciplina. Então os dados são nome e carga horária (um número). O sscanf lê nome = AEDS2 e carga = 60.","vars":{"n":1},"rows":[[{"s":0,"n":5,"i":[["A","",6],["D","p",2],["A","",6],["D","",2],["X","",0]],"l":"arquivo (A = aluno, D = disciplina)"}],[{"i":[["AEDS2","p",5],["60","p",7]],"l":"campos de uma disciplina (nome; carga horária)"}]],"stack":"lerMisto ← main"},{"line":12,"caption":"Lemos o registro 2. O primeiro caractere é o código do tipo de registro: 'A'. O programa decide o que fazer a partir dele.","vars":{"n":2,"tipo":"'A'"},"rows":[[{"s":0,"n":5,"i":[["A","",6],["D","",2],["A","c",6],["D","",2],["X","",0]],"l":"arquivo (A = aluno, D = disciplina)"}]],"stack":"lerMisto ← main"},{"line":14,"caption":"O código 'A' quer dizer aluno. Então os dados são nome e curso, separados por ';'. O sscanf separa os dois campos: nome = Bruno e curso = Civil.","vars":{"n":2},"rows":[[{"s":0,"n":5,"i":[["A","",6],["D","",2],["A","p",6],["D","",2],["X","",0]],"l":"arquivo (A = aluno, D = disciplina)"}],[{"i":[["Bruno","p",6],["Civil","p",8]],"l":"campos de um aluno (nome; curso)"}]],"stack":"lerMisto ← main"},{"line":12,"caption":"Lemos o registro 3. O primeiro caractere é o código do tipo de registro: 'D'. O programa decide o que fazer a partir dele.","vars":{"n":3,"tipo":"'D'"},"rows":[[{"s":0,"n":5,"i":[["A","",6],["D","",2],["A","",6],["D","c",2],["X","",0]],"l":"arquivo (A = aluno, D = disciplina)"}]],"stack":"lerMisto ← main"},{"line":19,"caption":"O código 'D' quer dizer disciplina. Então os dados são nome e carga horária (um número). O sscanf lê nome = BD e carga = 45.","vars":{"n":3},"rows":[[{"s":0,"n":5,"i":[["A","",6],["D","",2],["A","",6],["D","p",2],["X","",0]],"l":"arquivo (A = aluno, D = disciplina)"}],[{"i":[["BD","p",6],["45","p",5]],"l":"campos de uma disciplina (nome; carga horária)"}]],"stack":"lerMisto ← main"},{"line":12,"caption":"Lemos o registro 4. O primeiro caractere é o código do tipo de registro: 'X'. O programa decide o que fazer a partir dele.","vars":{"n":4,"tipo":"'X'"},"rows":[[{"s":0,"n":5,"i":[["A","",6],["D","",2],["A","",6],["D","",2],["X","c",0]],"l":"arquivo (A = aluno, D = disciplina)"}]],"stack":"lerMisto ← main"},{"line":22,"caption":"O código 'X' não está na lista de tipos conhecidos. O programa avisa e continua com o próximo registro.","vars":{"n":4,"tipo":"'X'"},"rows":[[{"s":0,"n":5,"i":[["A","",6],["D","",2],["A","",6],["D","",2],["X","p",0]],"l":"arquivo (A = aluno, D = disciplina)"}]],"stack":"lerMisto ← main"},{"line":25,"caption":"Fim do arquivo. O mesmo arquivo guardou dois tipos de registro. O código do tipo, no começo de cada um, disse ao programa como interpretar o resto.","vars":{},"rows":[[{"s":0,"n":5,"i":[["A","",6],["D","",2],["A","",6],["D","",2],["X","",0]],"l":"arquivo (A = aluno, D = disciplina)"}]],"stack":"lerMisto ← main"}]}
+{
+  "title": "Arquivo misto passo a passo",
+  "code": [
+    "#include <stdio.h>",
+    "#include <string.h>",
+    "",
+    "/* Arquivo misto: cada linha é um registro e o primeiro caractere é o código do tipo.",
+    "   'A' = aluno (nome;curso)    'D' = disciplina (nome;carga horária) */",
+    "void lerMisto(FILE *f) {",
+    "    char linha[64];",
+    "    for (int n = 0; fgets(linha, sizeof(linha), f) != NULL; n++) {",
+    "        linha[strcspn(linha, \"\\n\")] = '\\0';",
+    "        char tipo = linha[0];",
+    "        char *dados = linha + 2;",
+    "        if (tipo == 'A') {",
+    "            char nome[20], curso[20];",
+    "            sscanf(dados, \"%19[^;];%19s\", nome, curso);",
+    "            printf(\"aluno: nome = %s, curso = %s\\n\", nome, curso);",
+    "        } else if (tipo == 'D') {",
+    "            char nome[20];",
+    "            int carga;",
+    "            sscanf(dados, \"%19[^;];%d\", nome, &carga);",
+    "            printf(\"disciplina: nome = %s, carga = %d horas\\n\", nome, carga);",
+    "        } else {",
+    "            printf(\"tipo desconhecido: %c\\n\", tipo);",
+    "        }",
+    "    }",
+    "}",
+    "",
+    "int main(void) {",
+    "    FILE *f = fopen(\"misto.txt\", \"w+\");",
+    "    fputs(\"A Ana;Sistemas\\n\", f);",
+    "    fputs(\"D AEDS2;60\\n\", f);",
+    "    fputs(\"A Bruno;Civil\\n\", f);",
+    "    fputs(\"D BD;45\\n\", f);",
+    "    fputs(\"X ???\\n\", f);",
+    "    rewind(f);",
+    "    lerMisto(f);",
+    "    fclose(f);",
+    "    return 0;",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 12,
+      "caption": "Lemos o registro 0. O primeiro caractere é o código do tipo de registro: 'A'. O programa decide o que fazer a partir dele.",
+      "vars": {"n": 0, "tipo": "'A'"},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "c", 6], ["D", "", 2], ["A", "", 6], ["D", "", 2], ["X", "", 0]], "l": "arquivo (A = aluno, D = disciplina)"}]],
+      "stack": "lerMisto ← main"
+    },
+    {
+      "line": 14,
+      "caption": "O código 'A' quer dizer aluno. Então os dados são nome e curso, separados por ';'. O sscanf separa os dois campos: nome = Ana e curso = Sistemas.",
+      "vars": {"n": 0},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "p", 6], ["D", "", 2], ["A", "", 6], ["D", "", 2], ["X", "", 0]], "l": "arquivo (A = aluno, D = disciplina)"}], [{"i": [["Ana", "p", 5], ["Sistemas", "p", 0]], "l": "campos de um aluno (nome; curso)"}]],
+      "stack": "lerMisto ← main"
+    },
+    {
+      "line": 12,
+      "caption": "Lemos o registro 1. O primeiro caractere é o código do tipo de registro: 'D'. O programa decide o que fazer a partir dele.",
+      "vars": {"n": 1, "tipo": "'D'"},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "", 6], ["D", "c", 2], ["A", "", 6], ["D", "", 2], ["X", "", 0]], "l": "arquivo (A = aluno, D = disciplina)"}]],
+      "stack": "lerMisto ← main"
+    },
+    {
+      "line": 19,
+      "caption": "O código 'D' quer dizer disciplina. Então os dados são nome e carga horária (um número). O sscanf lê nome = AEDS2 e carga = 60.",
+      "vars": {"n": 1},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "", 6], ["D", "p", 2], ["A", "", 6], ["D", "", 2], ["X", "", 0]], "l": "arquivo (A = aluno, D = disciplina)"}], [{"i": [["AEDS2", "p", 5], ["60", "p", 7]], "l": "campos de uma disciplina (nome; carga horária)"}]],
+      "stack": "lerMisto ← main"
+    },
+    {
+      "line": 12,
+      "caption": "Lemos o registro 2. O primeiro caractere é o código do tipo de registro: 'A'. O programa decide o que fazer a partir dele.",
+      "vars": {"n": 2, "tipo": "'A'"},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "", 6], ["D", "", 2], ["A", "c", 6], ["D", "", 2], ["X", "", 0]], "l": "arquivo (A = aluno, D = disciplina)"}]],
+      "stack": "lerMisto ← main"
+    },
+    {
+      "line": 14,
+      "caption": "O código 'A' quer dizer aluno. Então os dados são nome e curso, separados por ';'. O sscanf separa os dois campos: nome = Bruno e curso = Civil.",
+      "vars": {"n": 2},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "", 6], ["D", "", 2], ["A", "p", 6], ["D", "", 2], ["X", "", 0]], "l": "arquivo (A = aluno, D = disciplina)"}], [{"i": [["Bruno", "p", 6], ["Civil", "p", 8]], "l": "campos de um aluno (nome; curso)"}]],
+      "stack": "lerMisto ← main"
+    },
+    {
+      "line": 12,
+      "caption": "Lemos o registro 3. O primeiro caractere é o código do tipo de registro: 'D'. O programa decide o que fazer a partir dele.",
+      "vars": {"n": 3, "tipo": "'D'"},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "", 6], ["D", "", 2], ["A", "", 6], ["D", "c", 2], ["X", "", 0]], "l": "arquivo (A = aluno, D = disciplina)"}]],
+      "stack": "lerMisto ← main"
+    },
+    {
+      "line": 19,
+      "caption": "O código 'D' quer dizer disciplina. Então os dados são nome e carga horária (um número). O sscanf lê nome = BD e carga = 45.",
+      "vars": {"n": 3},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "", 6], ["D", "", 2], ["A", "", 6], ["D", "p", 2], ["X", "", 0]], "l": "arquivo (A = aluno, D = disciplina)"}], [{"i": [["BD", "p", 6], ["45", "p", 5]], "l": "campos de uma disciplina (nome; carga horária)"}]],
+      "stack": "lerMisto ← main"
+    },
+    {
+      "line": 12,
+      "caption": "Lemos o registro 4. O primeiro caractere é o código do tipo de registro: 'X'. O programa decide o que fazer a partir dele.",
+      "vars": {"n": 4, "tipo": "'X'"},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "", 6], ["D", "", 2], ["A", "", 6], ["D", "", 2], ["X", "c", 0]], "l": "arquivo (A = aluno, D = disciplina)"}]],
+      "stack": "lerMisto ← main"
+    },
+    {
+      "line": 22,
+      "caption": "O código 'X' não está na lista de tipos conhecidos. O programa avisa e continua com o próximo registro.",
+      "vars": {"n": 4, "tipo": "'X'"},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "", 6], ["D", "", 2], ["A", "", 6], ["D", "", 2], ["X", "p", 0]], "l": "arquivo (A = aluno, D = disciplina)"}]],
+      "stack": "lerMisto ← main"
+    },
+    {
+      "line": 25,
+      "caption": "Fim do arquivo. O mesmo arquivo guardou dois tipos de registro. O código do tipo, no começo de cada um, disse ao programa como interpretar o resto.",
+      "vars": {},
+      "rows": [[{"s": 0, "n": 5, "i": [["A", "", 6], ["D", "", 2], ["A", "", 6], ["D", "", 2], ["X", "", 0]], "l": "arquivo (A = aluno, D = disciplina)"}]],
+      "stack": "lerMisto ← main"
+    }
+  ]
+}
 ```
 
 ## Teste rápido
@@ -63,6 +184,19 @@ Clique em **Executar**. Repare que o programa lê o código do tipo primeiro e s
   ],
   "correctFeedback": "✅ Correto! No tamanho fixo, a maioria dos registros desperdiçaria quase todo o espaço reservado.",
   "incorrectFeedback": "❌ Ainda não. Reservar o pior caso em todos os registros desperdiça muito espaço (fragmentação interna). O tamanho variável usa só o necessário."
+}
+```
+
+```quiz
+{
+  "question": "Em um arquivo misto com registros de alunos e de disciplinas, para que serve o código de tipo de registro?",
+  "options": [
+    { "text": "Guardar o tamanho do registro em bytes", "correct": false },
+    { "text": "Marcar o fim do arquivo", "correct": false },
+    { "text": "Dizer ao programa como interpretar o que vem depois dele", "correct": true }
+  ],
+  "correctFeedback": "✅ Correto! O código de tipo, no começo de cada registro, indica se o que vem a seguir é um aluno ou uma disciplina.",
+  "incorrectFeedback": "❌ Ainda não. O tamanho e o fim do arquivo são outras informações. O código de tipo só identifica o tipo do registro, para o programa saber como ler os campos."
 }
 ```
 

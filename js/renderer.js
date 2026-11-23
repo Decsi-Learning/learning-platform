@@ -162,9 +162,11 @@
 
   function renderCodigo(source) {
     const data = parseJson(source);
-    if (!data || typeof data.code !== "string" || !Array.isArray(data.steps)) return blockError("Este bloco de código tem um erro de formato.");
+    // "code" pode ser um texto com quebras de linha ou uma lista de linhas (mais fácil de ler e editar no editor de código)
+    const code = Array.isArray(data && data.code) && data.code.every((l) => typeof l === "string") ? data.code.join("\n") : data && data.code;
+    if (!data || typeof code !== "string" || !Array.isArray(data.steps)) return blockError("Este bloco de código tem um erro de formato.");
     if (data.steps.length < 1) return blockError("O bloco de código precisa de pelo menos um passo.");
-    const codeLines = highlightC(data.code);
+    const codeLines = highlightC(code);
     for (const step of data.steps) {
       if (!step || typeof step !== "object") return blockError("Um dos passos do código tem um erro de formato.");
       if (step.line !== undefined && !(Number.isInteger(step.line) && step.line >= 1 && step.line <= codeLines.length)) {

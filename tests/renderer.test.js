@@ -368,3 +368,10 @@ test("patricia block rejects keys with the wrong number of bits", () => {
   assert.match(renderBlock("patricia", JSON.stringify({ bits: 5, chaves: [{ nome: "a", bits: "0101" }] })), /quiz-error/);
   assert.match(renderBlock("patricia", JSON.stringify({ bits: 5, chaves: [{ nome: "", bits: "01010" }] })), /quiz-error/);
 });
+
+test("codigo accepts the code as a list of lines, same result as a single string", () => {
+  const comoTexto = renderBlock("codigo", codigoBloco());
+  const comoLista = renderBlock("codigo", codigoBloco({ code: ["int a = 1;", "int b = a + 2; // soma"] }));
+  assert.strictEqual(comoLista, comoTexto);
+  assert.match(renderBlock("codigo", codigoBloco({ code: ["ok", 3] })), /class="quiz-error"/);
+});
