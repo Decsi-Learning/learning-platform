@@ -152,7 +152,26 @@
       "id": "hash",
       "title": "Hash",
       "summary": "Funções de dispersão, tratamento de colisões e eficiência de tabelas Hash.",
-      "file": null
+      "pages": [
+        {
+          "id": "funcao-dispersao",
+          "title": "Função de dispersão",
+          "summary": "Como transformar uma chave em um endereço do vetor e por que a escolha dessa função define a qualidade de toda a tabela.",
+          "file": "hash/funcao-dispersao.md"
+        },
+        {
+          "id": "tratamento-colisoes",
+          "title": "Tratamento de colisões",
+          "summary": "O que fazer quando duas chaves diferentes são mapeadas para a mesma posição.",
+          "file": "hash/tratamento-colisoes.md"
+        },
+        {
+          "id": "eficiencia",
+          "title": "Eficiência de tabelas hash",
+          "summary": "Como medir o desempenho, quando ele degrada e como mantê-lo em O(1) na prática.",
+          "file": "hash/eficiencia.md"
+        }
+      ]
     },
     {
       "id": "casamento-padroes-texto",
