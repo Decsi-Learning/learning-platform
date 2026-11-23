@@ -23,7 +23,22 @@
       "id": "acesso-sequencial-randomico",
       "title": "Acesso sequencial e randômico",
       "summary": "Formas de localizar e acessar registros em arquivos.",
-      "file": null
+      "pages":[
+        {
+          "id": "Acesso Sequencial e Acesso Randômico em Arquivos",
+          "title": "Acesso Sequencial e Acesso Randômico em Arquivos",
+          "summary": "Resolva a lista de exercícios para avançar para a proxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "acesso_sequencial_e_randomico.md"
+        },
+        {
+          "id": "ListaExercicios-Acessos_Sequencial_Randomico",
+          "title": "ListaExercicios-Acessos_Sequencial e Randomico",
+          "summary": "Resolva a lista de exercícios para avançar para a proxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "exerciciosAcessoSequencialRandomico.md"
+        }
+      ]
     },
     {
       "id": "organizacao-dados-arquivos",
