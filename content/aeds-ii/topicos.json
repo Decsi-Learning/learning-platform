@@ -109,7 +109,8 @@
         {
           "id": "exercicios-avaliativos-registros-tamanho-variavel",
           "title": "Exercícios avaliativos",
-          "summary": "Exercícios com gabarito sobre todo o tópico.",
+          "summary": "Dez questões de marcar sobre todo o tópico.",
+          "requiresQuizAnswers": true,
           "file": "registros-tamanho-variavel/exercicios-avaliativos-registros-tamanho-variavel.md"
         },
         {
