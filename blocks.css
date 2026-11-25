@@ -208,7 +208,7 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 
 .markdown .stepper[data-kind="narrada"] {
   display: grid;
-  grid-template-columns: minmax(8rem, 1fr) minmax(0, 3fr);
+  grid-template-columns: clamp(8rem, 20%, 11.25rem) minmax(0, 1fr);
   gap: 1rem;
   background: var(--theme-surface-raised);
 }
@@ -218,6 +218,10 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
   align-content: center;
 }
 .narrator {
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  align-self: start;
   justify-items: center;
   text-align: center;
   gap: .7rem;
@@ -254,6 +258,6 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 .stepper[data-kind="narrada"] .stepper-controls { grid-column: 1 / -1; margin-top: 0; }
 @media (max-width: 650px) {
   .markdown .stepper[data-kind="narrada"] { grid-template-columns: minmax(0, 1fr); }
-  .narrator { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .narrator { width: min(100%, 8rem); justify-self: center; }
   .narrator-portrait { font-size: 2.5rem; }
 }
