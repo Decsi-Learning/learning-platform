@@ -27,7 +27,21 @@ const response = await fetch('https://generativelanguage.googleapis.com/v1beta/i
     response_format: { ...format, delivery: 'inline' }
   })
 });
-if (!response.ok) throw new Error('A API retornou HTTP ' + response.status);
+if (!response.ok) {
+  const body = await response.json().catch(() => null);
+  const error = body?.error;
+  const lines = [`Gemini API: HTTP ${response.status}`];
+  if (error?.message) lines.push(error.message);
+  for (const detail of error?.details ?? []) {
+    for (const violation of detail.violations ?? []) {
+      lines.push([violation.quotaMetric, violation.quotaId, violation.description].filter(Boolean).join(' '));
+    }
+    if (detail.retryDelay) lines.push('Prazo sugerido pela API: ' + detail.retryDelay);
+  }
+  if (response.headers.has('retry-after')) lines.push('Retry-After: ' + response.headers.get('retry-after'));
+  console.error(lines.join('\n').replaceAll(key, '[chave omitida]'));
+  process.exit(1);
+}
 const result = await response.json();
 const media = result.steps?.filter(s => s.type === 'model_output').flatMap(s => s.content).find(c => c.type === 'video' && c.data);
 if (!media) throw new Error('Resposta sem vídeo. Interação: ' + result.id);
