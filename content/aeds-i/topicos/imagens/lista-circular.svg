@@ -36,8 +36,8 @@
   </g>
 
   <!-- Retorno do último para o primeiro -->
-  <path d="M 577 110 L 640 110 C 690 110, 690 190, 620 190 L 160 190 C 110 190, 100 160, 105 128" fill="none" stroke="#147d78" stroke-width="2.2"/>
-  <polygon points="105,128 100,139 111,137" fill="#147d78"/>
+  <path d="M 577 110 L 640 110 C 700 110, 700 195, 620 195 L 240 195 C 200 195, 180 175, 180 143" fill="none" stroke="#147d78" stroke-width="2.2"/>
+  <polygon points="180,143 173,154 187,154" fill="#147d78"/>
 
   <text x="390" y="215" text-anchor="middle" font-size="12" fill="#42636a">O prox do &#250;ltimo n&#243; aponta de volta para o primeiro: n&#227;o h&#225; NULL, a lista forma um ciclo.</text>
 </svg>
