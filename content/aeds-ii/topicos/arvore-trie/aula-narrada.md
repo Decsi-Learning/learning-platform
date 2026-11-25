@@ -9,6 +9,15 @@
     "maxClipes": 36,
     "glossarioPronuncia": {
       "Trie": "trai"
+    },
+    "flow": {
+      "modelo": "Omni Flash 1.2",
+      "modo": "Ingredients",
+      "aspecto": "9:16",
+      "resolucaoTeste": "360p",
+      "resolucaoFinal": "720p",
+      "mencaoPersonagem": "@Rafa IA",
+      "cena": "medium close-up, centered, plain white background, static camera, soft studio light"
     }
   },
   "slides": [

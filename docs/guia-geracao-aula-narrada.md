@@ -35,6 +35,8 @@ Use os valores abaixo, a menos que quem pediu informe outros. Copie-os para o ca
 | `maxSlides` | `18` | Máximo de slides por tópico. |
 | `maxClipes` | `36` | Máximo de clipes por tópico (cada clipe é uma geração de vídeo, então tem custo). |
 
+Para produzir os vídeos do avatar no Google Flow, selecione o formato vertical indicado em `config.flow.aspecto` (9:16). Use essa proporção no clipe piloto e nas exportações finais.
+
 ## 5. Processo (siga nesta ordem)
 
 1. **Mapeie o tópico.** Liste as seções e o que cada uma ensina.
@@ -159,6 +161,15 @@ Uma frase curta **em inglês**, só sobre expressão e gesto do professor naquel
     "charsPorSegundo": 14.5,
     "maxSlides": 18,
     "maxClipes": 36,
+    "flow": {
+      "modelo": "Omni Flash 1.2",
+      "modo": "Ingredients",
+      "aspecto": "9:16",
+      "resolucaoTeste": "360p",
+      "resolucaoFinal": "720p",
+      "mencaoPersonagem": "@Rafa IA",
+      "cena": "medium close-up, centered, plain white background, static camera, soft studio light"
+    },
     "glossarioPronuncia": { "termo": "como falar" }
   },
   "slides": [
