@@ -21,7 +21,38 @@ Se o tópico não tiver uma seção, não invente: pule o slide correspondente.
 
 ## 3. Saída
 
-O arquivo da aula deve conter **um único bloco** ` ```aula-narrada ` com JSON válido (aspas duplas, sem comentários, sem vírgula sobrando) e **nenhum texto fora dele**. Ao trabalhar no repositório, salve esse bloco no arquivo da aula e registre a página no catálogo conforme a seção 13. Em um chat externo, entregue o bloco para o desenvolvedor salvar.
+O arquivo da aula deve conter **um único bloco** ` ```aula-narrada ` com JSON válido (aspas duplas, sem comentários, sem vírgula sobrando) e **nenhum texto fora dele**. Ao trabalhar no repositório, salve esse bloco no arquivo da aula e registre a página no catálogo conforme a seção 13. Além do arquivo do player, entregue ao desenvolvedor o roteiro completo descrito abaixo. No repositório, salve-o como `roteiro-google-flow.md` ao lado de `aula-narrada.md`. Em um chat externo, identifique as duas entregas na resposta.
+
+### Roteiro de produção para o Google Flow
+
+Comece com a instrução: **No Google Flow, use @Rafa IA no modo Ingredients. Gere cada clipe em 9:16 (vertical) e 360p. Confira o enquadramento e a fala. Ao exportar o MP4, escolha 720p e mantenha 9:16.**
+
+Na resposta ao desenvolvedor e no roteiro, apresente **todos** os slides na ordem de `slides[]`. Use o título real e o total de segundos do slide. Para cada clipe, indique o arquivo `sNN-cN.mp4` e coloque o prompt completo em um bloco de código próprio, pronto para colar no Flow. Copie a fala de `speech` literalmente e a direção de `direction` em inglês. Repita a menção ao Rafa, a cena, o enquadramento e as instruções finais em cada prompt, pois cada geração começa do zero.
+
+Os exemplos abaixo ilustram a entrega de uma aula de três slides. Em cada nova aula, use as falas e durações do roteiro gerado.
+
+**Slide 1: "Uma ideia para começar"** (duração 9 s)
+Arquivo: `s01-c1.mp4`
+
+```text
+@Rafa IA, medium close-up, centered, plain white background, static camera, soft studio light. He looks at the camera like a friendly professor, warm smile, small natural head movements. On the question, he raises his eyebrows and tilts his head slightly with curiosity. He says in a warm, unhurried voice: "Vamos começar com uma pergunta simples. Se você pudesse mostrar uma única ideia para alguém, qual escolheria?" No background music. No on-screen text.
+```
+
+**Slide 2: "A mesma ideia, vista de perto"** (duração 10 s)
+Arquivo: `s02-c1.mp4`
+
+```text
+@Rafa IA, medium close-up, centered, plain white background, static camera, soft studio light. He looks at the camera like a friendly professor, relaxed and conversational, small natural head movements, a gentle nod on "um exemplo". He says in a warm, unhurried voice: "Imagine que você está contando essa ideia a um colega. Escolha um exemplo do seu dia a dia e descreva o que aconteceu." No background music. No on-screen text.
+```
+
+**Slide 3: "O que ficou?"** (duração 8 s)
+Arquivo: `s03-c1.mp4`
+
+```text
+@Rafa IA, medium close-up, centered, plain white background, static camera, soft studio light. He looks at the camera like a friendly professor, calm and satisfied, small natural head movements, a slow nod at the end and a warm smile. He says in a warm, unhurried voice: "Para fechar, volte à pergunta inicial. Como você explicaria a ideia agora, em uma frase?" No background music. No on-screen text.
+```
+
+Se o slide tiver vários clipes, mantenha um único cabeçalho com a duração total e, antes de cada prompt, escreva, por exemplo, **Clipe 1 de 2 · 9 s · `s03-c1.mp4`**. Ao final, indique a montagem em ordem de clipe e o destino do slide, por exemplo `videos/3.mp4`. Para um único clipe, basta salvar uma cópia com o número do slide na pasta `videos/`.
 
 ## 4. Parâmetros
 
@@ -200,7 +231,8 @@ O `id` segue a ordem (`s01`, `s02`...). O `durationSeconds` do slide é a soma d
 
 ## 12. Checklist antes de entregar
 
-- [ ] A saída é só um bloco ` ```aula-narrada ` com JSON válido.
+- [ ] O arquivo do player contém só um bloco ` ```aula-narrada ` com JSON válido.
+- [ ] O roteiro do Flow contém um prompt por clipe, com fala, nome e duração conferidos contra o JSON, e informa geração vertical 9:16 em 360p e exportação vertical em 720p.
 - [ ] Há de 10 a 18 slides e no máximo 36 clipes; o primeiro slide é `abertura` e o último é `recap`.
 - [ ] Todo slide cumpre os limites da seção 7 (título, linhas de código, linhas de tabela).
 - [ ] Nenhum `speech` passa de 190 caracteres (ou 120 se `maxClipSeconds` for 10) nem tem menos de 45.

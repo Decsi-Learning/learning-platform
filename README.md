@@ -8,6 +8,10 @@ O [guia e modelo de Markdown](docs/guia-e-modelo-markdown.md) descreve os elemen
 
 Antes de gerar uma aula, consulte o [guia de geração de aula narrada](docs/guia-geracao-aula-narrada.md). Ele orienta a transformação do Markdown do tópico em slides, falas e tempos. Se a IA estiver fora do repositório, anexe a versão atual do guia e o Markdown do tópico à mesma conversa e peça que aplique o guia.
 
+Ao criar ou atualizar uma aula, a IA deve entregar o Markdown do player e um **roteiro de produção para o Google Flow**. Na resposta ao desenvolvedor, apresente todos os slides em ordem no formato **Slide N: "Título" (duração X s)**, com um bloco de texto pronto para copiar por clipe. Inclua a fala integral em português, a direção do Rafa em inglês e o nome do MP4. Para slides com várias falas, identifique cada clipe e sua duração. O guia contém o modelo e exemplos completos.
+
+Abra o roteiro com esta instrução: **No Google Flow, use o personagem @Rafa IA, gere cada clipe em 9:16 (vertical) e 360p. Na exportação, selecione 720p e mantenha 9:16.**
+
 ## Adicionar e ordenar tópicos
 
 1. Escolha a trilha e crie o arquivo `.md` dentro da pasta `topicos/` correspondente, por exemplo `content/aeds-ii/topicos/variaveis.md`.
