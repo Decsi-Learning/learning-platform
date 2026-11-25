@@ -92,6 +92,76 @@
     return renderStepper("slides", "Slides", '<p class="stepper-title">Slides</p>', panels);
   }
 
+  function renderNarratedLesson(source) {
+    const slides = parseJson(source)?.slides;
+    if (!Array.isArray(slides) || !slides.length || slides.some(slide => !slide?.title || !slide.speech)) {
+      return blockError("Cada slide da aula precisa de um título e uma narração.");
+    }
+    const panels = slides.map(slide => {
+      const books = Array.isArray(slide.stack) ? slide.stack.map(book => `<li>${escapeHtml(book)}</li>`).join("") : "";
+      return `<article class="narrated-slide" data-speech="${escapeHtml(slide.speech)}">
+        <div><h4>${renderInline(slide.title)}</h4><p>${renderInline(slide.body || "")}</p></div>
+        ${books ? `<figure><figcaption>Topo ↓</figcaption><ol>${books}</ol></figure>` : ""}
+      </article>`;
+    });
+    const presenter = `<aside class="narrator"><span aria-hidden="true" class="narrator-portrait">👨🏽‍🏫</span>
+      <button type="button" data-narrate>Ouvir aula</button><small role="status"></small></aside>`;
+    return renderStepper("narrada", "Aula narrada", presenter, panels);
+  }
+
+  let activeSpeech = null;
+
+  function stopNarration() {
+    if (!activeSpeech) return;
+    const { button } = activeSpeech;
+    activeSpeech = null;
+    window.speechSynthesis.cancel();
+    button.textContent = "Ouvir aula";
+  }
+
+  if (typeof window !== "undefined") window.addEventListener("pagehide", stopNarration);
+
+  function narrate(stepper) {
+    const button = stepper.querySelector("[data-narrate]");
+    const status = stepper.querySelector('[role="status"]');
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+      status.textContent = "Voz indisponível. Use os controles para ler os slides.";
+      return;
+    }
+    const wasPlaying = activeSpeech?.button === button;
+    stopNarration();
+    if (wasPlaying) return;
+    status.textContent = "";
+    if (stepper.dataset.finished) showStep(stepper, -Number(stepper.dataset.count));
+    delete stepper.dataset.finished;
+    function speakSlide() {
+      const slide = stepper.querySelector(".stepper-panel:not([hidden]) .narrated-slide");
+      const utterance = new window.SpeechSynthesisUtterance(slide.dataset.speech);
+      utterance.lang = "pt-BR";
+      activeSpeech = { button, utterance };
+      button.textContent = "Parar narração";
+      utterance.onend = () => {
+        if (activeSpeech?.utterance !== utterance) return;
+        if (stepper.isConnected && !stepper.querySelector('[data-stepper="next"]').disabled) {
+          showStep(stepper, 1);
+          speakSlide();
+        } else {
+          activeSpeech = null;
+          stepper.dataset.finished = "true";
+          button.textContent = "Ouvir novamente";
+        }
+      };
+      utterance.onerror = () => {
+        if (activeSpeech?.utterance !== utterance) return;
+        activeSpeech = null;
+        button.textContent = "Tentar narração";
+        status.textContent = "Voz indisponível. Você pode avançar os slides manualmente.";
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+    speakSlide();
+  }
+
   function renderDemo(source) {
     const data = parseJson(source);
     if (!data || !Array.isArray(data.steps)) return blockError("Esta demonstração tem um erro de formato.");
@@ -658,7 +728,7 @@
     return !!passo.fim;
   }
 
-  const BLOCK_RENDERERS = { video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia };
+  const BLOCK_RENDERERS = { "aula-narrada": renderNarratedLesson, video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia };
 
   // Ponte para o renderizador do site: devolve o HTML do bloco, ou null se a linguagem não é nossa.
   function renderBlock(language, source, options = {}) {
@@ -706,6 +776,11 @@
   }
 
   function stopPlay(stepper) {
+    if (stepper.dataset.kind === "narrada") {
+      if (activeSpeech?.button.closest(".stepper") === stepper) stopNarration();
+      delete stepper.dataset.finished;
+      stepper.querySelector("[data-narrate]").textContent = "Ouvir aula";
+    }
     if (stepper.__timer) { clearInterval(stepper.__timer); stepper.__timer = null; }
     const play = stepper.querySelector('[data-stepper="play"]');
     if (play) { play.textContent = "▶ Executar"; play.classList.remove("playing"); }
@@ -729,6 +804,8 @@
     if (root.__lessonInteractions) return;
     root.__lessonInteractions = true;
     root.addEventListener("click", (event) => {
+      const narrator = event.target.closest("[data-narrate]");
+      if (narrator) { narrate(narrator.closest(".stepper")); return; }
       const rt = event.target.closest(".roteamento [data-rt], .roteamento .rt-bit");
       if (rt) {
         if (rt.disabled) return;

@@ -5,6 +5,12 @@
       "title": "Primeiros passos",
       "summary": "Um tópico de exemplo para conferir a navegação, a busca e o registro de progresso da nova trilha.",
       "file": "primeiros-passos.md"
+    },
+    {
+      "id": "pilhas-aula-narrada",
+      "title": "Pilhas: aula narrada",
+      "summary": "Acompanhe a entrada e a saída de livros em uma pilha.",
+      "file": "pilhas-aula-narrada.md"
     }
   ]
 }

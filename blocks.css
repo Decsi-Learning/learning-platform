@@ -205,3 +205,55 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 .markdown span.rt-bit.pt-dif { border-color: #ef4444; background: #ef4444; color: #fff; }
 .markdown .pt-chave { align-self: center; margin-left: 10px; font-weight: 750; color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .markdown .pt-leaf.rt-new rect { animation: none; } }
+
+.markdown .stepper[data-kind="narrada"] {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(0, 3fr);
+  gap: 1rem;
+  background: var(--theme-surface-raised);
+}
+.narrator, .narrated-slide {
+  border-radius: 12px;
+  display: grid;
+  align-content: center;
+}
+.narrator {
+  justify-items: center;
+  text-align: center;
+  gap: .7rem;
+  padding: 1rem;
+  background: var(--theme-accent-soft);
+}
+.narrator-portrait { font-size: clamp(3rem, 6vw, 5rem); line-height: 1.25; }
+.narrator button {
+  border: 0;
+  border-radius: 8px;
+  padding: .6rem .9rem;
+  background: var(--theme-action);
+  color: var(--theme-action-text);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+.narrator small:empty { display: none; }
+.markdown .narrated-slide {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 1.2rem;
+  align-items: center;
+  min-height: 16rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: var(--theme-surface);
+  border-top: 5px solid var(--theme-accent);
+}
+.markdown .narrated-slide h4 { color: var(--theme-accent-strong); font-size: 1.45rem; line-height: 1.15; }
+.markdown .narrated-slide figure { margin: 0; text-align: center; }
+.markdown .narrated-slide figcaption { color: var(--theme-text-soft); font-size: .85rem; }
+.markdown .narrated-slide ol { padding: 0; list-style: none; }
+.markdown .narrated-slide li { padding: .3rem; background: var(--theme-accent-soft); border-radius: 4px; }
+.markdown .narrated-slide li:first-child { background: var(--theme-action); color: var(--theme-action-text); }
+.stepper[data-kind="narrada"] .stepper-controls { grid-column: 1 / -1; margin-top: 0; }
+@media (max-width: 650px) {
+  .markdown .stepper[data-kind="narrada"] { grid-template-columns: minmax(0, 1fr); }
+  .narrator { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .narrator-portrait { font-size: 2.5rem; }
+}
