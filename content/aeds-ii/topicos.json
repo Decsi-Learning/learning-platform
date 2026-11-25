@@ -230,7 +230,19 @@
       "id": "arvore-trie",
       "title": "Árvore Trie",
       "summary": "Árvore de prefixos: inserção, busca, remoção, complexidade e variações.",
-      "file": "arvore-trie/arvore-trie.md"
+      "pages": [
+        {
+          "id": "arvore-trie",
+          "title": "Árvore Trie",
+          "file": "arvore-trie/arvore-trie.md"
+        },
+        {
+          "id": "aula-narrada",
+          "title": "Aula narrada: Árvore Trie",
+          "summary": "Percorra os exemplos em C, compare os custos e teste sua leitura de uma árvore de prefixos.",
+          "file": "arvore-trie/aula-narrada.md"
+        }
+      ]
     },
     {
       "id": "arvore-patricia",

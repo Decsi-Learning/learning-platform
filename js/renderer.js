@@ -92,10 +92,34 @@
     return renderStepper("slides", "Slides", '<p class="stepper-title">Slides</p>', panels);
   }
 
+  function renderLessonVisual(slide, sourceUrl) {
+    const v = slide.visual;
+    if (!v) return "";
+    const list = items => `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+    switch (slide.layout) {
+      case "diagrama": {
+        if (!/^[\w/-]+\.(svg|png|webp|jpe?g)$/i.test(v.figura)) return "";
+        const src = sourceUrl ? new URL(v.figura, sourceUrl).href : v.figura;
+        return `<figure><img src="${escapeHtml(src)}" alt="${escapeHtml(v.legenda)}"><figcaption>${escapeHtml(v.legenda)}</figcaption></figure>`;
+      }
+      case "codigo":
+        return `<pre><code>${v.trecho.split("\n").map((line, i) => `<span data-line="${i+1}">${escapeHtml(line)}</span>`).join("\n")}</code></pre>`;
+      case "comparativo":
+      case "tabela":
+        return `<div class="table-wrap"><table><thead><tr>${v.colunas.map(col => `<th>${escapeHtml(col)}</th>`).join("")}</tr></thead><tbody>${v.linhas.map((row,i) => `<tr data-line="${i+1}">${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+      case "quiz":
+        return `<strong>${escapeHtml(v.pergunta)}</strong>${list(v.opcoes)}<details class="lesson-answer"><summary>Conferir resposta</summary>${escapeHtml(v.opcoes[v.correta])}</details>`;
+      case "aplicacao":
+        return list(v.itens.map(item => item.nome + " — " + item.detalhe));
+      default:
+        return list(v.topicos || v.pontos || []);
+    }
+  }
+
   function renderNarratedLesson(source, options = {}) {
     const lesson = parseJson(source);
     const slides = lesson?.slides;
-    if (!Array.isArray(slides) || !slides.length || slides.some(slide => !slide?.title || !slide.speech)) {
+    if (!Array.isArray(slides) || !slides.length || slides.some(slide => !slide?.title || !(slide.speech || (Array.isArray(slide.clips) && slide.clips.length && slide.clips.every(c => c?.speech))))) {
       return blockError("Cada slide da aula precisa de um título e uma narração.");
     }
     const folder = lesson.videoFolder;
@@ -104,8 +128,9 @@
       const path = hasVideos ? `${folder}/${index + 1}.mp4` : "";
       const video = path && options.sourceUrl ? new URL(path, options.sourceUrl).href : path;
       const books = Array.isArray(slide.stack) ? slide.stack.map(book => `<li>${escapeHtml(book)}</li>`).join("") : "";
-      return `<article class="narrated-slide" data-speech="${escapeHtml(slide.speech)}"${video ? ` data-avatar-video="${escapeHtml(video)}"` : ""}>
+      return `<article class="narrated-slide${slide.visual ? " lesson-layout" : ""}" data-speech="${escapeHtml(slide.speech || "")}"${slide.clips ? ` data-clips="${escapeHtml(JSON.stringify(slide.clips))}"` : ""}${video ? ` data-avatar-video="${escapeHtml(video)}"` : ""}>
         <div><h4>${renderInline(slide.title)}</h4><p>${renderInline(slide.body || "")}</p></div>
+        ${renderLessonVisual(slide, options.sourceUrl)}
         ${books ? `<figure><figcaption>Topo ↓</figcaption><ol>${books}</ol></figure>` : ""}
       </article>`;
     });
@@ -181,16 +206,29 @@
         button.textContent = "Tentar narração";
         status.textContent = "Voz indisponível. Você pode avançar os slides manualmente.";
       }
+      const clips = slide.dataset.clips ? JSON.parse(slide.dataset.clips) : [{ speech: slide.dataset.speech }];
+      let clipIndex = 0;
+      let spokenSeconds = 0;
       function speakText() {
         if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { unavailable(); return; }
-        const utterance = new window.SpeechSynthesisUtterance(slide.dataset.speech);
+        const clip = clips[clipIndex];
+        const lines = clip.focus?.linhas || [];
+        slide.querySelectorAll("[data-line]").forEach(line => {
+          line.classList.toggle("lesson-focus", line.dataset.line >= lines[0] && line.dataset.line <= lines[1]);
+        });
+        const answer = slide.querySelector(".lesson-answer");
+        if (answer) answer.open = clip.focus?.mostrar === "opção correta";
+        const utterance = new window.SpeechSynthesisUtterance(clip.speech);
         utterance.lang = "pt-BR";
         activeSpeech = { button, utterance };
         let startedAt;
         utterance.onstart = () => { startedAt = performance.now(); };
         utterance.onend = event => {
           if (activeSpeech?.utterance !== utterance) return;
-          finish(event.elapsedTime || (startedAt === undefined ? 0 : (performance.now() - startedAt) / 1000));
+          spokenSeconds += event.elapsedTime || (startedAt === undefined ? 0 : (performance.now() - startedAt) / 1000);
+          clipIndex++;
+          if (clipIndex < clips.length) speakText();
+          else finish(spokenSeconds);
         };
         utterance.onerror = () => { if (activeSpeech?.utterance === utterance) unavailable(); };
         window.speechSynthesis.speak(utterance);

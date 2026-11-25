@@ -338,3 +338,12 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
   font-variant-numeric: tabular-nums;
 }
 .narration-timeline input { flex: 1; min-width: 5rem; height: 2rem; accent-color: var(--theme-accent); }
+
+.markdown .narrated-slide.lesson-layout {
+  grid-template-columns: minmax(0, 1fr);
+  gap: .55rem;
+}
+.lesson-layout pre { text-align: left; }
+.markdown .lesson-layout figure img { width: 100%; max-height: 16rem; object-fit: contain; margin: 0 auto; }
+.markdown .narrated-slide.lesson-layout li { background: transparent; color: inherit; padding: 0; }
+.lesson-layout .lesson-focus { background: var(--theme-accent-soft); color: var(--theme-text); }
