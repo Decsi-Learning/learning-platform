@@ -309,3 +309,14 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 @media (max-width: 650px) {
   .stepper[data-kind="narrada"]:not([data-view="avatar"]) .narrator-video { display: none; }
 }
+
+.narration-timeline {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  font-size: .85rem;
+  font-variant-numeric: tabular-nums;
+}
+.narration-timeline input { flex: 1; min-width: 5rem; height: 2rem; accent-color: var(--theme-accent); }

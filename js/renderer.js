@@ -129,9 +129,9 @@
 
   function stopNarration() {
     if (!activeSpeech) return;
-    const { button, video } = activeSpeech;
+    const { button, video, timeline } = activeSpeech;
     activeSpeech = null;
-    if (video) { video.pause(); video.remove(); }
+    if (video) { video.pause(); video.remove(); timeline.remove(); }
     else window.speechSynthesis?.cancel();
     button.textContent = "Ouvir aula";
   }
@@ -142,6 +142,17 @@
     const button = stepper.querySelector("[data-narrate]");
     const status = stepper.querySelector('[role="status"]');
     const wasPlaying = activeSpeech?.button === button;
+    if (wasPlaying && activeSpeech.video) {
+      const { video } = activeSpeech;
+      if (video.paused) {
+        video.play().catch(() => {
+          if (activeSpeech?.video === video) status.textContent = "Toque em Continuar para retomar o vídeo.";
+        });
+      } else {
+        video.pause();
+      }
+      return;
+    }
     stopNarration();
     if (wasPlaying) return;
     status.textContent = "";
@@ -189,12 +200,34 @@
       video.className = "narrator-video";
       video.playsInline = true;
       video.setAttribute("aria-label", "Vídeo do avatar");
-      activeSpeech = { button, video };
+      const timeline = document.createElement("label");
+      timeline.className = "narration-timeline";
+      timeline.innerHTML = '<span>Tempo do slide</span><input type="range" min="0" step="0.1" value="0" disabled><span class="video-clock" aria-hidden="true"></span>';
+      stepper.querySelector(".stepper-controls").before(timeline);
+      const seek = timeline.querySelector("input");
+      const clock = timeline.querySelector(".video-clock");
+      const formatTime = value => Math.floor(value / 60) + ":" + String(Math.floor(value % 60)).padStart(2, "0");
+      function updateTime() {
+        if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+        seek.disabled = false;
+        seek.max = video.duration;
+        seek.value = video.currentTime;
+        const time = formatTime(video.currentTime) + " / " + formatTime(video.duration);
+        seek.setAttribute("aria-valuetext", time);
+        clock.textContent = time;
+      }
+      seek.oninput = () => { video.currentTime = Number(seek.value); updateTime(); };
+      video.ontimeupdate = video.ondurationchange = updateTime;
+      video.onplay = () => { if (activeSpeech?.video === video) button.textContent = "Pausar"; };
+      video.onpause = () => { if (activeSpeech?.video === video) button.textContent = "Continuar"; };
+      activeSpeech = { button, video, timeline };
       const fallback = () => {
         if (activeSpeech?.video !== video) return;
         activeSpeech = null;
         video.pause();
         video.remove();
+        timeline.remove();
+        button.textContent = "Parar narração";
         speakText();
       };
       video.onerror = fallback;
@@ -202,6 +235,7 @@
         if (activeSpeech?.video !== video) return;
         const seconds = video.currentTime;
         video.remove();
+        timeline.remove();
         finish(seconds);
       };
       button.before(video);
