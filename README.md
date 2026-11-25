@@ -4,6 +4,10 @@ Plataforma estática publicada no GitHub Pages. Os textos das aulas ficam em arq
 
 O [guia e modelo de Markdown](docs/guia-e-modelo-markdown.md) descreve os elementos suportados, a sintaxe para imagens, vídeos, PDFs, tabelas e testes, e inclui um esqueleto copiável para novas aulas.
 
+## Gerar uma aula com IA
+
+Antes de gerar uma aula, consulte o [guia de geração de aula narrada](docs/guia-geracao-aula-narrada.md). Ele orienta a transformação do Markdown do tópico em slides, falas e tempos. Se a IA estiver fora do repositório, anexe a versão atual do guia e o Markdown do tópico à mesma conversa e peça que aplique o guia.
+
 ## Adicionar e ordenar tópicos
 
 1. Escolha a trilha e crie o arquivo `.md` dentro da pasta `topicos/` correspondente, por exemplo `content/aeds-ii/topicos/variaveis.md`.
