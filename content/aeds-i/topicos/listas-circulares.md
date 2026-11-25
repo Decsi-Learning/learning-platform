@@ -34,7 +34,7 @@ void percorrer(No *head) {
 }
 ```
 
-> **Cuidado:** o `do...while` executa o corpo antes de testar a condição, garantindo que o primeiro nó seja visitado. Com `while` comum, o laço pararia antes mesmo de começar.
+> **Cuidado:** o `do...while` executa o corpo antes de testar a condição, então o primeiro nó é sempre visitado. Com `while (atual != head)` começando em `head`, a condição já é falsa na entrada e o laço não executa nenhuma vez. Dá para usar `while`, mas seria preciso tratar o primeiro nó fora do laço ou avançar o ponteiro antes do teste.
 
 ### Inserção no fim em O(1)
 
@@ -58,15 +58,20 @@ A forma circular aparece quando o percurso deve se repetir indefinidamente:
 
 ## Comparação das implementações
 
-| Critério | Vetor | Simples | Dupla | Circular |
-|:--|:--:|:--:|:--:|--:|
-| Acesso por índice | O(1) | O(n) | O(n) | O(n) |
-| Inserir ou remover no início | O(n) | O(1) | O(1) | O(1)* |
-| Remover nó conhecido | O(n) | O(n) | O(1) | O(1)* |
-| Percurso inverso | O(n) | Não | Sim | Sim (versão dupla) |
-| Memória extra por elemento | Nenhuma | 1 referência | 2 referências | 1 ou 2 referências |
+| Critério | Vetor | Simples | Dupla | Circular simples | Circular dupla |
+|:--|:--:|:--:|:--:|:--:|:--:|
+| Acesso por índice | O(1) | O(n) | O(n) | O(n) | O(n) |
+| Inserir ou remover no início | O(n) | O(1) | O(1) | O(1)* | O(1) |
+| Inserir no fim | O(1)† | O(n) | O(n) | O(1)* | O(1) |
+| Remover nó conhecido | O(n) | O(n)‡ | O(1) | O(n)‡ | O(1) |
+| Percurso inverso | Sim, O(n) | Não | Sim, O(n) | Não | Sim, O(n) |
+| Memória extra por elemento | Nenhuma | 1 referência | 2 referências | 1 referência | 2 referências |
 
-*Na versão circular com ponteiro para o último nó. A melhor escolha depende das operações mais frequentes da aplicação — não existe implementação vencedora em todos os cenários.
+*Na circular simples, com ponteiro para o último nó: como `ultimo->prox` é o primeiro, as duas pontas ficam acessíveis em O(1). Na circular dupla, o `ant` da cabeça já é o último nó.
+†Quando há espaço no vetor (sem redimensionamento).
+‡Remover um nó conhecido exige o predecessor: na dupla ele vem de `ant` em O(1); na simples e na circular simples é preciso percorrer a lista para encontrá-lo, salvo casos pontuais como remover o primeiro com ponteiro para o último.
+
+A melhor escolha depende das operações mais frequentes da aplicação — não existe implementação vencedora em todos os cenários.
 
 ## Teste de conhecimento
 
