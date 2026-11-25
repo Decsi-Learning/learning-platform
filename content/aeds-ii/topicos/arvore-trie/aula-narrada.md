@@ -1,6 +1,7 @@
 ```aula-narrada
 {
   "tema": "Árvore Trie",
+  "videoFolder": "videos",
   "config": {
     "personagem": "Rafa IA",
     "maxClipSeconds": 15,
