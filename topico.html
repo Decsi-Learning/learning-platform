@@ -242,7 +242,7 @@
 
     // Blocos extras das aulas (slides, demo, video, exercicio, estrutura, pseudocodigo): ver js/renderer.js
     function renderLessonBlock(language, source) {
-      return window.LessonRenderer ? window.LessonRenderer.renderBlock(language, source, { defer: true }) : null;
+      return window.LessonRenderer ? window.LessonRenderer.renderBlock(language, source, { defer: true, sourceUrl: markdownUrl }) : null;
     }
 
     function isTableRow(line) {

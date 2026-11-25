@@ -1,5 +1,6 @@
 ```aula-narrada
 {
+  "videoFolder": "topico-de-exemplo/videos",
   "slides": [
     {
       "title": "Uma ideia para começar",

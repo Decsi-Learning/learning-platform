@@ -301,3 +301,11 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
   .narrator { justify-self: center; }
   .narrator-portrait { font-size: 4rem; }
 }
+
+.narrator:has(.narrator-video) { position: relative; align-content: end; }
+.narrator-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.narrator:has(.narrator-video) .narrator-portrait { visibility: hidden; }
+.narrator:has(.narrator-video) button { position: relative; }
+@media (max-width: 650px) {
+  .stepper[data-kind="narrada"]:not([data-view="avatar"]) .narrator-video { display: none; }
+}

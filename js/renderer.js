@@ -92,14 +92,19 @@
     return renderStepper("slides", "Slides", '<p class="stepper-title">Slides</p>', panels);
   }
 
-  function renderNarratedLesson(source) {
-    const slides = parseJson(source)?.slides;
+  function renderNarratedLesson(source, options = {}) {
+    const lesson = parseJson(source);
+    const slides = lesson?.slides;
     if (!Array.isArray(slides) || !slides.length || slides.some(slide => !slide?.title || !slide.speech)) {
       return blockError("Cada slide da aula precisa de um título e uma narração.");
     }
-    const panels = slides.map(slide => {
+    const folder = lesson.videoFolder;
+    const hasVideos = typeof folder === "string" && /^[\w-]+(?:\/[\w-]+)*$/.test(folder);
+    const panels = slides.map((slide, index) => {
+      const path = hasVideos ? `${folder}/${index + 1}.mp4` : "";
+      const video = path && options.sourceUrl ? new URL(path, options.sourceUrl).href : path;
       const books = Array.isArray(slide.stack) ? slide.stack.map(book => `<li>${escapeHtml(book)}</li>`).join("") : "";
-      return `<article class="narrated-slide" data-speech="${escapeHtml(slide.speech)}">
+      return `<article class="narrated-slide" data-speech="${escapeHtml(slide.speech)}"${video ? ` data-avatar-video="${escapeHtml(video)}"` : ""}>
         <div><h4>${renderInline(slide.title)}</h4><p>${renderInline(slide.body || "")}</p></div>
         ${books ? `<figure><figcaption>Topo ↓</figcaption><ol>${books}</ol></figure>` : ""}
       </article>`;
@@ -124,9 +129,10 @@
 
   function stopNarration() {
     if (!activeSpeech) return;
-    const { button } = activeSpeech;
+    const { button, video } = activeSpeech;
     activeSpeech = null;
-    window.speechSynthesis.cancel();
+    if (video) { video.pause(); video.remove(); }
+    else window.speechSynthesis?.cancel();
     button.textContent = "Ouvir aula";
   }
 
@@ -135,10 +141,6 @@
   function narrate(stepper) {
     const button = stepper.querySelector("[data-narrate]");
     const status = stepper.querySelector('[role="status"]');
-    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
-      status.textContent = "Voz indisponível. Use os controles para ler os slides.";
-      return;
-    }
     const wasPlaying = activeSpeech?.button === button;
     stopNarration();
     if (wasPlaying) return;
@@ -147,16 +149,8 @@
     delete stepper.dataset.finished;
     function speakSlide() {
       const slide = stepper.querySelector(".stepper-panel:not([hidden]) .narrated-slide");
-      const utterance = new window.SpeechSynthesisUtterance(slide.dataset.speech);
-      utterance.lang = "pt-BR";
-      activeSpeech = { button, utterance };
       button.textContent = "Parar narração";
-      let startedAt;
-      utterance.onstart = () => { startedAt = performance.now(); };
-      utterance.onend = event => {
-        if (activeSpeech?.utterance !== utterance) return;
-        const seconds = event.elapsedTime > 0 ? event.elapsedTime :
-          startedAt === undefined ? 0 : (performance.now() - startedAt) / 1000;
+      function finish(seconds) {
         if (seconds > 0) {
           const index = slide.closest(".stepper-panel").dataset.step;
           const cell = stepper.parentElement.querySelector(`[data-measured="${index}"]`);
@@ -170,14 +164,49 @@
           stepper.dataset.finished = "true";
           button.textContent = "Ouvir novamente";
         }
-      };
-      utterance.onerror = () => {
-        if (activeSpeech?.utterance !== utterance) return;
+      }
+      function unavailable() {
         activeSpeech = null;
         button.textContent = "Tentar narração";
         status.textContent = "Voz indisponível. Você pode avançar os slides manualmente.";
+      }
+      function speakText() {
+        if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { unavailable(); return; }
+        const utterance = new window.SpeechSynthesisUtterance(slide.dataset.speech);
+        utterance.lang = "pt-BR";
+        activeSpeech = { button, utterance };
+        let startedAt;
+        utterance.onstart = () => { startedAt = performance.now(); };
+        utterance.onend = event => {
+          if (activeSpeech?.utterance !== utterance) return;
+          finish(event.elapsedTime || (startedAt === undefined ? 0 : (performance.now() - startedAt) / 1000));
+        };
+        utterance.onerror = () => { if (activeSpeech?.utterance === utterance) unavailable(); };
+        window.speechSynthesis.speak(utterance);
+      }
+      if (!slide.dataset.avatarVideo) { speakText(); return; }
+      const video = document.createElement("video");
+      video.className = "narrator-video";
+      video.playsInline = true;
+      video.setAttribute("aria-label", "Vídeo do avatar");
+      activeSpeech = { button, video };
+      const fallback = () => {
+        if (activeSpeech?.video !== video) return;
+        activeSpeech = null;
+        video.pause();
+        video.remove();
+        speakText();
       };
-      window.speechSynthesis.speak(utterance);
+      video.onerror = fallback;
+      video.onended = () => {
+        if (activeSpeech?.video !== video) return;
+        const seconds = video.currentTime;
+        video.remove();
+        finish(seconds);
+      };
+      button.before(video);
+      video.src = slide.dataset.avatarVideo;
+      video.play().catch(fallback);
     }
     speakSlide();
   }
