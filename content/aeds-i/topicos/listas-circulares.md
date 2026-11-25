@@ -68,7 +68,9 @@ A forma circular aparece quando o percurso deve se repetir indefinidamente:
 | Memória extra por elemento | Nenhuma | 1 referência | 2 referências | 1 referência | 2 referências |
 
 *Na circular simples, com ponteiro para o último nó: como `ultimo->prox` é o primeiro, as duas pontas ficam acessíveis em O(1). Na circular dupla, o `ant` da cabeça já é o último nó.
+
 †Quando há espaço no vetor (sem redimensionamento).
+
 ‡Remover um nó conhecido exige o predecessor: na dupla ele vem de `ant` em O(1); na simples e na circular simples é preciso percorrer a lista para encontrá-lo, salvo casos pontuais como remover o primeiro com ponteiro para o último.
 
 A melhor escolha depende das operações mais frequentes da aplicação — não existe implementação vencedora em todos os cenários.
