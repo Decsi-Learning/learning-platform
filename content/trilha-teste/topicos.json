@@ -8,9 +8,9 @@
     },
     {
       "id": "pilhas-aula-narrada",
-      "title": "Pilhas: aula narrada",
-      "summary": "Acompanhe a entrada e a saída de livros em uma pilha.",
-      "file": "pilhas-aula-narrada.md"
+      "title": "Tópico de Exemplo",
+      "summary": "Uma apresentação curta para experimentar os slides e a narração.",
+      "file": "modelo-aula-narrada.md"
     }
   ]
 }

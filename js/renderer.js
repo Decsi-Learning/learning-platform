@@ -106,7 +106,15 @@
     });
     const presenter = `<aside class="narrator"><span aria-hidden="true" class="narrator-portrait">👨🏽‍🏫</span>
       <button type="button" data-narrate>Ouvir aula</button><small role="status"></small></aside>`;
-    return renderStepper("narrada", "Aula narrada", presenter, panels);
+    const rows = slides.map((slide, index) => {
+      const seconds = slide.durationSeconds;
+      const planned = Number.isFinite(seconds) && seconds > 0 ? seconds.toLocaleString("pt-BR") + " s" : "—";
+      return `<tr><th scope="row">${index + 1}. ${escapeHtml(slide.title)}</th><td>${planned}</td><td data-measured="${index}">—</td></tr>`;
+    }).join("");
+    const timing = `<details><summary>Tempos da narração</summary><div class="table-wrap"><table>
+      <thead><tr><th>Slide</th><th>Planejado</th><th>Última fala completa</th></tr></thead>
+      <tbody>${rows}</tbody></table></div></details>`;
+    return `<div class="narrated-lesson">${renderStepper("narrada", "Aula narrada", presenter, panels)}${timing}</div>`;
   }
 
   let activeSpeech = null;
@@ -140,8 +148,17 @@
       utterance.lang = "pt-BR";
       activeSpeech = { button, utterance };
       button.textContent = "Parar narração";
-      utterance.onend = () => {
+      let startedAt;
+      utterance.onstart = () => { startedAt = performance.now(); };
+      utterance.onend = event => {
         if (activeSpeech?.utterance !== utterance) return;
+        const seconds = event.elapsedTime > 0 ? event.elapsedTime :
+          startedAt === undefined ? 0 : (performance.now() - startedAt) / 1000;
+        if (seconds > 0) {
+          const index = slide.closest(".stepper-panel").dataset.step;
+          const cell = stepper.parentElement.querySelector(`[data-measured="${index}"]`);
+          cell.textContent = seconds.toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + " s";
+        }
         if (stepper.isConnected && !stepper.querySelector('[data-stepper="next"]').disabled) {
           showStep(stepper, 1);
           speakSlide();
