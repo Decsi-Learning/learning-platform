@@ -206,11 +206,18 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 .markdown .pt-chave { align-self: center; margin-left: 10px; font-weight: 750; color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .markdown .pt-leaf.rt-new rect { animation: none; } }
 
+.topic:has(.stepper[data-kind="narrada"]) {
+  padding-inline: clamp(.5rem, 1vw, 1rem);
+}
+.card:has(.stepper[data-kind="narrada"]) {
+  padding-inline: clamp(.75rem, 2vw, 2rem);
+}
 .markdown .stepper[data-kind="narrada"] {
+  padding: clamp(.5rem, 1vw, 1rem);
   display: grid;
   container-type: inline-size;
   grid-template-columns: auto minmax(0, 1fr);
-  --avatar-width: clamp(8rem, 20cqi, 11.25rem);
+  --avatar-width: clamp(10rem, 25cqi, 18rem);
   gap: 1rem;
   background: var(--theme-surface-raised);
 }
@@ -231,7 +238,7 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
   padding: 1rem;
   background: var(--theme-accent-soft);
 }
-.narrator-portrait { font-size: clamp(3rem, 6vw, 5rem); line-height: 1.25; }
+.narrator-portrait { font-size: clamp(4rem, 11cqi, 8rem); line-height: 1.25; }
 .narrator button {
   border: 0;
   border-radius: 8px;
@@ -251,7 +258,7 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
   background: var(--theme-surface);
   border-top: 5px solid var(--theme-accent);
 }
-.markdown .narrated-slide h4 { color: var(--theme-accent-strong); font-size: 1.45rem; line-height: 1.15; }
+.markdown .narrated-slide h4 { color: var(--theme-accent-strong); font-size: clamp(1.45rem, 3cqi, 2.25rem); line-height: 1.15; }
 .markdown .narrated-slide figure { margin: 0; text-align: center; }
 .markdown .narrated-slide figcaption { color: var(--theme-text-soft); font-size: .85rem; }
 .markdown .narrated-slide ol { padding: 0; list-style: none; }
@@ -259,7 +266,7 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 .markdown .narrated-slide li:first-child { background: var(--theme-action); color: var(--theme-action-text); }
 .stepper[data-kind="narrada"] .stepper-controls { grid-column: 1 / -1; margin-top: 0; }
 @media (max-width: 650px) {
-  .markdown .stepper[data-kind="narrada"] { grid-template-columns: minmax(0, 1fr); --avatar-width: min(100cqi, 8rem); }
+  .markdown .stepper[data-kind="narrada"] { grid-template-columns: minmax(0, 1fr); --avatar-width: min(100cqi, clamp(10rem, 55cqi, 13rem)); }
   .narrator { justify-self: center; }
-  .narrator-portrait { font-size: 2.5rem; }
+  .narrator-portrait { font-size: 4rem; }
 }
