@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 218" width="100%" height="auto" font-family="Inter, ui-sans-serif, system-ui, sans-serif">
+  <rect width="780" height="218" rx="16" fill="#f6fbf8" stroke="#cfe4da" stroke-width="1.5"/>
+
+  <!-- Ponteiro head -->
+  <rect x="30" y="85" width="70" height="40" rx="8" fill="#173b43"/>
+  <text x="65" y="110" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">head</text>
+  <line x1="100" y1="105" x2="140" y2="105" stroke="#789096" stroke-width="2.2"/>
+  <polygon points="140,105 130,100 130,110" fill="#789096"/>
+
+  <!-- Nó 1 -->
+  <g>
+    <rect x="145" y="70" width="40" height="50" fill="#dff1eb"/>
+    <rect x="185" y="70" width="70" height="50" fill="#147d78"/>
+    <rect x="255" y="70" width="40" height="50" fill="#0d625f"/>
+    <text x="165" y="98" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0d625f">NULL</text>
+    <text x="220" y="100" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">10</text>
+    <circle cx="275" cy="95" r="4" fill="#ffffff"/>
+    <text x="165" y="136" text-anchor="middle" font-size="11" fill="#42636a">ant</text>
+    <text x="220" y="136" text-anchor="middle" font-size="11" fill="#42636a">info</text>
+    <text x="275" y="136" text-anchor="middle" font-size="11" fill="#42636a">prox</text>
+  </g>
+
+  <!-- Nó 2 -->
+  <g>
+    <rect x="375" y="70" width="40" height="50" fill="#dff1eb"/>
+    <rect x="415" y="70" width="70" height="50" fill="#ffffff" stroke="#147d78" stroke-width="2.5"/>
+    <rect x="485" y="70" width="40" height="50" fill="#dff1eb"/>
+    <circle cx="395" cy="95" r="4" fill="#0d625f"/>
+    <text x="450" y="100" text-anchor="middle" font-size="15" font-weight="700" fill="#173b43">25</text>
+    <circle cx="505" cy="95" r="4" fill="#0d625f"/>
+    <text x="395" y="136" text-anchor="middle" font-size="11" fill="#42636a">ant</text>
+    <text x="450" y="136" text-anchor="middle" font-size="11" fill="#42636a">info</text>
+    <text x="505" y="136" text-anchor="middle" font-size="11" fill="#42636a">prox</text>
+  </g>
+
+  <!-- Nó 3 -->
+  <g>
+    <rect x="605" y="70" width="40" height="50" fill="#dff1eb"/>
+    <rect x="645" y="70" width="70" height="50" fill="#ffffff" stroke="#147d78" stroke-width="2.5"/>
+    <rect x="715" y="70" width="40" height="50" fill="#dff1eb"/>
+    <circle cx="625" cy="95" r="4" fill="#0d625f"/>
+    <text x="680" y="100" text-anchor="middle" font-size="15" font-weight="700" fill="#173b43">7</text>
+    <text x="735" y="98" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0d625f">NULL</text>
+    <text x="625" y="136" text-anchor="middle" font-size="11" fill="#42636a">ant</text>
+    <text x="680" y="136" text-anchor="middle" font-size="11" fill="#42636a">info</text>
+    <text x="735" y="136" text-anchor="middle" font-size="11" fill="#42636a">prox</text>
+  </g>
+
+  <!-- Setas prox (para frente, por cima) -->
+  <path d="M 275 95 C 315 60, 355 60, 392 92" fill="none" stroke="#789096" stroke-width="2.2"/>
+  <polygon points="392,92 381,88 384,99" fill="#789096"/>
+  <path d="M 505 95 C 545 60, 585 60, 622 92" fill="none" stroke="#789096" stroke-width="2.2"/>
+  <polygon points="622,92 611,88 614,99" fill="#789096"/>
+
+  <!-- Setas ant (para trás, por baixo) -->
+  <path d="M 395 100 C 370 200, 215 200, 188 102" fill="none" stroke="#147d78" stroke-width="2.2" stroke-dasharray="6,4"/>
+  <polygon points="188,102 189,91 198,99" fill="#147d78"/>
+  <path d="M 625 100 C 600 200, 445 200, 418 102" fill="none" stroke="#147d78" stroke-width="2.2" stroke-dasharray="6,4"/>
+  <polygon points="418,102 419,91 428,99" fill="#147d78"/>
+
+  <!-- Legenda -->
+  <text x="390" y="206" text-anchor="middle" font-size="12" fill="#42636a">&#8702; prox aponta para o pr&#243;ximo n&#243; &#183; <tspan fill="#147d78">ant (tracejado) aponta para o anterior</tspan> &#183; as pontas terminam em NULL</text>
+</svg>

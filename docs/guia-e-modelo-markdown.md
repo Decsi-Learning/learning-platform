@@ -2,6 +2,8 @@
 
 Este guia reúne a estrutura recomendada para as aulas e um esqueleto copiável. Use Markdown para o texto e os catálogos JSON para títulos, ordem e navegação. Não escreva HTML, CSS ou JavaScript dentro das aulas.
 
+Antes de gerar uma aula com IA, consulte o [guia de geração de aula narrada](guia-geracao-aula-narrada.md).
+
 ## Como adicionar uma aula
 
 1. Escolha a trilha: `aeds-i` ou `aeds-ii`.

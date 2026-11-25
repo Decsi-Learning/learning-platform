@@ -92,6 +92,197 @@
     return renderStepper("slides", "Slides", '<p class="stepper-title">Slides</p>', panels);
   }
 
+  function renderLessonVisual(slide, sourceUrl) {
+    const v = slide.visual;
+    if (!v) return "";
+    const list = items => `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+    switch (slide.layout) {
+      case "diagrama": {
+        if (!/^[\w/-]+\.(svg|png|webp|jpe?g)$/i.test(v.figura)) return "";
+        const src = sourceUrl ? new URL(v.figura, sourceUrl).href : v.figura;
+        return `<figure><img src="${escapeHtml(src)}" alt="${escapeHtml(v.legenda)}"><figcaption>${escapeHtml(v.legenda)}</figcaption></figure>`;
+      }
+      case "codigo":
+        return `<pre><code>${v.trecho.split("\n").map((line, i) => `<span data-line="${i+1}">${escapeHtml(line)}</span>`).join("\n")}</code></pre>`;
+      case "comparativo":
+      case "tabela":
+        return `<div class="table-wrap"><table><thead><tr>${v.colunas.map(col => `<th>${escapeHtml(col)}</th>`).join("")}</tr></thead><tbody>${v.linhas.map((row,i) => `<tr data-line="${i+1}">${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+      case "quiz":
+        return `<strong>${escapeHtml(v.pergunta)}</strong>${list(v.opcoes)}<details class="lesson-answer"><summary>Conferir resposta</summary>${escapeHtml(v.opcoes[v.correta])}</details>`;
+      case "aplicacao":
+        return list(v.itens.map(item => item.nome + " — " + item.detalhe));
+      default:
+        return list(v.topicos || v.pontos || []);
+    }
+  }
+
+  function renderNarratedLesson(source, options = {}) {
+    const lesson = parseJson(source);
+    const slides = lesson?.slides;
+    if (!Array.isArray(slides) || !slides.length || slides.some(slide => !slide?.title || !(slide.speech || (Array.isArray(slide.clips) && slide.clips.length && slide.clips.every(c => c?.speech))))) {
+      return blockError("Cada slide da aula precisa de um título e uma narração.");
+    }
+    const folder = lesson.videoFolder;
+    const hasVideos = typeof folder === "string" && /^[\w-]+(?:\/[\w-]+)*$/.test(folder);
+    const panels = slides.map((slide, index) => {
+      const path = hasVideos ? `${folder}/${index + 1}.mp4` : "";
+      const video = path && options.sourceUrl ? new URL(path, options.sourceUrl).href : path;
+      const books = Array.isArray(slide.stack) ? slide.stack.map(book => `<li>${escapeHtml(book)}</li>`).join("") : "";
+      return `<article class="narrated-slide${slide.visual ? " lesson-layout" : ""}" data-speech="${escapeHtml(slide.speech || "")}"${slide.clips ? ` data-clips="${escapeHtml(JSON.stringify(slide.clips))}"` : ""}${video ? ` data-avatar-video="${escapeHtml(video)}"` : ""}>
+        <div><h4>${renderInline(slide.title)}</h4><p>${renderInline(slide.body || "")}</p></div>
+        ${renderLessonVisual(slide, options.sourceUrl)}
+        ${books ? `<figure><figcaption>Topo ↓</figcaption><ol>${books}</ol></figure>` : ""}
+      </article>`;
+    });
+    const presenter = `<div class="lesson-views" role="group" aria-label="Visualização da aula">
+      <button type="button" data-view="slide" aria-pressed="true">Slide</button>
+      <button type="button" data-view="avatar" aria-pressed="false">Avatar</button>
+    </div><aside class="narrator"><span aria-hidden="true" class="narrator-portrait"></span>
+      <button type="button" class="narration-glass" data-narrate>Ouvir aula</button><small role="status"></small></aside>`;
+    const rows = slides.map((slide, index) => {
+      const seconds = slide.durationSeconds;
+      const planned = Number.isFinite(seconds) && seconds > 0 ? seconds.toLocaleString("pt-BR") + " s" : "—";
+      return `<tr><th scope="row">${index + 1}. ${escapeHtml(slide.title)}</th><td>${planned}</td><td data-measured="${index}">—</td></tr>`;
+    }).join("");
+    const timing = `<details><summary>Tempos da narração</summary><div class="table-wrap"><table>
+      <thead><tr><th>Slide</th><th>Planejado</th><th>Última fala completa</th></tr></thead>
+      <tbody>${rows}</tbody></table></div></details>`;
+    return `<div class="narrated-lesson">${renderStepper("narrada", "Aula narrada", presenter, panels)}${timing}</div>`;
+  }
+
+  let activeSpeech = null;
+
+  function stopNarration() {
+    if (!activeSpeech) return;
+    const { button, video, timeline } = activeSpeech;
+    activeSpeech = null;
+    if (video) { video.pause(); video.remove(); timeline.remove(); }
+    else window.speechSynthesis?.cancel();
+    button.textContent = "Ouvir aula";
+  }
+
+  if (typeof window !== "undefined") window.addEventListener("pagehide", stopNarration);
+
+  function narrate(stepper) {
+    const button = stepper.querySelector("[data-narrate]");
+    const status = stepper.querySelector('[role="status"]');
+    const wasPlaying = activeSpeech?.button === button;
+    if (wasPlaying && activeSpeech.video) {
+      const { video } = activeSpeech;
+      if (video.paused) {
+        video.play().catch(() => {
+          if (activeSpeech?.video === video) status.textContent = "Toque em Continuar para retomar o vídeo.";
+        });
+      } else {
+        video.pause();
+      }
+      return;
+    }
+    stopNarration();
+    if (wasPlaying) return;
+    status.textContent = "";
+    if (stepper.dataset.finished) showStep(stepper, -Number(stepper.dataset.count));
+    delete stepper.dataset.finished;
+    function speakSlide() {
+      const slide = stepper.querySelector(".stepper-panel:not([hidden]) .narrated-slide");
+      button.textContent = "Parar narração";
+      function finish(seconds) {
+        if (seconds > 0) {
+          const index = slide.closest(".stepper-panel").dataset.step;
+          const cell = stepper.parentElement.querySelector(`[data-measured="${index}"]`);
+          cell.textContent = seconds.toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + " s";
+        }
+        if (stepper.isConnected && !stepper.querySelector('[data-stepper="next"]').disabled) {
+          showStep(stepper, 1);
+          speakSlide();
+        } else {
+          activeSpeech = null;
+          stepper.dataset.finished = "true";
+          button.textContent = "Ouvir novamente";
+        }
+      }
+      function unavailable() {
+        activeSpeech = null;
+        button.textContent = "Tentar narração";
+        status.textContent = "Voz indisponível. Você pode avançar os slides manualmente.";
+      }
+      const clips = slide.dataset.clips ? JSON.parse(slide.dataset.clips) : [{ speech: slide.dataset.speech }];
+      let clipIndex = 0;
+      let spokenSeconds = 0;
+      function speakText() {
+        if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { unavailable(); return; }
+        const clip = clips[clipIndex];
+        const lines = clip.focus?.linhas || [];
+        slide.querySelectorAll("[data-line]").forEach(line => {
+          line.classList.toggle("lesson-focus", line.dataset.line >= lines[0] && line.dataset.line <= lines[1]);
+        });
+        const answer = slide.querySelector(".lesson-answer");
+        if (answer) answer.open = clip.focus?.mostrar === "opção correta";
+        const utterance = new window.SpeechSynthesisUtterance(clip.speech);
+        utterance.lang = "pt-BR";
+        activeSpeech = { button, utterance };
+        let startedAt;
+        utterance.onstart = () => { startedAt = performance.now(); };
+        utterance.onend = event => {
+          if (activeSpeech?.utterance !== utterance) return;
+          spokenSeconds += event.elapsedTime || (startedAt === undefined ? 0 : (performance.now() - startedAt) / 1000);
+          clipIndex++;
+          if (clipIndex < clips.length) speakText();
+          else finish(spokenSeconds);
+        };
+        utterance.onerror = () => { if (activeSpeech?.utterance === utterance) unavailable(); };
+        window.speechSynthesis.speak(utterance);
+      }
+      if (!slide.dataset.avatarVideo) { speakText(); return; }
+      const video = document.createElement("video");
+      video.className = "narrator-video";
+      video.playsInline = true;
+      video.setAttribute("aria-label", "Vídeo do avatar");
+      const timeline = document.createElement("label");
+      timeline.className = "narration-timeline";
+      timeline.innerHTML = '<span>Tempo do slide</span><input type="range" min="0" step="0.1" value="0" disabled><span class="video-clock" aria-hidden="true"></span>';
+      stepper.querySelector(".stepper-controls").before(timeline);
+      const seek = timeline.querySelector("input");
+      const clock = timeline.querySelector(".video-clock");
+      const formatTime = value => Math.floor(value / 60) + ":" + String(Math.floor(value % 60)).padStart(2, "0");
+      function updateTime() {
+        if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+        seek.disabled = false;
+        seek.max = video.duration;
+        seek.value = video.currentTime;
+        const time = formatTime(video.currentTime) + " / " + formatTime(video.duration);
+        seek.setAttribute("aria-valuetext", time);
+        clock.textContent = time;
+      }
+      seek.oninput = () => { video.currentTime = Number(seek.value); updateTime(); };
+      video.ontimeupdate = video.ondurationchange = updateTime;
+      video.onplay = () => { if (activeSpeech?.video === video) button.textContent = "Pausar"; };
+      video.onpause = () => { if (activeSpeech?.video === video) button.textContent = "Continuar"; };
+      activeSpeech = { button, video, timeline };
+      const fallback = () => {
+        if (activeSpeech?.video !== video) return;
+        activeSpeech = null;
+        video.pause();
+        video.remove();
+        timeline.remove();
+        button.textContent = "Parar narração";
+        speakText();
+      };
+      video.onerror = fallback;
+      video.onended = () => {
+        if (activeSpeech?.video !== video) return;
+        const seconds = video.currentTime;
+        video.remove();
+        timeline.remove();
+        finish(seconds);
+      };
+      button.before(video);
+      video.src = slide.dataset.avatarVideo;
+      video.play().catch(fallback);
+    }
+    speakSlide();
+  }
+
   function renderDemo(source) {
     const data = parseJson(source);
     if (!data || !Array.isArray(data.steps)) return blockError("Esta demonstração tem um erro de formato.");
@@ -658,7 +849,7 @@
     return !!passo.fim;
   }
 
-  const BLOCK_RENDERERS = { video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia };
+  const BLOCK_RENDERERS = { "aula-narrada": renderNarratedLesson, video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia };
 
   // Ponte para o renderizador do site: devolve o HTML do bloco, ou null se a linguagem não é nossa.
   function renderBlock(language, source, options = {}) {
@@ -706,6 +897,11 @@
   }
 
   function stopPlay(stepper) {
+    if (stepper.dataset.kind === "narrada") {
+      if (activeSpeech?.button.closest(".stepper") === stepper) stopNarration();
+      delete stepper.dataset.finished;
+      stepper.querySelector("[data-narrate]").textContent = "Ouvir aula";
+    }
     if (stepper.__timer) { clearInterval(stepper.__timer); stepper.__timer = null; }
     const play = stepper.querySelector('[data-stepper="play"]');
     if (play) { play.textContent = "▶ Executar"; play.classList.remove("playing"); }
@@ -729,6 +925,17 @@
     if (root.__lessonInteractions) return;
     root.__lessonInteractions = true;
     root.addEventListener("click", (event) => {
+      const view = event.target.closest(".lesson-views [data-view]");
+      if (view) {
+        const lesson = view.closest(".stepper");
+        lesson.dataset.view = view.dataset.view;
+        for (const option of view.parentElement.querySelectorAll("button")) {
+          option.setAttribute("aria-pressed", String(option === view));
+        }
+        return;
+      }
+      const narrator = event.target.closest("[data-narrate]");
+      if (narrator) { narrate(narrator.closest(".stepper")); return; }
       const rt = event.target.closest(".roteamento [data-rt], .roteamento .rt-bit");
       if (rt) {
         if (rt.disabled) return;

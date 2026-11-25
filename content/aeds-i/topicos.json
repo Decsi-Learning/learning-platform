@@ -139,8 +139,20 @@
     {
       "id": "estruturas-dados-lineares-lista",
       "title": "Estruturas de Dados lineares - Lista",
-      "summary": "Listas - encadeadas, duplamente encadeadas e circulares; operações de inserção, remoção e busca.",
+      "summary": "Listas: TAD, implementação por vetor e encadeadas (simples, dupla e circular); operações de inserção, remoção e busca.",
       "pages": [
+        {
+          "id": "lista-conceito-tad",
+          "title": "Lista - Conceito e TAD",
+          "summary": "O que é uma lista, as operações padrão do TAD e as duas formas de implementá-la.",
+          "file": "lista-conceito-tad.md"
+        },
+        {
+          "id": "lista-por-vetor",
+          "title": "Lista por vetor",
+          "summary": "Posições contíguas, deslocamentos na inserção e remoção e o custo de cada operação.",
+          "file": "lista-por-vetor.md"
+        },
         {
           "id": "listas-simplesmente-encadeadas",
           "title": "Lista simplesmente encadeada",
@@ -158,6 +170,13 @@
           "title": "Lista circular",
           "summary": "A referência do último nó retorna ao primeiro e fecha o ciclo.",
           "file": "listas-circulares.md"
+        },
+        {
+          "id": "lista-exercicios",
+          "title": "Lista - Exercícios",
+          "summary": "Exercícios práticos para fixação do conteúdo de Listas.",
+          "file": "lista-exercicios.md",
+          "requiresQuizAnswers": true
         }
       ]
     },
