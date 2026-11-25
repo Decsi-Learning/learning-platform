@@ -112,8 +112,8 @@
     const presenter = `<div class="lesson-views" role="group" aria-label="Visualização da aula">
       <button type="button" data-view="slide" aria-pressed="true">Slide</button>
       <button type="button" data-view="avatar" aria-pressed="false">Avatar</button>
-    </div><aside class="narrator"><span aria-hidden="true" class="narrator-portrait">👨🏽‍🏫</span>
-      <button type="button" data-narrate>Ouvir aula</button><small role="status"></small></aside>`;
+    </div><aside class="narrator"><span aria-hidden="true" class="narrator-portrait"></span>
+      <button type="button" class="narration-glass" data-narrate>Ouvir aula</button><small role="status"></small></aside>`;
     const rows = slides.map((slide, index) => {
       const seconds = slide.durationSeconds;
       const planned = Number.isFinite(seconds) && seconds > 0 ? seconds.toLocaleString("pt-BR") + " s" : "—";

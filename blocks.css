@@ -230,6 +230,9 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
   align-content: safe center;
 }
 .narrator {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   width: var(--avatar-width);
   align-self: start;
   justify-items: center;
@@ -238,17 +241,32 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
   padding: 1rem;
   background: var(--theme-accent-soft);
 }
-.narrator-portrait { font-size: clamp(4rem, 11cqi, 8rem); line-height: 1.25; }
-.narrator button {
-  border: 0;
-  border-radius: 8px;
-  padding: .6rem .9rem;
-  background: var(--theme-action);
-  color: var(--theme-action-text);
+.narrator-portrait {
+  position: absolute;
+  inset: 0;
+  background: center / cover no-repeat url("assets/illustrations/avatar-aula.png");
+}
+.narration-glass {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  min-height: 44px;
+  padding: .6rem 1rem;
+  border: 1px solid;
+  border-radius: 999px;
+  color: var(--theme-text);
   font: inherit;
   font-weight: 650;
   cursor: pointer;
 }
+.narrator:not(:has(.narrator-video)) .narration-glass::before {
+  content: "";
+  border-block: .36rem solid transparent;
+  border-inline-start: .58rem solid currentColor;
+}
+.narrator small { position: relative; background: var(--theme-surface); border-radius: .4rem; }
 .narrator small:empty { display: none; }
 .markdown .narrated-slide {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
@@ -299,7 +317,7 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
     background: transparent;
   }
   .narrator { justify-self: center; }
-  .narrator-portrait { font-size: 4rem; }
+  .stepper[data-kind="narrada"]:not([data-view="avatar"]) .narrator { overflow: visible; }
 }
 
 .narrator:has(.narrator-video) { position: relative; align-content: end; }
