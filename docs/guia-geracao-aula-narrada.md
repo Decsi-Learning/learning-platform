@@ -21,7 +21,7 @@ Se o tópico não tiver uma seção, não invente: pule o slide correspondente.
 
 ## 3. Saída
 
-O arquivo da aula deve conter **um único bloco** ` ```aula-narrada ` com JSON válido (aspas duplas, sem comentários, sem vírgula sobrando) e **nenhum texto fora dele**. Ao trabalhar no repositório, salve esse bloco no arquivo da aula e registre a página no catálogo conforme a seção 13. Além do arquivo do player, entregue ao desenvolvedor o roteiro completo descrito abaixo. No repositório, salve-o como `roteiro-google-flow.md` ao lado de `aula-narrada.md`. Em um chat externo, identifique as duas entregas na resposta.
+O arquivo da aula deve conter **um único bloco** ` ```aula-narrada ` com JSON válido (aspas duplas, sem comentários, sem vírgula sobrando) e **nenhum texto fora dele**. Ao trabalhar no repositório, salve esse bloco no arquivo da aula e vincule a aula ao tópico no catálogo conforme a seção 13. Além do arquivo do player, entregue ao desenvolvedor o roteiro completo descrito abaixo. No repositório, salve-o como `roteiro-google-flow.md` ao lado de `aula-narrada.md`. Em um chat externo, identifique as duas entregas na resposta.
 
 ### Roteiro de produção para o Google Flow
 
@@ -254,16 +254,16 @@ Use a [aula narrada de Árvore Trie](../content/aeds-ii/topicos/arvore-trie/aula
 
 1. Localize o tópico em `content/<trilha>/topicos.json` e abra o Markdown indicado por `file` ou pelas entradas de `pages`. Use os exemplos, o código e as figuras dessa versão.
 2. Salve a apresentação em `content/<trilha>/topicos/<tópico>/aula-narrada.md`. Resolva os caminhos das figuras a partir desse novo arquivo. Por exemplo, `img/trie-exemplo.svg` aponta para a subpasta `img` ao lado da aula.
-3. Registre a aula no mesmo tópico. Se ele tiver um único `file`, mova a referência ao material original para a primeira entrada de `pages`, preservando o ID, o título, o caminho e as configurações da página. Acrescente a entrada da aula narrada. Se já houver páginas, preserve a sequência existente. Ao regenerar, atualize a entrada da aula que já existe.
+3. Em qualquer trilha, defina `narratedLesson` no objeto do tópico. O player aparece no início da página principal, antes do texto. Preserve o material escrito em `file` ou as páginas existentes em `pages`. Ao regenerar a aula, reutilize o vínculo existente.
 
-Exemplo de entrada em `pages`, conforme o [catálogo de AEDS II](../content/aeds-ii/topicos.json):
+Exemplo do [catálogo de AEDS II](../content/aeds-ii/topicos.json):
 
 ```json
 {
-  "id": "aula-narrada",
-  "title": "Aula narrada: Árvore Trie",
-  "summary": "Percorra os exemplos em C, compare os custos e teste sua leitura de uma árvore de prefixos.",
-  "file": "arvore-trie/aula-narrada.md"
+  "id": "arvore-trie",
+  "title": "Árvore Trie",
+  "file": "arvore-trie/arvore-trie.md",
+  "narratedLesson": "arvore-trie/aula-narrada.md"
 }
 ```
 
