@@ -21,7 +21,7 @@ Se o tópico não tiver uma seção, não invente: pule o slide correspondente.
 
 ## 3. Saída
 
-Devolva **um único bloco** ` ```aula-narrada ` com JSON válido (aspas duplas, sem comentários, sem vírgula sobrando) e **nenhum texto fora dele**. Nada de explicações antes ou depois.
+O arquivo da aula deve conter **um único bloco** ` ```aula-narrada ` com JSON válido (aspas duplas, sem comentários, sem vírgula sobrando) e **nenhum texto fora dele**. Ao trabalhar no repositório, salve esse bloco no arquivo da aula e registre a página no catálogo conforme a seção 13. Em um chat externo, entregue o bloco para o desenvolvedor salvar.
 
 ## 4. Parâmetros
 
@@ -70,7 +70,7 @@ Todo slide tem `title` (até 7 palavras, afirmativo, de preferência a ideia-cha
 |:--|:--|:--|
 | `abertura` | `topicos`: lista de objetivos | até 4 itens, até 8 palavras cada |
 | `conceito` | `pontos`: lista; `destaque`: frase-chave (opcional) | até 4 pontos, até 10 palavras cada |
-| `diagrama` | `figura`: caminho da imagem ou descrição do desenho a criar; `legenda` | 1 figura por slide |
+| `diagrama` | `figura`: caminho relativo da imagem existente; `legenda` | 1 figura por slide |
 | `codigo` | `linguagem`, `trecho` (código), `origem` (seção de onde veio) | até 14 linhas e 60 colunas; mantenha o código **idêntico** ao material; cortes são marcados com `/* ... */` |
 | `tabela` / `comparativo` | `colunas`, `linhas` | até 5 linhas e 4 colunas; células curtas |
 | `aplicacao` | `itens`: lista de `{ "nome", "detalhe" }` | até 4 itens |
@@ -157,6 +157,8 @@ Uma frase curta **em inglês**, só sobre expressão e gesto do professor naquel
     "personagem": "Rafa IA",
     "maxClipSeconds": 15,
     "charsPorSegundo": 14.5,
+    "maxSlides": 18,
+    "maxClipes": 36,
     "glossarioPronuncia": { "termo": "como falar" }
   },
   "slides": [
@@ -199,184 +201,35 @@ O `id` segue a ordem (`s01`, `s02`...). O `durationSeconds` do slide é a soma d
 - [ ] Os objetivos de aprendizagem do material são todos cobertos por algum slide.
 - [ ] Há uma `direction` em todo clipe, só sobre expressão e gesto.
 
-## 13. Exemplo (tópico: Árvore Trie, cinco slides)
+- [ ] Quando a entrega for no projeto, abra a aula pelo catálogo e confira o material escrito, as figuras e a ordem dos slides. Durante a narração, verifique a passagem entre clipes do mesmo slide e o avanço após o último clipe.
 
-Mostra uma abertura, um diagrama com dois clipes, um código, uma tabela e um quiz. Os números já foram conferidos pela fórmula. É um **exemplo parcial**: um tópico completo teria de 10 a 18 slides e terminaria com um `recap`.
+## 13. Integração no projeto
 
-```aula-narrada
+Use a [aula narrada de Árvore Trie](../content/aeds-ii/topicos/arvore-trie/aula-narrada.md) como exemplo completo. Ela foi criada a partir do [material escrito do tópico](../content/aeds-ii/topicos/arvore-trie/arvore-trie.md). Consulte os dois arquivos para ver como um exemplo em C se transforma em um slide e como a fala acompanha os passos do algoritmo.
+
+### Arquivo e catálogo
+
+1. Localize o tópico em `content/<trilha>/topicos.json` e abra o Markdown indicado por `file` ou pelas entradas de `pages`. Use os exemplos, o código e as figuras dessa versão.
+2. Salve a apresentação em `content/<trilha>/topicos/<tópico>/aula-narrada.md`. Resolva os caminhos das figuras a partir desse novo arquivo. Por exemplo, `img/trie-exemplo.svg` aponta para a subpasta `img` ao lado da aula.
+3. Registre a aula no mesmo tópico. Se ele tiver um único `file`, mova a referência ao material original para a primeira entrada de `pages`, preservando o ID, o título, o caminho e as configurações da página. Acrescente a entrada da aula narrada. Se já houver páginas, preserve a sequência existente. Ao regenerar, atualize a entrada da aula que já existe.
+
+Exemplo de entrada em `pages`, conforme o [catálogo de AEDS II](../content/aeds-ii/topicos.json):
+
+```json
 {
-  "tema": "Árvore Trie",
-  "config": {
-    "personagem": "Rafa IA",
-    "maxClipSeconds": 15,
-    "charsPorSegundo": 14.5,
-    "glossarioPronuncia": {}
-  },
-  "slides": [
-    {
-      "id": "s01",
-      "title": "Árvore Trie: a árvore de prefixos",
-      "layout": "abertura",
-      "body": "O que você vai dominar neste tópico",
-      "visual": {
-        "topicos": [
-          "Explicar o que é uma Trie",
-          "Representar palavras nela",
-          "Inserir, buscar e remover",
-          "Analisar o custo das operações"
-        ]
-      },
-      "clips": [
-        {
-          "speech": "Olá, pessoal! Hoje vamos conhecer a árvore Trie, a estrutura por trás do autocompletar. Ao final, você vai saber montar, consultar e analisar o custo dela.",
-          "direction": "warm smile, welcoming",
-          "durationSeconds": 12
-        }
-      ],
-      "durationSeconds": 12
-    },
-    {
-      "id": "s02",
-      "title": "Palavras parecidas dividem o mesmo caminho",
-      "layout": "diagrama",
-      "body": "O prefixo ca é guardado uma única vez",
-      "visual": {
-        "figura": "img/trie-exemplo.svg",
-        "legenda": "Trie com casa, caso, cama, cao e dia"
-      },
-      "clips": [
-        {
-          "speech": "Veja a Trie de casa, caso, cama, cão e dia. A raiz é a cadeia vazia, e cada aresta é uma letra. Os nós verdes marcam o fim de uma palavra.",
-          "direction": "calm and explanatory, glances briefly to the side as if looking at the slide",
-          "focus": {
-            "destaque": "raiz, arestas e nós verdes"
-          },
-          "durationSeconds": 11
-        },
-        {
-          "speech": "Repare que o prefixo c a aparece uma única vez e é compartilhado por quatro palavras. É por isso que ela se chama árvore de prefixos.",
-          "direction": "slow nod on the key word",
-          "focus": {
-            "destaque": "caminho c-a até a bifurcação"
-          },
-          "durationSeconds": 11
-        }
-      ],
-      "motivoClipeExtra": "dois passos visuais: primeiro ler a estrutura, depois destacar o prefixo compartilhado",
-      "durationSeconds": 22
-    },
-    {
-      "id": "s03",
-      "title": "O nó da Trie em C",
-      "layout": "codigo",
-      "body": "Um ponteiro por letra e uma marca de fim de palavra",
-      "visual": {
-        "linguagem": "c",
-        "trecho": "#define TAM_ALFABETO 26\n\ntypedef struct NoTrie {\n    struct NoTrie *filhos[TAM_ALFABETO];\n    bool fimDePalavra;\n} NoTrie;",
-        "origem": "Representação em C"
-      },
-      "clips": [
-        {
-          "speech": "Cada nó guarda vinte e seis ponteiros, um por letra, e um booleano que marca o fim da palavra. O índice de uma letra é c menos a: o a vale zero, o b vale um.",
-          "direction": "calm and explanatory, glances briefly to the side as if looking at the slide",
-          "focus": {
-            "linhas": [
-              3,
-              5
-            ]
-          },
-          "durationSeconds": 12
-        }
-      ],
-      "durationSeconds": 12
-    },
-    {
-      "id": "s04",
-      "title": "O custo depende do tamanho da palavra",
-      "layout": "tabela",
-      "body": "eme é o tamanho da chave; sigma, o tamanho do alfabeto",
-      "visual": {
-        "colunas": [
-          "Operação",
-          "Custo"
-        ],
-        "linhas": [
-          [
-            "Inserção",
-            "O(m)"
-          ],
-          [
-            "Busca",
-            "O(m)"
-          ],
-          [
-            "Busca por prefixo",
-            "O(m)"
-          ],
-          [
-            "Remoção",
-            "O(m · σ)"
-          ],
-          [
-            "Espaço",
-            "O(N · σ)"
-          ]
-        ]
-      },
-      "clips": [
-        {
-          "speech": "Inserção, busca e busca por prefixo custam ó de eme e não dependem de quantas palavras existem. O ponto fraco é o espaço: cada nó reserva sigma ponteiros.",
-          "direction": "calm and explanatory, slow nod on the key word",
-          "focus": {
-            "linhas": [
-              1,
-              3
-            ]
-          },
-          "durationSeconds": 12
-        }
-      ],
-      "durationSeconds": 12
-    },
-    {
-      "id": "s05",
-      "title": "Teste: busca em uma Trie",
-      "layout": "quiz",
-      "body": "",
-      "visual": {
-        "pergunta": "Qual é o custo de buscar uma palavra de tamanho m em uma Trie com n palavras?",
-        "opcoes": [
-          "O(log n)",
-          "O(m)",
-          "O(n · m)",
-          "O(n)"
-        ],
-        "correta": 1
-      },
-      "clips": [
-        {
-          "speech": "Hora de testar! Qual é o custo de buscar uma palavra de tamanho eme em uma Trie com ene palavras? Pense um instante antes de ver a resposta.",
-          "direction": "looks expectantly at the camera, encouraging smile",
-          "focus": {
-            "mostrar": "pergunta e opções"
-          },
-          "durationSeconds": 11
-        },
-        {
-          "speech": "A resposta é ó de eme. A busca desce um nível por caractere, então o custo depende do tamanho da palavra, não de quantas palavras existem.",
-          "direction": "satisfied smile, confident tone",
-          "focus": {
-            "mostrar": "opção correta"
-          },
-          "durationSeconds": 11
-        }
-      ],
-      "motivoClipeExtra": "o quiz precisa de uma pausa para o aluno pensar antes da resposta",
-      "durationSeconds": 22
-    }
-  ]
+  "id": "aula-narrada",
+  "title": "Aula narrada: Árvore Trie",
+  "summary": "Percorra os exemplos em C, compare os custos e teste sua leitura de uma árvore de prefixos.",
+  "file": "arvore-trie/aula-narrada.md"
 }
 ```
+
+### Narração, destaques e vídeos
+
+- **Com voz do navegador**, escreva as falas em `slides[].clips[].speech`, na ordem de reprodução. O player permanece no slide enquanto houver clipes e avança quando a última fala termina. A duração planejada serve ao roteiro; o fim da fala controla a transição.
+- **Para destacar o conteúdo**, use `focus.linhas` nos clipes de código, tabela e comparativo. A primeira linha do trecho de código ou dos dados da tabela é a linha 1. No quiz, use `focus.mostrar` para apresentar as opções e depois revelar a resposta. Na figura, `focus.destaque` serve como indicação para a produção; o player exibe a imagem estática.
+- **Quando os vídeos estiverem prontos**, adicione `"videoFolder": "videos"` na raiz do JSON, ao lado de `tema` e `config`. Coloque os MP4 na pasta `videos/` ao lado do Markdown. A numeração segue a posição do **slide**. Se o slide 3 tiver duas falas gravadas separadamente, una os dois clipes em ordem e salve o resultado como `3.mp4`. O fim desse vídeo leva ao slide 4. Se faltar o MP4 de um slide, o player usa as falas desse slide.
+- **Ao conferir a entrega**, informe quantos slides e clipes foram produzidos e a duração planejada total. Registre se o teste usou voz do navegador ou MP4 e quais verificações foram realizadas.
 
 ## 14. Erros comuns (evite)
 
