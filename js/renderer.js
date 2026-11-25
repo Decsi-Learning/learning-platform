@@ -104,7 +104,10 @@
         ${books ? `<figure><figcaption>Topo ↓</figcaption><ol>${books}</ol></figure>` : ""}
       </article>`;
     });
-    const presenter = `<aside class="narrator"><span aria-hidden="true" class="narrator-portrait">👨🏽‍🏫</span>
+    const presenter = `<div class="lesson-views" role="group" aria-label="Visualização da aula">
+      <button type="button" data-view="slide" aria-pressed="true">Slide</button>
+      <button type="button" data-view="avatar" aria-pressed="false">Avatar</button>
+    </div><aside class="narrator"><span aria-hidden="true" class="narrator-portrait">👨🏽‍🏫</span>
       <button type="button" data-narrate>Ouvir aula</button><small role="status"></small></aside>`;
     const rows = slides.map((slide, index) => {
       const seconds = slide.durationSeconds;
@@ -821,6 +824,15 @@
     if (root.__lessonInteractions) return;
     root.__lessonInteractions = true;
     root.addEventListener("click", (event) => {
+      const view = event.target.closest(".lesson-views [data-view]");
+      if (view) {
+        const lesson = view.closest(".stepper");
+        lesson.dataset.view = view.dataset.view;
+        for (const option of view.parentElement.querySelectorAll("button")) {
+          option.setAttribute("aria-pressed", String(option === view));
+        }
+        return;
+      }
       const narrator = event.target.closest("[data-narrate]");
       if (narrator) { narrate(narrator.closest(".stepper")); return; }
       const rt = event.target.closest(".roteamento [data-rt], .roteamento .rt-bit");

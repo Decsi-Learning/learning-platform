@@ -264,9 +264,40 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 .markdown .narrated-slide ol { padding: 0; list-style: none; }
 .markdown .narrated-slide li { padding: .3rem; background: var(--theme-accent-soft); border-radius: 4px; }
 .markdown .narrated-slide li:first-child { background: var(--theme-action); color: var(--theme-action-text); }
+.lesson-views { display: none; }
 .stepper[data-kind="narrada"] .stepper-controls { grid-column: 1 / -1; margin-top: 0; }
 @media (max-width: 650px) {
   .markdown .stepper[data-kind="narrada"] { grid-template-columns: minmax(0, 1fr); --avatar-width: min(100cqi, clamp(10rem, 55cqi, 13rem)); }
+  .lesson-views {
+    display: flex;
+    justify-self: center;
+    gap: .25rem;
+    padding: .2rem;
+    border-radius: .75rem;
+    background: var(--theme-surface);
+  }
+  .lesson-views button {
+    min-height: 44px;
+    padding-inline: 1.2rem;
+    border: 0;
+    border-radius: .55rem;
+    background: transparent;
+    color: var(--theme-text);
+    font: inherit;
+    cursor: pointer;
+  }
+  .lesson-views button[aria-pressed="true"] {
+    background: var(--theme-action);
+    color: var(--theme-action-text);
+  }
+  .stepper[data-kind="narrada"][data-view="avatar"] > .stepper-panels,
+  .stepper[data-kind="narrada"]:not([data-view="avatar"]) .narrator-portrait { display: none; }
+  .stepper[data-kind="narrada"]:not([data-view="avatar"]) .narrator {
+    width: auto;
+    height: auto;
+    padding: 0;
+    background: transparent;
+  }
   .narrator { justify-self: center; }
   .narrator-portrait { font-size: 4rem; }
 }
