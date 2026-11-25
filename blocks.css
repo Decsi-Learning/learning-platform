@@ -208,19 +208,22 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 
 .markdown .stepper[data-kind="narrada"] {
   display: grid;
-  grid-template-columns: clamp(8rem, 20%, 11.25rem) minmax(0, 1fr);
+  container-type: inline-size;
+  grid-template-columns: auto minmax(0, 1fr);
+  --avatar-width: clamp(8rem, 20cqi, 11.25rem);
   gap: 1rem;
   background: var(--theme-surface-raised);
 }
 .narrator, .narrated-slide {
+  box-sizing: border-box;
+  height: calc(var(--avatar-width) * 16 / 9);
+  overflow: auto;
   border-radius: 12px;
   display: grid;
-  align-content: center;
+  align-content: safe center;
 }
 .narrator {
-  box-sizing: border-box;
-  width: 100%;
-  aspect-ratio: 9 / 16;
+  width: var(--avatar-width);
   align-self: start;
   justify-items: center;
   text-align: center;
@@ -244,7 +247,6 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
   gap: 1.2rem;
   align-items: center;
-  min-height: 16rem;
   padding: clamp(1rem, 3vw, 2rem);
   background: var(--theme-surface);
   border-top: 5px solid var(--theme-accent);
@@ -257,7 +259,7 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 .markdown .narrated-slide li:first-child { background: var(--theme-action); color: var(--theme-action-text); }
 .stepper[data-kind="narrada"] .stepper-controls { grid-column: 1 / -1; margin-top: 0; }
 @media (max-width: 650px) {
-  .markdown .stepper[data-kind="narrada"] { grid-template-columns: minmax(0, 1fr); }
-  .narrator { width: min(100%, 8rem); justify-self: center; }
+  .markdown .stepper[data-kind="narrada"] { grid-template-columns: minmax(0, 1fr); --avatar-width: min(100cqi, 8rem); }
+  .narrator { justify-self: center; }
   .narrator-portrait { font-size: 2.5rem; }
 }
