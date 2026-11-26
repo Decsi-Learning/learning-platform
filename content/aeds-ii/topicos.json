@@ -16,7 +16,22 @@
       "id": "arquivos",
       "title": "Arquivos",
       "summary": "Conceitos e estruturas de arquivos para armazenamento e processamento de dados.",
-      "file": "topico2_arquivos.md"
+      "pages":[
+        {
+          "id": "arquivos",
+          "title": "Arquivos",
+          "summary": "Resolva a lista de exercícios para avançar para a proxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "topico2_arquivos.md"
+        },
+        {
+          "id": "ListaExercicios- Arquivos",
+          "title": "ListaExercicios- Arquivos",
+          "summary": "Resolva a lista de exercícios para avançar para a proxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "exerciciosArquivos.md"
+        }
+      ]
     },
     {
       "id": "acesso-sequencial-randomico",

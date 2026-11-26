@@ -6,6 +6,30 @@ No Tópico 1, entendemos por que precisamos da Memória Secundária e conhecemos
 
 ---
 
+## Objetivos de Aprendizagem
+
+Ao concluir este módulo da trilha, você será capaz de:
+
+1. Diferenciar a **visão lógica** (sequência de bytes) da **visão física** (blocos no disco) de um arquivo e explicar o papel do **Sistema de Arquivos** na tradução entre elas.
+2. Comparar **arquivos de texto** e **arquivos binários**, justificando por que os binários são o padrão em AEDS 2.
+3. Descrever as estratégias de **alocação de arquivos no disco** (contígua, encadeada e indexada), com suas vantagens e desvantagens.
+4. Explicar a função do **cabeçalho (*file header*)** e dos metadados que ele armazena.
+5. Reconhecer as **operações sobre arquivos** (controle, CRUD, navegação e manutenção) e entender por que o `close()`/`flush` e a compactação são essenciais.
+
+---
+
+## Conexão com a Trilha: Onde Estamos?
+
+No módulo anterior desta trilha, **Organização em Memória Secundária**, vimos por que precisamos do disco, como ele é muito mais lento que a RAM e como os dados são transferidos em **blocos**, além da hierarquia básica **Campo → Registro → Bloco**.
+
+Agora surge a pergunta central deste módulo:
+
+> **O que é, de fato, um arquivo? Como o Sistema Operacional o gerencia por dentro e quais operações podemos realizar sobre ele?**
+
+Este módulo é a **base conceitual** para o que vem a seguir: o vocabulário aqui (cursor, `seek`, cabeçalho, remoção lógica, compactação) será usado diretamente no próximo módulo, **Acesso Sequencial e Acesso Randômico**, em que veremos *como navegar* pelos registros de um arquivo com eficiência.
+
+---
+
 ## 1. Conceituação: Visão Lógica vs. Visão Física
 
 Quando você programa em C, Java ou Python e abre um arquivo, a forma como você interage com ele é bem diferente da forma como ele está realmente gravado lá dentro do HD ou SSD. Por isso, dividimos o conceito de arquivo em duas visões:
@@ -188,3 +212,17 @@ Questão 3: Cabeçalho e Fechamento de Arquivo
 1. **Visão Lógica $\neq$ Visão Física:** Você programa pensando em uma fita contínua de bytes, mas o Sistema Operacional guarda tudo em blocos espalhados pelo disco.
 2. **Arquivos Binários são o padrão em AEDS 2:** Eles não gastam tempo convertendo texto, economizam espaço e mantêm os tamanhos das estruturas idênticos aos da memória RAM.
 3. **Nunca esqueça o Cabeçalho e o `close()`:** O cabeçalho organiza a inteligência do seu arquivo, e o fechamento garante que os dados saiam do *buffer* da RAM e sejam salvos de verdade no disco.
+
+
+
+---
+
+## Ponte para o Próximo Módulo da Trilha
+
+Neste módulo, entendemos **o que é um arquivo**, como ele é visto pelo programa e pelo disco, como é alocado, o que o cabeçalho guarda e quais operações podemos executar. Mas ficou uma pergunta em aberto:
+
+**Uma vez que os registros estão gravados, como o programa navega até o registro desejado para ler, buscar, alterar ou remover dados com eficiência?**
+
+Foi apresentada a operação de **posicionamento (`seek`)**, que move o cursor para qualquer byte do arquivo, e ela é a chave para a resposta.
+
+> **Próximo Módulo 🔜:** **Acesso Sequencial e Acesso Randômico** — como o ponteiro de arquivo percorre os dados, o cálculo de *offset* por RRN, a pesquisa binária em arquivo e quando escolher cada modelo de acesso!
