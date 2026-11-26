@@ -72,7 +72,7 @@ O registro é: `Ana Souza`, `Sistemas`, `Mariana`.
 
 Os campos nome = "Ana Souza" e curso = "Sistemas" de cinco maneiras. Abaixo também há um registro *keyword=value* com os três separadores:
 
-![Estrutura da tabela: as cinco maneiras de organizar os campos, em infográfico](img/Estrutura%20da%20Tabela%20em%20Infografico.png){align=center width=100%}
+[Vídeo: Estrutura da tabela explicada](videos/estrutura_da_tabela.mp4)
 
 ## Código em C
 

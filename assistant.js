@@ -16,7 +16,7 @@
         </form>
       </section>
       <button class="assistant-launcher" id="site-assistant-launcher" type="button" aria-label="Abrir assistente de estudos" aria-expanded="false" aria-controls="site-assistant-panel">
-        <span class="assistant-icon" data-lucide="sparkles"></span>
+        <img src="assets/illustrations/avatar-aula.png" alt="" width="58" height="58">
       </button>
     </div>
   `);

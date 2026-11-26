@@ -315,3 +315,63 @@ test("carrossel escapes attribute text and rejects an empty list", () => {
   assert.doesNotMatch(html, /<script>|<i>|<b>/);
   assert.match(renderMarkdown(fence("carrossel", { images: [] })), /pelo menos uma/);
 });
+
+// ---- bloco "roteamento": Trie binária interativa ----
+test("roteamento block draws the trie nodes, the missing children and the route table", () => {
+  const html = renderBlock("roteamento", JSON.stringify({
+    title: "Rotas", bits: 3, endereco: "101",
+    rotas: [{ prefixo: "", saida: "A" }, { prefixo: "10", saida: "<b>C</b>" }],
+  }));
+  assert.match(html, /data-kind="roteamento"/);
+  for (const p of ["", "1", "10"]) assert.match(html, new RegExp('class="rt-node[^"]*" data-p="' + p + '"'));
+  assert.match(html, /class="rt-node rt-ghost" data-p="0"/);     // filho 0 da raiz não existe
+  assert.match(html, /class="rt-node rt-ghost" data-p="101"/);
+  assert.strictEqual((html.match(/class="rt-bit"/g) || []).length, 3);
+  assert.match(html, /<tr data-p="10" data-s="&lt;b&gt;C&lt;\/b&gt;">/);
+  assert.doesNotMatch(html, /<b>C<\/b>/);
+});
+
+test("roteamento block rejects invalid prefixes", () => {
+  assert.match(renderBlock("roteamento", "{nope"), /quiz-error/);
+  assert.match(renderBlock("roteamento", JSON.stringify({ rotas: [{ prefixo: "12", saida: "A" }] })), /quiz-error/);
+  assert.match(renderBlock("roteamento", JSON.stringify({ bits: 2, rotas: [{ prefixo: "101", saida: "A" }] })), /quiz-error/);
+});
+
+test("roteamento block in construction mode starts with only the root visible and keeps the table order", () => {
+  const html = renderBlock("roteamento", JSON.stringify({
+    modo: "construcao", bits: 3,
+    rotas: [{ prefixo: "10", saida: "C" }, { prefixo: "", saida: "A" }],
+  }));
+  assert.match(html, /class="roteamento rt-build"/);
+  assert.match(html, /class="rt-node" data-p=""/);                       // raiz visível
+  assert.match(html, /class="rt-node rt-hidden" data-p="10" data-s="C"/); // aparece depois
+  assert.doesNotMatch(html, /rt-ghost/);
+  assert.doesNotMatch(html, /class="rt-bit"/);                            // sem botões de endereço
+  assert.ok(html.indexOf('data-p="10" data-s="C"><td>') < html.indexOf('<tr data-p="" '), "tabela na ordem de inserção");
+});
+
+// ---- bloco "patricia": construção sem código ----
+test("patricia block lists the keys in insertion order and starts with an empty tree", () => {
+  const html = renderBlock("patricia", JSON.stringify({
+    title: "Índice", bits: 5,
+    chaves: [{ nome: "notas.txt", bits: "01101" }, { nome: "<b>x</b>", bits: "10010" }],
+  }));
+  assert.match(html, /data-kind="patricia" data-bits="5"/);
+  assert.match(html, /class="roteamento rt-build pt"/);
+  assert.match(html, /árvore vazia/);
+  assert.ok(html.indexOf('data-bits="01101"') < html.indexOf('data-bits="10010"'));
+  assert.doesNotMatch(html, /<b>x<\/b>/);
+});
+
+test("patricia block rejects keys with the wrong number of bits", () => {
+  assert.match(renderBlock("patricia", "{nope"), /quiz-error/);
+  assert.match(renderBlock("patricia", JSON.stringify({ bits: 5, chaves: [{ nome: "a", bits: "0101" }] })), /quiz-error/);
+  assert.match(renderBlock("patricia", JSON.stringify({ bits: 5, chaves: [{ nome: "", bits: "01010" }] })), /quiz-error/);
+});
+
+test("codigo accepts the code as a list of lines, same result as a single string", () => {
+  const comoTexto = renderBlock("codigo", codigoBloco());
+  const comoLista = renderBlock("codigo", codigoBloco({ code: ["int a = 1;", "int b = a + 2; // soma"] }));
+  assert.strictEqual(comoLista, comoTexto);
+  assert.match(renderBlock("codigo", codigoBloco({ code: ["ok", 3] })), /class="quiz-error"/);
+});

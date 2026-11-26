@@ -16,25 +16,72 @@
       "id": "arquivos",
       "title": "Arquivos",
       "summary": "Conceitos e estruturas de arquivos para armazenamento e processamento de dados.",
+      "requiresQuizAnswers": true,
       "file": "topico2_arquivos.md"
     },
     {
       "id": "acesso-sequencial-randomico",
       "title": "Acesso sequencial e randômico",
       "summary": "Formas de localizar e acessar registros em arquivos.",
-      "file": null
+      "pages":[
+        {
+          "id": "Acesso Sequencial e Acesso Randômico em Arquivos",
+          "title": "Acesso Sequencial e Acesso Randômico em Arquivos",
+          "summary": "Resolva a lista de exercícios para avançar para a proxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "acesso_sequencial_e_randomico.md"
+        },
+        {
+          "id": "ListaExercicios-Acessos_Sequencial_Randomico",
+          "title": "ListaExercicios-Acessos_Sequencial e Randomico",
+          "summary": "Resolva a lista de exercícios para avançar para a proxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "exerciciosAcessoSequencialRandomico.md"
+        }
+      ]
     },
     {
       "id": "organizacao-dados-arquivos",
       "title": "Organização de dados em arquivos",
       "summary": "Métodos de disposição e organização de dados em arquivos.",
-      "file": null
+      "file": "organizacao_dados_arquivos.md"
     },
     {
       "id": "registros-tamanho-fixo",
       "title": "Registros de tamanho fixo",
       "summary": "Representação e armazenamento de registros com tamanho constante.",
-      "file": null
+      "pages": [
+        {
+          "id": "campos-e-registros-fixos",
+          "title": "Campos e registros fixos",
+          "summary": "O que é um registro de tamanho fixo, struct em C, alinhamento e gravação em arquivo binário.",
+          "file": "registros-tamanho-fixo/campos-e-registros-fixos.md"
+        },
+        {
+          "id": "rrn-e-acesso-direto",
+          "title": "RRN e acesso direto",
+          "summary": "Cabeçalho, número relativo do registro, cálculo do offset e atualização no lugar.",
+          "file": "registros-tamanho-fixo/rrn-e-acesso-direto.md"
+        },
+        {
+          "id": "blocos-e-fragmentacao",
+          "title": "Blocos, fragmentação e limites",
+          "summary": "Fator de bloco, organização espalhada e não espalhada, fragmentação interna e quando usar tamanho fixo.",
+          "file": "registros-tamanho-fixo/blocos-e-fragmentacao.md"
+        },
+        {
+          "id": "exercicios-avaliativos-registros-tamanho-fixo",
+          "title": "Exercícios avaliativos",
+          "summary": "Exercícios com gabarito sobre todo o tópico.",
+          "file": "registros-tamanho-fixo/exercicios-avaliativos-registros-tamanho-fixo.md"
+        },
+        {
+          "id": "slides-registros-tamanho-fixo",
+          "title": "Slides e vídeo",
+          "summary": "Apresentação do tópico, vídeo explicativo e referências.",
+          "file": "registros-tamanho-fixo/slides-registros-tamanho-fixo.md"
+        }
+      ]
     },
     {
       "id": "registros-tamanho-variavel",
@@ -62,7 +109,8 @@
         {
           "id": "exercicios-avaliativos-registros-tamanho-variavel",
           "title": "Exercícios avaliativos",
-          "summary": "Exercícios com gabarito sobre todo o tópico.",
+          "summary": "Dez questões de marcar sobre todo o tópico.",
+          "requiresQuizAnswers": true,
           "file": "registros-tamanho-variavel/exercicios-avaliativos-registros-tamanho-variavel.md"
         },
         {
@@ -94,19 +142,25 @@
       "id": "rle",
       "title": "Run-Length Encoding (RLE)",
       "summary": "Substitui corridas de símbolos iguais por pares (contagem, símbolo).",
-      "file": "rle.md"
+      "file": "compressao/rle.md"
     },
     {
       "id": "huffman",
       "title": "Código de Huffman",
       "summary": "Códigos de prefixo de tamanho variável construídos com um Min-Heap.",
-      "file": "huffman.md"
+      "file": "compressao/huffman.md"
     },
     {
       "id": "lzw",
       "title": "LZW",
       "summary": "Compressão baseada em dicionário aprendido durante a leitura.",
-      "file": "lzw.md"
+      "file": "compressao/lzw.md"
+    },
+    {
+      "id": "Exercicios-avaliativos-Compressão",
+      "title": "Exercícios avaliativos",
+      "summary": "Exercícios com gabarito sobre todo o tópico.",
+      "file": "compressao/exercicios-avaliativos-compressao.md"
     }
   ]
     },
@@ -114,19 +168,76 @@
       "id": "hash",
       "title": "Hash",
       "summary": "Funções de dispersão, tratamento de colisões e eficiência de tabelas Hash.",
-      "file": null
+      "pages": [
+        {
+          "id": "funcao-dispersao",
+          "title": "Função de dispersão",
+          "summary": "Como transformar uma chave em um endereço do vetor e por que a escolha dessa função define a qualidade de toda a tabela.",
+          "file": "hash/funcao-dispersao.md"
+        },
+        {
+          "id": "tratamento-colisoes",
+          "title": "Tratamento de colisões",
+          "summary": "O que fazer quando duas chaves diferentes são mapeadas para a mesma posição.",
+          "file": "hash/tratamento-colisoes.md"
+        },
+        {
+          "id": "eficiencia",
+          "title": "Eficiência de tabelas hash",
+          "summary": "Como medir o desempenho, quando ele degrada e como mantê-lo em O(1) na prática.",
+          "file": "hash/eficiencia.md"
+        }
+      ]
     },
     {
       "id": "casamento-padroes-texto",
       "title": "Casamento de padrões em texto",
       "summary": "Força bruta, Shift-And, Boyer-Moore, Boyer-Moore-Horspool e Knuth-Morris-Pratt (KMP).",
-      "file": null
+      "pages": [
+        {
+          "id": "fundamentos-e-forca-bruta",
+          "title": "Fundamentos e força bruta",
+          "summary": "Vocabulário do casamento de padrões, categorias de algoritmos, força bruta em C e análise de custo.",
+          "file": "casamento-padroes-texto/fundamentos-e-forca-bruta.md"
+        },
+        {
+          "id": "knuth-morris-pratt",
+          "title": "Knuth-Morris-Pratt (KMP)",
+          "summary": "Bordas, construção da tabela de falha, busca sem voltar no texto e análise O(n + m).",
+          "file": "casamento-padroes-texto/knuth-morris-pratt.md"
+        },
+        {
+          "id": "boyer-moore-e-horspool",
+          "title": "Boyer-Moore e Horspool (BMH)",
+          "summary": "Comparação da direita para a esquerda, heurísticas da ocorrência e do sufixo bom, e simplificação BMH.",
+          "file": "casamento-padroes-texto/boyer-moore-e-horspool.md"
+        },
+        {
+          "id": "shift-and-e-comparacao",
+          "title": "Shift-And e comparação",
+          "summary": "Paralelismo de bits, máscaras de caracteres, busca aproximada e escolha prática entre os algoritmos.",
+          "file": "casamento-padroes-texto/shift-and-e-comparacao.md"
+        },
+        {
+          "id": "slides-casamento-padroes-texto",
+          "title": "Slides e vídeo",
+          "summary": "Apresentação do tópico e vídeo explicativo (em preparação).",
+          "file": null
+        }
+      ]
     },
     {
       "id": "arvore-trie",
       "title": "Árvore Trie",
       "summary": "Árvore de prefixos: inserção, busca, remoção, complexidade e variações.",
-      "file": "arvore-trie.md"
+      "file": "arvore-trie/arvore-trie.md",
+      "narratedLesson": "arvore-trie/aula-narrada.md"
+    },
+    {
+      "id": "arvore-patricia",
+      "title": "Árvore Patricia",
+      "summary": "Trie binária compacta: nós internos testam bits, folhas guardam chaves; pesquisa, inserção e complexidade.",
+      "file": "arvore-patricia/arvore-patricia.md"
     }
   ]
 }

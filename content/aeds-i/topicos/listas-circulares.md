@@ -1,18 +1,104 @@
-Em uma **lista circular**, a referência do último nó volta ao primeiro, formando um ciclo. Por isso, o percurso não termina em `NULL` no último elemento.
+## Objetivos de aprendizagem
 
-Uma lista circular pode ser simplesmente ou duplamente encadeada. Na versão simplesmente encadeada, o `proximo` do último nó aponta para o início; na versão dupla, as referências também permitem percorrer o ciclo no sentido inverso.
+Ao final deste tópico, você deverá ser capaz de:
 
-Esse formato pode ser útil quando o percurso deve se repetir, como em uma sequência circular de tarefas. Ao percorrê-lo, é necessário definir um critério de parada para não continuar indefinidamente.
+- Explicar como o encadeamento circular elimina o `NULL` do fim da lista.
+- Percorrer uma lista circular com um critério de parada correto.
+- Descrever situações em que a estrutura circular é a escolha natural.
+- Comparar as implementações de lista vistas neste tópico.
+
+## Introdução
+
+Pense em uma roda de conversa: depois que a última pessoa fala, a vez volta para a primeira, e a rodada recomeça. Não existe "fim da fila". Uma **lista circular** segue essa ideia: a referência do último nó aponta de volta para o primeiro, fechando um ciclo.
+
+## Conceito principal
+
+Em uma lista encadeada comum, o último nó tem `prox` igual a `NULL`. Na versão circular, esse `prox` aponta para o primeiro nó:
+
+![Diagrama de uma lista circular: três nós em sequência e a seta do último voltando ao primeiro, sem NULL](imagens/lista-circular.svg){align=center width=85%}
+
+Uma lista circular pode ser **simplesmente encadeada** (só `prox` fecha o ciclo) ou **duplamente encadeada** (os dois sentidos formam ciclos). A escolha entre elas segue os mesmos critérios da versão não circular.
+
+### O percurso e o critério de parada
+
+Como não existe `NULL` marcando o fim, percorrer com `while (atual != NULL)` nunca termina. O critério de parada passa a ser **voltar ao ponto de partida**:
+
+```explicado c
+void percorrer(No *head) {
+    if (head == NULL) return; @@ Lista vazia: nada a percorrer.
+    No *atual = head; @@ Começa pela cabeça.
+    do {
+        printf("%d ", atual->info); @@ Visita o nó atual.
+        atual = atual->prox; @@ Avança para o próximo.
+    } while (atual != head); @@ Para quando der a volta completa.
+}
+```
+
+> **Cuidado:** o `do...while` executa o corpo antes de testar a condição, então o primeiro nó é sempre visitado. Com `while (atual != head)` começando em `head`, a condição já é falsa na entrada e o laço não executa nenhuma vez. Dá para usar `while`, mas seria preciso tratar o primeiro nó fora do laço ou avançar o ponteiro antes do teste.
+
+### Inserção no fim em O(1)
+
+Na lista simples comum, inserir no fim custa O(n) porque só guardamos `head`. Na circular, basta manter um ponteiro para o **último** nó: como `ultimo->prox` é sempre o primeiro, as duas pontas ficam acessíveis em O(1) — e a cabeça pode ser dispensada.
+
+```text
+Inserir [ 9 ] no fim, com ponteiro 'ultimo':
+
+Passo 1: novo->prox   = ultimo->prox    o novo nó aponta para o primeiro
+Passo 2: ultimo->prox = novo            o antigo último aponta para o novo
+Passo 3: ultimo       = novo            o novo nó passa a ser o último
+```
+
+## Quando usar
+
+A forma circular aparece quando o percurso deve se repetir indefinidamente:
+
+- **Escalonamento de processos (round-robin):** o sistema operacional dá a vez a cada processo em rodadas contínuas.
+- **Playlists em repetição:** ao fim da última música, volta para a primeira.
+- **Jogos por turnos:** a vez circula entre os participantes.
+
+## Comparação das implementações
+
+| Critério | Vetor | Simples | Dupla | Circular simples | Circular dupla |
+|:--|:--:|:--:|:--:|:--:|:--:|
+| Acesso por índice | O(1) | O(n) | O(n) | O(n) | O(n) |
+| Inserir ou remover no início | O(n) | O(1) | O(1) | O(1)* | O(1) |
+| Inserir no fim | O(1)† | O(n) | O(n) | O(1)* | O(1) |
+| Remover nó conhecido | O(n) | O(n)‡ | O(1) | O(n)‡ | O(1) |
+| Percurso inverso | Sim, O(n) | Não | Sim, O(n) | Não | Sim, O(n) |
+| Memória extra por elemento | Nenhuma | 1 referência | 2 referências | 1 referência | 2 referências |
+
+*Na circular simples, com ponteiro para o último nó: como `ultimo->prox` é o primeiro, as duas pontas ficam acessíveis em O(1). Na circular dupla, o `ant` da cabeça já é o último nó.
+
+†Quando há espaço no vetor (sem redimensionamento).
+
+‡Remover um nó conhecido exige o predecessor: na dupla ele vem de `ant` em O(1); na simples e na circular simples é preciso percorrer a lista para encontrá-lo, salvo casos pontuais como remover o primeiro com ponteiro para o último.
+
+A melhor escolha depende das operações mais frequentes da aplicação — não existe implementação vencedora em todos os cenários.
+
+## Teste de conhecimento
 
 ```quiz
 {
-  "question": "Qual característica distingue uma lista circular de uma lista encadeada não circular?",
+  "question": "Qual é o critério de parada correto para percorrer uma lista circular simplesmente encadeada?",
   "options": [
-    { "text": "Ela só armazena números inteiros.", "correct": false },
-    { "text": "A referência do último nó retorna ao primeiro, formando um ciclo.", "correct": true },
-    { "text": "Ela não pode ter um nó inicial definido.", "correct": false }
+    { "text": "Parar quando atual->prox for NULL, como na lista comum.", "correct": false },
+    { "text": "Parar quando o ponteiro atual voltar a apontar para o nó de partida (head).", "correct": true },
+    { "text": "Parar após exatamente n iterações, sendo n o tamanho máximo do vetor.", "correct": false }
   ],
-  "correctFeedback": "Correto! A ligação entre o último nó e o primeiro fecha o ciclo.",
-  "incorrectFeedback": "Observe para onde aponta a referência do último nó e tente novamente."
+  "correctFeedback": "Correto! Como não há NULL, o fim do percurso é detectado quando completamos a volta e chegamos de novo ao primeiro nó.",
+  "incorrectFeedback": "Na lista circular o campo prox do último nó não é NULL — ele aponta para o primeiro. O que sinaliza a volta completa? Tente novamente."
+}
+```
+
+```quiz
+{
+  "question": "Por que uma lista circular com ponteiro para o último nó permite inserir no fim em O(1)?",
+  "options": [
+    { "text": "Porque ultimo->prox sempre aponta para o primeiro nó, dando acesso imediato às duas pontas do ciclo.", "correct": true },
+    { "text": "Porque a lista circular mantém os elementos em posições contíguas de memória.", "correct": false },
+    { "text": "Porque o percurso até o fim é substituído por uma busca binária.", "correct": false }
+  ],
+  "correctFeedback": "Exato! O último nó dá acesso direto ao primeiro (ultimo->prox), então inserir depois do último e atualizar o ponteiro resolve tudo sem percurso.",
+  "incorrectFeedback": "Reveja o passo a passo da inserção no fim: quais referências mudam e quem você já conhece de antemão? Tente novamente."
 }
 ```
