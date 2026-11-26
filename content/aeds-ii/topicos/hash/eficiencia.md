@@ -2,10 +2,29 @@
 
 Ao final deste tópico, você deverá ser capaz de:
 
-- Definir e calcular o **fator de carga** ($\alpha = n/m$) de uma tabela hash.
-- Analisar o custo médio e de pior caso das operações com **encadeamento** e com **endereçamento aberto**.
-- Explicar como o **rehashing** mantém o custo amortizado das inserções em $O(1)$ e como mitigar o pior caso $O(n)$.
-- Identificar em quais problemas tabelas hash são indicadas e quando outras estruturas (como árvores balanceadas) são mais adequadas.
+- **Definir** e calcular o fator de carga ($\alpha = n/m$) de uma tabela hash.
+- **Analisar** o custo médio e de pior caso das operações com encadeamento e com endereçamento aberto.
+- **Explicar** como o rehashing mantém o custo amortizado das inserções em $O(1)$ e como mitigar o pior caso $O(n)$.
+- **Identificar** em quais problemas tabelas hash são indicadas e quando outras estruturas (como árvores balanceadas) são mais adequadas.
+
+## Como este tópico se liga à trilha
+
+Esta página fecha a base teórica de **Tabelas Hash**, usando a análise assintótica de AEDS I para medir o custo das estratégias vistas antes e compará-las com árvores balanceadas.
+
+1. [Função de dispersão](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=funcao-dispersao)
+2. [Tratamento de colisões](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=tratamento-colisoes)
+3. **Eficiência de tabelas hash** *(você está aqui)*
+4. [Exemplos e aplicações](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=exemplos-aplicacoes)
+5. [Exercícios](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=exercicios)
+
+| Conteúdo relacionado | Trilha | Como se conecta a esta página |
+|:---|:---|:---|
+| [Análise Assintótica](../../../../topico.html?trilha=aeds-i&id=analise-de-complexidade&pagina=analise-assintotica) | AEDS I | Define as notações $O$ e $\Theta$ usadas para expressar o caso médio $\Theta(1 + \alpha)$ e o pior caso $\Theta(n)$ |
+| [Árvores Vermelho e Preto](../../../../topico.html?trilha=aeds-i&id=estruturas-dados-hierarquicas&pagina=arvores-vermelho-preto) | AEDS I | Alternativa para buscas ordenadas ou por intervalo e solução adotada em bibliotecas para buckets muito longos |
+| [Tratamento de colisões](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=tratamento-colisoes) | AEDS II · Hash | Apresenta o encadeamento e a sondagem cujos custos em função de $\alpha$ são analisados aqui |
+| [Exemplos e aplicações](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=exemplos-aplicacoes) | AEDS II · Hash | Próxima etapa: permite experimentar $\alpha$, colisões e rehashing na prática nos laboratórios |
+
+---
 
 ## Fator de carga
 
@@ -45,8 +64,6 @@ Quando a tabela se aproxima de cheia, o desempenho cai drasticamente. Por isso c
 
 ![Curva de 1/(1−α) que cresce rapidamente perto de α = 1, comparada com a reta 1+α do encadeamento.](img/curva-sondagens.svg)
 
----
-
 ## Rehashing
 
 Para manter $\alpha$ sob controle, a tabela é **redimensionada** quando o fator de carga ultrapassa um limite (por exemplo, 0,75):
@@ -70,6 +87,8 @@ No pior caso todas as chaves caem na mesma posição e a tabela se comporta como
 
 - **Indicadas para:** busca, inserção e remoção rápidas por chave; contagem de frequências; conjuntos e dicionários; caches; detecção de duplicatas.
 - **Não indicadas para:** acesso ordenado às chaves, buscas por intervalo, mínimo/máximo ou sucessor. Nesses casos, árvores balanceadas são mais adequadas.
+
+---
 
 ## Resumo
 

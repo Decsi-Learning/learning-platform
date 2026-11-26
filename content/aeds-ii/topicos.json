@@ -164,6 +164,18 @@
           "title": "Eficiência de tabelas hash",
           "summary": "Como medir o desempenho, quando ele degrada e como mantê-lo em O(1) na prática.",
           "file": "hash/eficiencia.md"
+        },
+        {
+          "id": "exemplos-aplicacoes",
+          "title": "Exemplos e aplicações",
+          "summary": "Onde as tabelas hash aparecem no mundo real e dois laboratórios interativos para testar funções de dispersão, colisões e fator de carga.",
+          "file": "hash/exemplos-aplicacoes.md"
+        },
+        {
+          "id": "exercicios",
+          "title": "Exercícios",
+          "summary": "Dez questões que revisam toda a trilha de Tabelas Hash com dicas e verificação de acertos.",
+          "file": "hash/exercicios.md"
         }
       ]
     },

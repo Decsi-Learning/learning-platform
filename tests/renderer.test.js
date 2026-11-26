@@ -368,3 +368,46 @@ test("patricia block rejects keys with the wrong number of bits", () => {
   assert.match(renderBlock("patricia", JSON.stringify({ bits: 5, chaves: [{ nome: "a", bits: "0101" }] })), /quiz-error/);
   assert.match(renderBlock("patricia", JSON.stringify({ bits: 5, chaves: [{ nome: "", bits: "01010" }] })), /quiz-error/);
 });
+
+
+// ---- blocos de Tabelas Hash: simulador, distribuição e avaliação ----
+test("hash-simulador block renders controls, strategies, functions and rejects broken json", () => {
+  const html = renderBlock("hash-simulador", JSON.stringify({ title: "Lab 1", m: 11, strategy: "lin", fn: "div" }));
+  assert.match(html, /data-kind="hash-simulador"/);
+  assert.match(html, /Lab 1/);
+  assert.match(html, /<option value="lin" selected>Sondagem linear<\/option>/);
+  assert.match(html, /<option value="div" selected>Divisão/);
+  assert.match(html, /<option value="11" selected>11<\/option>/);
+  assert.match(renderBlock("hash-simulador", "{nope"), /quiz-error/);
+});
+
+test("hash-distribuicao block renders dataset, function and size selectors", () => {
+  const html = renderBlock("hash-distribuicao", JSON.stringify({ title: "<b>Lab 2</b>" }));
+  assert.match(html, /data-kind="hash-distribuicao"/);
+  assert.match(html, /&lt;b&gt;Lab 2&lt;\/b&gt;/);
+  assert.doesNotMatch(html, /<b>Lab 2<\/b>/);
+  assert.match(html, /data-hd="bar"/);
+  assert.match(renderBlock("hash-distribuicao", "{nope"), /quiz-error/);
+});
+
+test("avaliacao block renders questions, progress bar, review links data and escapes html", () => {
+  const html = renderBlock("avaliacao", JSON.stringify({
+    title: "Revisão",
+    requirePerfect: true,
+    questions: [
+      { question: "<b>Q1</b>", options: ["A", "B"], correct: 1, topic: "Hash", section: "Base", page: "funcao-dispersao" },
+      { question: "Q2", options: ["C", "D"], correct: 0 },
+    ],
+  }));
+  assert.match(html, /data-kind="avaliacao" data-total="2" data-require-perfect="true"/);
+  assert.match(html, /0 de 2 corretas/);
+  assert.match(html, /data-r="1" data-t="Hash" data-s="Base" data-p="funcao-dispersao"/);
+  assert.doesNotMatch(html, /<b>Q1<\/b>/);
+  assert.match(html, /&lt;b&gt;Q1&lt;\/b&gt;/);
+});
+
+test("avaliacao block rejects invalid json or malformed questions", () => {
+  assert.match(renderBlock("avaliacao", "{nope"), /quiz-error/);
+  assert.match(renderBlock("avaliacao", JSON.stringify({ questions: [] })), /quiz-error/);
+  assert.match(renderBlock("avaliacao", JSON.stringify({ questions: [{ question: "Q", options: ["A", "B"], correct: 5 }] })), /quiz-error/);
+});

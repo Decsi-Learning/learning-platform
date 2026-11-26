@@ -2,10 +2,29 @@
 
 Ao final deste tópico, você deverá ser capaz de:
 
-- Explicar o que é uma **colisão** em tabelas hash e por que ela ocorre mesmo com poucas chaves (princípio da casa dos pombos e paradoxo do aniversário).
-- Aplicar o **encadeamento separado** e o **endereçamento aberto** (**sondagem linear**, **sondagem quadrática** e **hash duplo**) na inserção e busca de chaves.
-- Explicar o papel do marcador de remoção (*tombstone*) no endereçamento aberto.
-- Comparar encadeamento e endereçamento aberto quanto a memória, fator de carga, remoção e localidade de cache.
+- **Explicar** o que é uma colisão em tabelas hash e por que ela ocorre mesmo com poucas chaves (princípio da casa dos pombos e paradoxo do aniversário).
+- **Aplicar** o encadeamento separado e o endereçamento aberto (sondagem linear, sondagem quadrática e hash duplo) na inserção e busca de chaves.
+- **Explicar** o papel do marcador de remoção (*tombstone*) no endereçamento aberto.
+- **Comparar** encadeamento e endereçamento aberto quanto a memória, fator de carga, remoção e localidade de cache.
+
+## Como este tópico se liga à trilha
+
+Partindo das funções de dispersão da página anterior, esta etapa mostra como lidar com chaves que mapeiam para o mesmo índice, conectando estruturas lineares de AEDS I às decisões de projeto de tabelas hash.
+
+1. [Função de dispersão](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=funcao-dispersao)
+2. **Tratamento de colisões** *(você está aqui)*
+3. [Eficiência de tabelas hash](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=eficiencia)
+4. [Exemplos e aplicações](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=exemplos-aplicacoes)
+5. [Exercícios](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=exercicios)
+
+| Conteúdo relacionado | Trilha | Como se conecta a esta página |
+|:---|:---|:---|
+| [Função de dispersão](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=funcao-dispersao) | AEDS II · Hash | Mostra por que um universo de chaves maior que $m$ torna as colisões inevitáveis |
+| [Lista simplesmente encadeada](../../../../topico.html?trilha=aeds-i&id=estruturas-dados-lineares-lista&pagina=listas-simplesmente-encadeadas) | AEDS I | Estrutura armazenada em cada posição da tabela no encadeamento separado |
+| [Medidas de Tempo e Espaço](../../../../topico.html?trilha=aeds-i&id=analise-de-complexidade&pagina=medidas-tempo-espaco) | AEDS I | Base para avaliar o consumo extra de ponteiros frente à localidade de cache do vetor |
+| [Eficiência de tabelas hash](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=eficiencia) | AEDS II · Hash | Próxima etapa: mede o desempenho de cada estratégia conforme o fator de carga cresce |
+
+---
 
 ## O que é uma colisão
 
@@ -25,11 +44,8 @@ Cada posição da tabela guarda uma **lista encadeada** com todos os elementos q
 - **Busca:** calcula $h(k)$ e percorre a lista dessa posição.
 - **Remoção:** busca o elemento na lista e o remove.
 
-**Vantagens:** implementação simples, remoção direta, degradação gradual quando a tabela enche e capacidade para guardar mais elementos que $m$.
-
-**Desvantagens:** memória extra para os ponteiros e pior localidade de cache.
-
----
+- **Vantagens:** implementação simples, remoção direta, degradação gradual quando a tabela enche e capacidade para guardar mais elementos que $m$.
+- **Desvantagens:** memória extra para os ponteiros e pior localidade de cache.
 
 ## Endereçamento aberto
 
@@ -69,7 +85,7 @@ Usa uma **segunda função hash** para definir o passo, então chaves diferentes
 
 No endereçamento aberto, **não basta esvaziar a posição** ao remover um elemento: isso quebraria a sequência de sondagem e faria buscas posteriores falharem. A solução é marcar a posição como **removida** (*tombstone*). A busca continua passando por ela, e uma inserção pode reutilizá-la.
 
-## Comparação e resumo
+## Comparação
 
 | Critério | Encadeamento | Endereçamento aberto |
 |:---|:---|:---|
@@ -80,10 +96,14 @@ No endereçamento aberto, **não basta esvaziar a posição** ao remover um elem
 | Localidade de cache | Pior | Melhor |
 | Sensibilidade a $\alpha$ alto | Baixa | Alta |
 
+---
+
+## Resumo
+
 - Colisão: duas chaves distintas com o mesmo índice. Ela é inevitável e precisa ser tratada.
 - Encadeamento separado: cada posição guarda uma lista com os elementos daquele índice.
 - Endereçamento aberto: tudo fica no vetor e uma sequência de sondagem (linear, quadrática ou hash duplo) procura a próxima posição livre.
-- Na remoção com endereçamento aberto, usa-se um marcador para não quebrar a sequência de sondagem.
+- Na remoção com endereçamento aberto, usa-se um marcador (*tombstone*) para não quebrar a sequência de sondagem.
 
 ## Teste de conhecimento
 

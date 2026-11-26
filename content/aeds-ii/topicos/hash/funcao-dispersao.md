@@ -2,10 +2,29 @@
 
 Ao final deste tópico, você deverá ser capaz de:
 
-- Explicar o que é uma **tabela hash** e qual o papel da **função de dispersão** no acesso em tempo médio $O(1)$.
-- Identificar as propriedades desejáveis de uma boa função de dispersão e o conceito de **hashing uniforme simples**.
-- Aplicar os métodos clássicos de dispersão (**divisão**, **multiplicação** e **hash polinomial para strings**) e escolher adequadamente o tamanho $m$ da tabela.
-- Reconhecer por que colisões são inevitáveis quando o universo de chaves é maior que $m$.
+- **Explicar** o que é uma tabela hash e qual o papel da função de dispersão no acesso em tempo médio $O(1)$.
+- **Identificar** as propriedades desejáveis de uma boa função de dispersão e o conceito de hashing uniforme simples.
+- **Aplicar** os métodos clássicos de dispersão (divisão, multiplicação e hash polinomial para strings) e escolher adequadamente o tamanho $m$ da tabela.
+- **Reconhecer** por que colisões são inevitáveis quando o universo de chaves é maior que $m$.
+
+## Como este tópico se liga à trilha
+
+Esta página abre o estudo de **Tabelas Hash** em AEDS II, apresentando a função que transforma chaves em índices. Ela se apoia em fundamentos de TADs e complexidade vistos em AEDS I e prepara a base para as próximas páginas do tópico.
+
+1. **Função de dispersão** *(você está aqui)*
+2. [Tratamento de colisões](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=tratamento-colisoes)
+3. [Eficiência de tabelas hash](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=eficiencia)
+4. [Exemplos e aplicações](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=exemplos-aplicacoes)
+5. [Exercícios](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=exercicios)
+
+| Conteúdo relacionado | Trilha | Como se conecta a esta página |
+|:---|:---|:---|
+| [TADs: Pilha, Fila, Lista e Conjunto](../../../../topico.html?trilha=aeds-i&id=tipos-abstratos-de-dados&pagina=tads-pilha-fila-lista-conjunto) | AEDS I | Tabelas hash são a principal implementação dos TADs Conjunto e Dicionário (pares chave-valor) |
+| [Análise Assintótica](../../../../topico.html?trilha=aeds-i&id=analise-de-complexidade&pagina=analise-assintotica) | AEDS I | Fundamenta o conceito de tempo médio $O(1)$ nas operações de inserção, busca e remoção |
+| [RRN e acesso direto](../../../../topico.html?trilha=aeds-ii&id=registros-tamanho-fixo&pagina=rrn-e-acesso-direto) | AEDS II | Usa a mesma ideia de calcular diretamente a posição de acesso em vez de percorrer toda a estrutura |
+| [Tratamento de colisões](../../../../topico.html?trilha=aeds-ii&id=hash&pagina=tratamento-colisoes) | AEDS II · Hash | Próxima etapa: resolve o que fazer quando duas chaves distintas caem no mesmo índice |
+
+---
 
 ## Introdução
 
@@ -31,8 +50,6 @@ O universo de chaves (todas as strings possíveis, por exemplo) é muito maior q
 - **Dispersora:** chaves parecidas resultam em índices bem diferentes, evitando agrupamentos.
 
 O cenário ideal é o **hashing uniforme simples**: cada chave tem probabilidade $1/m$ de cair em qualquer posição, independentemente das demais. A análise de eficiência parte dessa hipótese.
-
----
 
 ## Métodos clássicos
 
@@ -61,6 +78,8 @@ Para strings, é comum tratar os caracteres como coeficientes de um polinômio. 
 $$h(s) = (s_0 \cdot 31^{n-1} + s_1 \cdot 31^{n-2} + \dots + s_{n-1}) \bmod m$$
 
 O multiplicador faz com que a **posição** de cada caractere influencie o resultado, então `"abc"` e `"cba"` geram valores diferentes. Somar apenas os códigos dos caracteres seria uma função ruim, porque anagramas sempre colidiriam.
+
+---
 
 ## Resumo
 

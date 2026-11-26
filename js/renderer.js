@@ -656,7 +656,635 @@
     return !!passo.fim;
   }
 
-  const BLOCK_RENDERERS = { video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia };
+  // ---- Blocos de Tabelas Hash: simulador, comparador de distribuição e avaliação ----
+  const HD_NOMES = [
+    "Ana", "Bruno", "Carla", "Daniel", "Eduarda", "Felipe", "Gabriela", "Henrique", "Isabela", "Joao",
+    "Karina", "Lucas", "Marina", "Nicolas", "Olivia", "Paulo", "Queila", "Rafael", "Sofia", "Tiago",
+    "Ursula", "Vitor", "Wanda", "Xavier", "Yasmin", "Zeca", "Alice", "Caio", "Lara", "Mateus"
+  ];
+  const HS_EST_LABEL = { enc: "Encadeamento", lin: "Sondagem linear", qua: "Sondagem quadrática", dup: "Hash duplo" };
+  const HS_FN_LABEL = { poli: "Polinomial (×31)", div: "Divisão (k mod m)", soma: "Soma dos caracteres" };
+  let blockUid = 0;
+
+  function hashNum(chave, fn) {
+    const s = String(chave);
+    if (fn === "div" && /^-?\d+$/.test(s)) return Math.abs(parseInt(s, 10));
+    if (fn === "poli") {
+      let h = 0;
+      for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+      return h;
+    }
+    let soma = 0;
+    for (let i = 0; i < s.length; i++) soma += s.charCodeAt(i);
+    return soma;
+  }
+
+  function hashIdx(chave, fn, m) {
+    const s = String(chave);
+    if (fn === "poli") {
+      let h = 0;
+      for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % m;
+      return h;
+    }
+    return ((hashNum(s, fn) % m) + m) % m;
+  }
+
+  function isPrime(n) {
+    if (n < 2) return false;
+    for (let d = 2; d * d <= n; d++) if (n % d === 0) return false;
+    return true;
+  }
+
+  function nextPrime(n) {
+    let p = Math.max(2, Math.floor(n));
+    while (!isPrime(p)) p++;
+    return p;
+  }
+
+  function prevPrime(n) {
+    for (let p = n - 1; p >= 2; p--) if (isPrime(p)) return p;
+    return 1;
+  }
+
+  function gcd(a, b) {
+    let x = Math.abs(a), y = Math.abs(b);
+    while (y) { const t = x % y; x = y; y = t; }
+    return x;
+  }
+
+  function hashStep2(chave, fn, m) {
+    const q = prevPrime(m);
+    let step = q - (hashNum(chave, fn) % q);
+    if (step <= 0) step = 1;
+    let guard = 0;
+    while (gcd(step, m) !== 1 && guard++ < m) step = (step % (m - 1)) + 1;
+    return step;
+  }
+
+  function probeIndex(est, h1, step2, i, m) {
+    if (est === "qua") return (h1 + i * i) % m;
+    if (est === "dup") return (h1 + i * step2) % m;
+    return (h1 + i) % m;
+  }
+
+  function hashExampleKeys(fn, m) {
+    if (fn === "div") return [m + 3, 2 * m + 3, 3 * m + 3, 4 * m + 3].map(String);
+    if (fn === "soma") return ["amor", "roma", "ramo", "mora"];
+    const grupos = new Map();
+    const candidatas = [
+      "ana", "bia", "caio", "dani", "eva", "fabi", "gabi", "hugo", "iris", "joao",
+      "lara", "manu", "nico", "otto", "ravi", "sara", "vera", "yuri", "zeca",
+      "lua", "sol", "mar", "rio", "ceu", "paz", "luz", "mel", "cor", "voz", "som"
+    ];
+    for (let n = 1; n <= 120; n++) candidatas.push("k" + n);
+    for (const c of candidatas) {
+      const idx = hashIdx(c, "poli", m);
+      if (!grupos.has(idx)) grupos.set(idx, []);
+      const lista = grupos.get(idx);
+      lista.push(c);
+      if (lista.length === 4) return lista;
+    }
+    return ["ana", "bia", "caio", "dani"];
+  }
+
+  function renderHashSimulador(source) {
+    const raw = String(source || "").trim();
+    const data = raw ? parseJson(raw) : {};
+    if (raw && (!data || typeof data !== "object")) return blockError("Este simulador de tabela hash tem um erro de formato.");
+    const title = String(data.title || "Simulador de tabela hash");
+    const mIni = [5, 7, 11, 13].includes(Number(data.m)) ? Number(data.m) : 7;
+    const estIni = HS_EST_LABEL[data.strategy] ? data.strategy : "enc";
+    const fnIni = HS_FN_LABEL[data.fn] ? data.fn : "poli";
+    const opt = (val, cur, label) => `<option value="${val}"${val === cur ? " selected" : ""}>${label}</option>`;
+    return '<section class="hash-lab hash-sim" data-kind="hash-simulador" aria-label="' + escapeHtml(title) + '">' +
+      '<p class="stepper-title">' + escapeHtml(title) + "</p>" +
+      '<div class="hl-ctrl">' +
+        '<label>Estratégia<select data-hs="est">' +
+          opt("enc", estIni, "Encadeamento") + opt("lin", estIni, "Sondagem linear") + opt("qua", estIni, "Sondagem quadrática") + opt("dup", estIni, "Hash duplo") +
+        "</select></label>" +
+        '<label>Função<select data-hs="fn">' +
+          opt("poli", fnIni, "Polinomial (×31)") + opt("div", fnIni, "Divisão (k mod m)") + opt("soma", fnIni, "Soma dos caracteres") +
+        "</select></label>" +
+        '<label>Tamanho m<select data-hs="m">' +
+          [5, 7, 11, 13].map((v) => opt(String(v), String(mIni), String(v))).join("") +
+        "</select></label>" +
+      "</div>" +
+      '<div class="hl-ctrl">' +
+        '<label>Chave<input type="text" data-hs="chave" maxlength="12" placeholder="ex.: 25 ou ana" autocomplete="off"></label>' +
+        '<button type="button" class="hl-pri" data-hs="ins">Inserir</button>' +
+        '<button type="button" data-hs="bus">Buscar</button>' +
+        '<button type="button" data-hs="rem">Remover</button>' +
+        '<button type="button" data-hs="ex">Exemplo</button>' +
+        '<button type="button" data-hs="lim">Limpar</button>' +
+      "</div>" +
+      '<div class="hl-ctrl">' +
+        '<label class="hl-ck"><input type="checkbox" data-hs="auto"> Redimensionar automaticamente quando α &gt; 0,75</label>' +
+        '<button type="button" data-hs="reh">Redimensionar agora</button>' +
+      "</div>" +
+      '<div class="hl-stats" data-hs="stats"></div>' +
+      '<p class="hl-msg" data-hs="msg" role="status" aria-live="polite">Insira uma chave para começar.</p>' +
+      '<div class="hl-vis" data-hs="vis"></div>' +
+      "</section>";
+  }
+
+  function initHashSim(el) {
+    if (el.__hs) return el.__hs;
+    const est = el.querySelector('[data-hs="est"]').value;
+    const fn = el.querySelector('[data-hs="fn"]').value;
+    const m = Number(el.querySelector('[data-hs="m"]').value) || 7;
+    el.__hs = {
+      est, fn, m,
+      buckets: Array.from({ length: m }, () => []),
+      slots: Array.from({ length: m }, () => null), // null | { k } | { tomb: true }
+      n: 0,
+      colisoes: 0,
+      destaque: { sondas: new Set(), okIdx: -1, okKey: null }
+    };
+    drawHashSim(el);
+    return el.__hs;
+  }
+
+  function simActiveKeys(st) {
+    if (st.est === "enc") return st.buckets.flat();
+    return st.slots.filter((s) => s && !s.tomb).map((s) => s.k);
+  }
+
+  function simResetTable(st, m, est, fn) {
+    st.m = m; st.est = est; st.fn = fn;
+    st.buckets = Array.from({ length: m }, () => []);
+    st.slots = Array.from({ length: m }, () => null);
+    st.n = 0; st.colisoes = 0;
+    st.destaque = { sondas: new Set(), okIdx: -1, okKey: null };
+  }
+
+  function simInsertOne(st, chave) {
+    const h1 = hashIdx(chave, st.fn, st.m);
+    const sondas = new Set([h1]);
+    if (st.est === "enc") {
+      const lista = st.buckets[h1];
+      if (lista.includes(chave)) return { status: "dup", idx: h1, sondas };
+      const colidiu = lista.length > 0;
+      if (colidiu) st.colisoes++;
+      lista.push(chave);
+      st.n++;
+      return { status: "ok", idx: h1, h1, colidiu, sondas };
+    }
+    const step2 = st.est === "dup" ? hashStep2(chave, st.fn, st.m) : 1;
+    let firstTomb = -1;
+    const caminho = [];
+    for (let i = 0; i < st.m; i++) {
+      const idx = probeIndex(st.est, h1, step2, i, st.m);
+      caminho.push(idx);
+      sondas.add(idx);
+      const slot = st.slots[idx];
+      if (slot === null) {
+        const alvo = firstTomb >= 0 ? firstTomb : idx;
+        st.slots[alvo] = { k: chave };
+        st.n++;
+        const col = caminho.length - 1;
+        st.colisoes += col;
+        return { status: "ok", idx: alvo, h1, step2, caminho, reutilizou: firstTomb >= 0, sondas };
+      }
+      if (slot.tomb) {
+        if (firstTomb < 0) firstTomb = idx;
+      } else if (slot.k === chave) {
+        return { status: "dup", idx, caminho, sondas };
+      }
+    }
+    if (firstTomb >= 0) {
+      st.slots[firstTomb] = { k: chave };
+      st.n++;
+      return { status: "ok", idx: firstTomb, h1, step2, caminho, reutilizou: true, sondas };
+    }
+    return { status: "full", h1, caminho, sondas };
+  }
+
+  function simRehash(el, novoM, motivo) {
+    const st = initHashSim(el);
+    const chaves = simActiveKeys(st);
+    const targetM = Math.min(novoM, 59);
+    const selM = el.querySelector('[data-hs="m"]');
+    if (!Array.from(selM.options).some((o) => Number(o.value) === targetM)) {
+      const opt = document.createElement("option");
+      opt.value = String(targetM);
+      opt.textContent = String(targetM);
+      selM.append(opt);
+    }
+    selM.value = String(targetM);
+    simResetTable(st, targetM, st.est, st.fn);
+    let naoCoube = 0;
+    for (const k of chaves) {
+      if (simInsertOne(st, k).status === "full") naoCoube++;
+    }
+    st.destaque = { sondas: new Set(), okIdx: -1, okKey: null };
+    el.querySelector('[data-hs="msg"]').textContent = motivo + (naoCoube ? ` (${naoCoube} chave(s) não couberam neste tamanho.)` : "");
+    drawHashSim(el);
+  }
+
+  function drawHashSim(el) {
+    const st = el.__hs;
+    const alpha = (st.n / st.m).toFixed(2).replace(".", ",");
+    el.querySelector('[data-hs="stats"]').innerHTML =
+      `<span>Elementos (n): <b>${st.n}</b></span>` +
+      `<span>Tamanho (m): <b>${st.m}</b></span>` +
+      `<span>Fator de carga (α): <b>${alpha}</b></span>` +
+      `<span>Colisões: <b>${st.colisoes}</b></span>`;
+    let html = "";
+    for (let i = 0; i < st.m; i++) {
+      const emSonda = st.destaque.sondas.has(i);
+      const ehOk = st.destaque.okIdx === i;
+      if (st.est === "enc") {
+        const lista = st.buckets[i];
+        let corpo = "";
+        if (!lista.length) {
+          corpo = `<span class="hl-cel vazia${emSonda ? " sonda" : ""}">vazia</span>`;
+        } else {
+          corpo = lista.map((k) => {
+            const cls = ehOk && st.destaque.okKey === k ? " ok" : emSonda ? " sonda" : "";
+            return `<span class="hl-seta">→</span><span class="hl-cel${cls}">${escapeHtml(k)}</span>`;
+          }).join("");
+        }
+        html += `<div class="hl-lin"><span class="hl-idx">${i}</span>${corpo}</div>`;
+      } else {
+        const slot = st.slots[i];
+        let cls = "hl-cel";
+        let texto = "vazia";
+        if (slot === null) { cls += " vazia"; }
+        else if (slot.tomb) { cls += " rem"; texto = "removida"; }
+        else { texto = escapeHtml(slot.k); }
+        if (ehOk) cls += " ok";
+        else if (emSonda) cls += " sonda";
+        html += `<div class="hl-lin"><span class="hl-idx">${i}</span><span class="${cls}">${texto}</span></div>`;
+      }
+    }
+    el.querySelector('[data-hs="vis"]').innerHTML = html;
+  }
+
+  function acaoHashSim(el, acao) {
+    const st = initHashSim(el);
+    const input = el.querySelector('[data-hs="chave"]');
+    const msg = el.querySelector('[data-hs="msg"]');
+    const auto = el.querySelector('[data-hs="auto"]').checked;
+    const chave = input.value.trim();
+
+    if (acao === "cfg") {
+      const novoEst = el.querySelector('[data-hs="est"]').value;
+      const novaFn = el.querySelector('[data-hs="fn"]').value;
+      const novoM = Number(el.querySelector('[data-hs="m"]').value) || 7;
+      const chaves = simActiveKeys(st);
+      simResetTable(st, novoM, novoEst, novaFn);
+      let naoCoube = 0;
+      for (const k of chaves) if (simInsertOne(st, k).status === "full") naoCoube++;
+      msg.textContent = chaves.length
+        ? `Tabela recalculada (${HS_EST_LABEL[novoEst]}, ${HS_FN_LABEL[novaFn]}, m = ${novoM}).` + (naoCoube ? ` ${naoCoube} chave(s) não couberam.` : "")
+        : `Configuração atualizada: ${HS_EST_LABEL[novoEst]}, ${HS_FN_LABEL[novaFn]}, m = ${novoM}.`;
+      drawHashSim(el);
+      return;
+    }
+
+    if (acao === "lim") {
+      simResetTable(st, st.m, st.est, st.fn);
+      input.value = "";
+      msg.textContent = "Tabela limpa. Insira uma chave para começar.";
+      drawHashSim(el);
+      return;
+    }
+
+    if (acao === "reh") {
+      const novoM = nextPrime(st.m * 2);
+      if (st.m >= 59) {
+        msg.textContent = "Tamanho máximo do simulador atingido (m = 59).";
+        return;
+      }
+      simRehash(el, novoM, `Rehashing concluído: m foi de ${st.m} para ${novoM} e as ${simActiveKeys(st).length} chaves ativas foram reinseridas.`);
+      return;
+    }
+
+    if (acao === "ex") {
+      simResetTable(st, st.m, st.est, st.fn);
+      const chaves = hashExampleKeys(st.fn, st.m);
+      const h1 = hashIdx(chaves[0], st.fn, st.m);
+      let inseridas = 0;
+      for (const k of chaves) {
+        const r = simInsertOne(st, k);
+        if (r.status === "ok") {
+          inseridas++;
+          st.destaque = { sondas: r.sondas, okIdx: r.idx, okKey: k };
+        }
+      }
+      msg.textContent = `Exemplo carregado: ${chaves.slice(0, inseridas).join(", ")} (todas com h(k) = ${h1} em ${HS_FN_LABEL[st.fn]}). Alterne a estratégia acima para comparar encadeamento e sondagens.`;
+      drawHashSim(el);
+      return;
+    }
+
+    if (!chave) {
+      msg.textContent = "Digite uma chave (número ou texto) antes de executar a operação.";
+      input.focus();
+      return;
+    }
+
+    if (acao === "ins") {
+      const r = simInsertOne(st, chave);
+      if (r.status === "dup") {
+        st.destaque = { sondas: r.sondas, okIdx: r.idx, okKey: chave };
+        msg.textContent = `A chave "${chave}" já está na tabela, na posição ${r.idx}.`;
+        drawHashSim(el);
+        return;
+      }
+      if (r.status === "full") {
+        st.destaque = { sondas: r.sondas, okIdx: -1, okKey: null };
+        msg.textContent = `Não foi possível inserir "${chave}": a sequência de sondagem não encontrou posição livre. Clique em "Redimensionar agora".`;
+        drawHashSim(el);
+        return;
+      }
+      st.destaque = { sondas: r.sondas, okIdx: r.idx, okKey: chave };
+      if (st.est === "enc") {
+        msg.textContent = `Inserida "${chave}" na lista da posição ${r.idx} (h = ${r.h1})${r.colidiu ? " após colisão." : "."}`;
+      } else {
+        const extra = st.est === "dup" ? `, h₂ = ${r.step2}` : "";
+        msg.textContent = `Inserida "${chave}" na posição ${r.idx} (h₁ = ${r.h1}${extra}; caminho: ${r.caminho.join(" → ")})${r.reutilizou ? " reutilizando posição removida." : "."}`;
+      }
+      input.value = "";
+      drawHashSim(el);
+      if (auto && st.n / st.m > 0.75 && st.m < 59) {
+        const antigoM = st.m;
+        const novoM = nextPrime(antigoM * 2);
+        simRehash(el, novoM, `Inserida "${chave}". Como α ultrapassou 0,75, a tabela foi redimensionada automaticamente de m = ${antigoM} para m = ${novoM}.`);
+      }
+      return;
+    }
+
+    if (acao === "bus") {
+      const h1 = hashIdx(chave, st.fn, st.m);
+      const sondas = new Set([h1]);
+      if (st.est === "enc") {
+        const achou = st.buckets[h1].includes(chave);
+        st.destaque = { sondas, okIdx: achou ? h1 : -1, okKey: achou ? chave : null };
+        msg.textContent = achou
+          ? `Busca por "${chave}": encontrada na posição ${h1} após percorrer a lista (tamanho ${st.buckets[h1].length}).`
+          : `Busca por "${chave}": não encontrada na lista da posição ${h1}.`;
+        drawHashSim(el);
+        return;
+      }
+      const step2 = st.est === "dup" ? hashStep2(chave, st.fn, st.m) : 1;
+      const caminho = [];
+      let passouTomb = 0;
+      for (let i = 0; i < st.m; i++) {
+        const idx = probeIndex(st.est, h1, step2, i, st.m);
+        caminho.push(idx);
+        sondas.add(idx);
+        const slot = st.slots[idx];
+        if (slot === null) {
+          st.destaque = { sondas, okIdx: -1, okKey: null };
+          msg.textContent = `Busca por "${chave}": não encontrada. Parou na posição vazia ${idx} (caminho: ${caminho.join(" → ")}).`;
+          drawHashSim(el);
+          return;
+        }
+        if (slot.tomb) { passouTomb++; continue; }
+        if (slot.k === chave) {
+          st.destaque = { sondas, okIdx: idx, okKey: chave };
+          msg.textContent = `Busca por "${chave}": encontrada na posição ${idx} (caminho: ${caminho.join(" → ")})${passouTomb ? ` — passou por ${passouTomb} marcador(es) de remoção sem interromper a busca.` : "."}`;
+          drawHashSim(el);
+          return;
+        }
+      }
+      st.destaque = { sondas, okIdx: -1, okKey: null };
+      msg.textContent = `Busca por "${chave}": não encontrada após testar ${caminho.length} posições (${caminho.join(" → ")}).`;
+      drawHashSim(el);
+      return;
+    }
+
+    if (acao === "rem") {
+      const h1 = hashIdx(chave, st.fn, st.m);
+      const sondas = new Set([h1]);
+      if (st.est === "enc") {
+        const pos = st.buckets[h1].indexOf(chave);
+        if (pos < 0) {
+          st.destaque = { sondas, okIdx: -1, okKey: null };
+          msg.textContent = `Remoção: "${chave}" não foi encontrada na posição ${h1}.`;
+        } else {
+          st.buckets[h1].splice(pos, 1);
+          st.n--;
+          st.destaque = { sondas, okIdx: -1, okKey: null };
+          msg.textContent = `Chave "${chave}" removida da lista da posição ${h1}.`;
+        }
+        drawHashSim(el);
+        return;
+      }
+      const step2 = st.est === "dup" ? hashStep2(chave, st.fn, st.m) : 1;
+      const caminho = [];
+      for (let i = 0; i < st.m; i++) {
+        const idx = probeIndex(st.est, h1, step2, i, st.m);
+        caminho.push(idx);
+        sondas.add(idx);
+        const slot = st.slots[idx];
+        if (slot === null) break;
+        if (!slot.tomb && slot.k === chave) {
+          st.slots[idx] = { tomb: true };
+          st.n--;
+          st.destaque = { sondas, okIdx: -1, okKey: null };
+          msg.textContent = `Chave "${chave}" removida da posição ${idx} e marcada como removida (tombstone) para não quebrar a sequência de sondagem.`;
+          drawHashSim(el);
+          return;
+        }
+      }
+      st.destaque = { sondas, okIdx: -1, okKey: null };
+      msg.textContent = `Remoção: "${chave}" não encontrada (caminho: ${caminho.join(" → ")}).`;
+      drawHashSim(el);
+    }
+  }
+
+  function renderHashDistribuicao(source) {
+    const raw = String(source || "").trim();
+    const data = raw ? parseJson(raw) : {};
+    if (raw && (!data || typeof data !== "object")) return blockError("Este comparador de distribuição tem um erro de formato.");
+    const title = String(data.title || "Distribuição das chaves");
+    return '<section class="hash-lab hash-dist" data-kind="hash-distribuicao" aria-label="' + escapeHtml(title) + '">' +
+      '<p class="stepper-title">' + escapeHtml(title) + "</p>" +
+      '<div class="hl-ctrl">' +
+        '<label>Chaves<select data-hd="dados">' +
+          '<option value="mult">Múltiplos de 10 (10 a 300)</option>' +
+          '<option value="nomes">30 nomes próprios</option>' +
+        "</select></label>" +
+        '<label>Função<select data-hd="fn">' +
+          '<option value="div">Divisão (k mod m)</option>' +
+          '<option value="soma">Soma dos caracteres</option>' +
+          '<option value="poli" selected>Polinomial (×31)</option>' +
+        "</select></label>" +
+        '<label>Tamanho m<select data-hd="m">' +
+          '<option value="10">10</option>' +
+          '<option value="11" selected>11</option>' +
+          '<option value="16">16</option>' +
+          '<option value="17">17</option>' +
+        "</select></label>" +
+      "</div>" +
+      '<div class="hl-stats" data-hd="stats"></div>' +
+      '<div class="hd-barras" data-hd="bar" role="img" aria-label="Quantidade de chaves em cada posição da tabela"></div>' +
+      '<p class="hl-msg" data-hd="msg" role="status" aria-live="polite"></p>' +
+      "</section>";
+  }
+
+  function drawHashDist(el) {
+    const dados = el.querySelector('[data-hd="dados"]').value;
+    const fn = el.querySelector('[data-hd="fn"]').value;
+    const m = Number(el.querySelector('[data-hd="m"]').value) || 11;
+    const chaves = dados === "mult" ? Array.from({ length: 30 }, (_, i) => String((i + 1) * 10)) : HD_NOMES;
+    const cont = Array(m).fill(0);
+    for (const k of chaves) cont[hashIdx(k, fn, m)]++;
+    const max = Math.max(...cont, 1);
+    const ocupadas = cont.filter((c) => c > 0).length;
+    const colisoes = cont.reduce((acc, c) => acc + Math.max(0, c - 1), 0);
+    const ideal = (chaves.length / m).toFixed(1).replace(".", ",");
+
+    el.querySelector('[data-hd="stats"]').innerHTML =
+      `<span>Chaves: <b>${chaves.length}</b></span>` +
+      `<span>Posições ocupadas: <b>${ocupadas} / ${m}</b></span>` +
+      `<span>Máximo em uma posição: <b>${max}</b></span>` +
+      `<span>Colisões: <b>${colisoes}</b></span>`;
+    el.querySelector('[data-hd="bar"]').innerHTML = cont.map((c, idx) => {
+      const pct = c ? Math.max(6, Math.round((c / max) * 100)) : 0;
+      return `<div class="hd-bc" title="Posição ${idx}: ${c} chave(s)"><b>${c}</b><i style="height:${pct}%"></i><small>${idx}</small></div>`;
+    }).join("");
+
+    let resumo;
+    if (max === chaves.length) {
+      resumo = `Agrupamento total: todas as ${chaves.length} chaves caíram na mesma posição! Experimente trocar m por um número primo (como 11 ou 17).`;
+    } else if (ocupadas <= Math.ceil(m / 2)) {
+      resumo = `Distribuição concentrada: apenas ${ocupadas} de ${m} posições foram usadas (máximo de ${max} chaves em um único índice; média ideal ≈ ${ideal}).`;
+    } else {
+      resumo = `Distribuição equilibrada: ${ocupadas} de ${m} posições ocupadas, com no máximo ${max} chaves em uma posição (média ideal ≈ ${ideal}).`;
+    }
+    el.querySelector('[data-hd="msg"]').textContent = resumo;
+  }
+
+  function renderAvaliacao(source) {
+    const data = parseJson(source);
+    if (!data || !Array.isArray(data.questions) || data.questions.length < 1) {
+      return blockError("Este bloco de avaliação precisa de uma lista de questões válida.");
+    }
+    for (const q of data.questions) {
+      if (!q || typeof q.question !== "string" || !Array.isArray(q.options) || q.options.length < 2 || !Number.isInteger(q.correct) || q.correct < 0 || q.correct >= q.options.length) {
+        return blockError("Uma das questões da avaliação tem formato inválido.");
+      }
+    }
+    const uid = ++blockUid;
+    const total = data.questions.length;
+    const title = String(data.title || "Responda e verifique");
+    const requirePerfect = data.requirePerfect === true;
+    const qsHtml = data.questions.map((q, idx) => {
+      const name = `av-${uid}-${idx}`;
+      const opts = q.options.map((opt, oi) =>
+        `<label><input type="radio" name="${name}" value="${oi}"><span>${escapeHtml(String(opt))}</span></label>`
+      ).join("");
+      const attrs = [
+        `data-n="${idx + 1}"`,
+        `data-r="${q.correct}"`,
+        q.topic ? `data-t="${escapeHtml(String(q.topic))}"` : "",
+        q.section ? `data-s="${escapeHtml(String(q.section))}"` : "",
+        q.page ? `data-p="${escapeHtml(String(q.page))}"` : ""
+      ].filter(Boolean).join(" ");
+      return `<div class="av-q" ${attrs}><p class="av-enunciado"><strong>${idx + 1}.</strong> ${escapeHtml(q.question)}</p><div class="av-opcoes">${opts}</div><p class="av-fb" hidden></p></div>`;
+    }).join("");
+
+    return `<section class="avaliacao" data-kind="avaliacao" data-total="${total}"${requirePerfect ? ' data-require-perfect="true"' : ""} aria-label="${escapeHtml(title)}">` +
+      `<p class="stepper-title">${escapeHtml(title)}</p>` +
+      `<div class="av-progresso"><div class="av-prog" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="0" aria-label="Questões corretas"><i data-av="barra"></i></div><span class="av-placar" data-av="placar">0 de ${total} corretas</span></div>` +
+      qsHtml +
+      `<div class="av-acoes"><button type="button" class="av-btn" data-av="check">Verificar respostas</button></div>` +
+      `<p class="av-res" data-av="res" role="status" aria-live="polite"></p>` +
+      (requirePerfect ? `<p class="av-gate" data-av="gate">Acerte as ${total} questões para liberar a conclusão do tópico.</p>` : "") +
+      "</section>";
+  }
+
+  function buildTopicPageUrl(pageId) {
+    if (typeof window === "undefined") return "";
+    const params = new URLSearchParams(window.location.search);
+    const trilha = params.get("trilha") || "aeds-ii";
+    const id = params.get("id") || "hash";
+    const next = new URLSearchParams({ trilha, id, pagina: pageId });
+    return new URL(`topico.html?${next.toString()}`, window.location.href).href;
+  }
+
+  function updateAvaliacaoGate(el, done) {
+    if (el.dataset.requirePerfect !== "true" || typeof document === "undefined") return;
+    const finishBtn = document.querySelector("#topic-navigation .page-button.finish");
+    if (finishBtn && finishBtn.dataset.topicFinished !== "true") {
+      finishBtn.disabled = !done;
+    }
+    const gate = el.querySelector('[data-av="gate"]');
+    if (gate) {
+      gate.textContent = done
+        ? "Exercícios concluídos! O botão Finalizar tópico abaixo já está liberado."
+        : `Acerte as ${el.dataset.total} questões para liberar a conclusão do tópico.`;
+      gate.classList.toggle("ok", done);
+    }
+  }
+
+  function checkAvaliacao(el) {
+    const qs = Array.from(el.querySelectorAll(".av-q"));
+    const res = el.querySelector('[data-av="res"]');
+    const btn = el.querySelector('[data-av="check"]');
+    const vazias = qs.filter((q) => q.dataset.ok !== "1" && !q.querySelector('input[type="radio"]:checked'));
+    if (vazias.length) {
+      res.textContent = "Responda todas as questões antes de verificar. Sem resposta: " + vazias.map((q) => q.dataset.n).join(", ") + ".";
+      if (vazias[0].scrollIntoView) vazias[0].scrollIntoView({ block: "center" });
+      return;
+    }
+    let primeira = null;
+    for (const q of qs) {
+      if (q.dataset.ok === "1") continue;
+      const sel = q.querySelector('input[type="radio"]:checked');
+      const fb = q.querySelector(".av-fb");
+      fb.hidden = false;
+      if (sel && sel.value === q.dataset.r) {
+        q.dataset.ok = "1";
+        q.classList.add("certa");
+        q.classList.remove("errada");
+        fb.className = "av-fb ok";
+        fb.textContent = "Correto.";
+        q.querySelectorAll('input[type="radio"]').forEach((i) => { i.disabled = true; });
+      } else {
+        q.classList.add("errada");
+        fb.className = "av-fb erro";
+        fb.textContent = "Incorreto.";
+        if (q.dataset.t) {
+          fb.append(" Dica: este assunto está no tópico ");
+          if (q.dataset.p) {
+            const a = document.createElement("a");
+            a.href = buildTopicPageUrl(q.dataset.p);
+            a.target = "_blank";
+            a.rel = "noopener";
+            a.textContent = q.dataset.s ? `${q.dataset.t} · ${q.dataset.s} ↗` : `${q.dataset.t} ↗`;
+            fb.append(a);
+          } else {
+            fb.append(q.dataset.s ? `${q.dataset.t} · ${q.dataset.s}` : q.dataset.t);
+          }
+          fb.append(". Releia e tente de novo.");
+        }
+        if (!primeira) primeira = q;
+      }
+    }
+    const certas = qs.filter((q) => q.dataset.ok === "1").length;
+    el.querySelector('[data-av="barra"]').style.width = `${(certas / qs.length) * 100}%`;
+    el.querySelector('[data-av="placar"]').textContent = `${certas} de ${qs.length} corretas`;
+    el.querySelector(".av-prog").setAttribute("aria-valuenow", String(certas));
+    if (certas === qs.length) {
+      res.textContent = `Parabéns! Você acertou as ${qs.length} questões.`;
+      btn.disabled = true;
+      updateAvaliacaoGate(el, true);
+    } else {
+      res.textContent = `Você acertou ${certas} de ${qs.length}. Siga as dicas nas questões erradas e tente de novo.`;
+      if (primeira && primeira.scrollIntoView) primeira.scrollIntoView({ block: "center" });
+    }
+  }
+
+  function hydrateHashBlocks(root) {
+    root.querySelectorAll(".hash-sim").forEach(initHashSim);
+    root.querySelectorAll(".hash-dist").forEach(drawHashDist);
+    root.querySelectorAll('.avaliacao[data-require-perfect="true"]').forEach((el) => updateAvaliacaoGate(el, false));
+  }
+
+  const BLOCK_RENDERERS = { video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia, "hash-simulador": renderHashSimulador, "hash-distribuicao": renderHashDistribuicao, avaliacao: renderAvaliacao };
 
   // Ponte para o renderizador do site: devolve o HTML do bloco, ou null se a linguagem não é nossa.
   function renderBlock(language, source, options = {}) {
@@ -724,9 +1352,14 @@
 
   // Botões e setas ← → dos slides e das demonstrações (escuta delegada, instalada uma única vez).
   function attachInteractions(root) {
+    hydrateHashBlocks(root);
     if (root.__lessonInteractions) return;
     root.__lessonInteractions = true;
     root.addEventListener("click", (event) => {
+      const hsBtn = event.target.closest(".hash-sim button[data-hs]");
+      if (hsBtn) { acaoHashSim(hsBtn.closest(".hash-sim"), hsBtn.dataset.hs); return; }
+      const avBtn = event.target.closest('.avaliacao button[data-av="check"]');
+      if (avBtn && !avBtn.disabled) { checkAvaliacao(avBtn.closest(".avaliacao")); return; }
       const rt = event.target.closest(".roteamento [data-rt], .roteamento .rt-bit");
       if (rt) {
         if (rt.disabled) return;
@@ -740,7 +1373,27 @@
       stopPlay(stepper);
       showStep(stepper, button.dataset.stepper === "next" ? 1 : -1);
     });
+    root.addEventListener("change", (event) => {
+      const hsSelect = event.target.closest('.hash-sim select[data-hs]');
+      if (hsSelect) { acaoHashSim(hsSelect.closest(".hash-sim"), "cfg"); return; }
+      const hdSelect = event.target.closest('.hash-dist select[data-hd]');
+      if (hdSelect) { drawHashDist(hdSelect.closest(".hash-dist")); return; }
+      const avRadio = event.target.closest('.avaliacao .av-q input[type="radio"]');
+      if (avRadio) {
+        const q = avRadio.closest(".av-q");
+        if (q && q.dataset.ok !== "1") {
+          q.querySelector(".av-fb").hidden = true;
+          q.classList.remove("errada");
+        }
+      }
+    });
     root.addEventListener("keydown", (event) => {
+      const hsInput = event.target.closest('.hash-sim input[data-hs="chave"]');
+      if (hsInput && event.key === "Enter") {
+        event.preventDefault();
+        acaoHashSim(hsInput.closest(".hash-sim"), "ins");
+        return;
+      }
       const stepper = event.target.closest(".stepper");
       if (!stepper || event.target !== stepper) return;
       if (event.key === "ArrowRight") { event.preventDefault(); stopPlay(stepper); showStep(stepper, 1); }

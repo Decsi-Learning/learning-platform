@@ -205,3 +205,63 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 .markdown span.rt-bit.pt-dif { border-color: #ef4444; background: #ef4444; color: #fff; }
 .markdown .pt-chave { align-self: center; margin-left: 10px; font-weight: 750; color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .markdown .pt-leaf.rt-new rect { animation: none; } }
+
+/* Laboratórios interativos de Tabelas Hash (blocos "hash-simulador" e "hash-distribuicao") */
+.markdown .hash-lab { margin: 1.4em 0; padding: clamp(16px, 3vw, 24px); border: 1px solid var(--theme-border, var(--line)); border-radius: 16px; background: var(--theme-surface-raised, var(--paper)); }
+.markdown .hl-ctrl { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-end; margin-bottom: 12px; }
+.markdown .hl-ctrl label { display: flex; flex-direction: column; gap: 4px; color: var(--theme-muted, var(--muted)); font-size: 12.5px; font-weight: 700; }
+.markdown .hl-ctrl label.hl-ck { flex-direction: row; align-items: center; gap: 8px; color: var(--theme-text-soft, var(--soft)); font-size: 13.5px; font-weight: 600; cursor: pointer; }
+.markdown .hash-lab select,
+.markdown .hash-lab input[type="text"] { padding: 8px 11px; border: 1px solid var(--theme-border, var(--line)); border-radius: 9px; background: var(--theme-input, var(--white)); color: var(--theme-text, var(--ink)); font: inherit; font-size: 14px; }
+.markdown .hash-lab input[type="checkbox"] { accent-color: var(--theme-accent, var(--teal)); }
+.markdown .hash-lab button { padding: 8px 14px; border: 1px solid var(--theme-accent, var(--teal)); border-radius: 9px; background: var(--theme-surface, var(--white)); color: var(--theme-accent-strong, var(--teal)); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.markdown .hash-lab button:hover { background: var(--theme-accent-soft, var(--mint)); }
+.markdown .hash-lab button.hl-pri { border-color: var(--theme-action, var(--teal)); background: var(--theme-action, var(--teal)); color: var(--theme-action-text, #fff); }
+.markdown .hash-lab button.hl-pri:hover { filter: brightness(.94); }
+.markdown .hl-stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 10px; }
+.markdown .hl-stats span { padding: 4px 12px; border: 1px solid var(--theme-border, var(--line)); border-radius: 999px; background: var(--theme-surface, var(--white)); color: var(--theme-text-soft, var(--soft)); font-size: 13px; }
+.markdown .hl-stats b { color: var(--theme-accent-strong, var(--teal)); }
+.markdown .hl-msg { min-height: 2.8em; margin: 8px 0 12px; padding: 10px 14px; border-left: 3px solid var(--theme-accent, var(--teal)); border-radius: 0 9px 9px 0; background: var(--theme-accent-soft, var(--mint)); color: var(--theme-text, var(--ink)); font-size: 14px; line-height: 1.5; }
+.markdown .hl-vis { display: grid; gap: 6px; }
+.markdown .hl-lin { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.markdown .hl-idx { width: 28px; text-align: right; color: var(--theme-muted, var(--muted)); font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace; }
+.markdown .hl-cel { min-width: 72px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 5px 12px; border: 1.5px solid var(--theme-border, var(--line)); border-radius: 9px; background: var(--theme-surface, var(--white)); color: var(--theme-text, var(--ink)); font-size: 14px; font-weight: 700; transition: background-color .2s, border-color .2s; }
+.markdown .hl-cel.vazia { color: var(--theme-muted, var(--muted)); font-weight: 500; }
+.markdown .hl-cel.rem { border-style: dashed; color: var(--theme-muted, var(--muted)); text-decoration: line-through; font-weight: 500; }
+.markdown .hl-cel.sonda { border-color: var(--theme-accent, var(--teal)); background: var(--theme-accent-soft, var(--mint)); color: var(--theme-accent-strong, var(--teal)); }
+.markdown .hl-cel.ok { border-color: var(--theme-action, var(--teal)); background: var(--theme-action, var(--teal)); color: var(--theme-action-text, #fff); }
+.markdown .hl-seta { color: var(--theme-accent, var(--teal)); font-weight: 700; }
+.markdown .hd-barras { display: flex; align-items: flex-end; gap: 6px; height: 190px; margin: 14px 0 8px; padding: 12px 10px 6px; border: 1px solid var(--theme-border, var(--line)); border-radius: 12px; background: var(--theme-surface, var(--white)); overflow-x: auto; }
+.markdown .hd-bc { flex: 1 1 0; min-width: 24px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
+.markdown .hd-bc i { display: block; width: 100%; border-radius: 5px 5px 0 0; background: var(--theme-action, var(--teal)); min-height: 2px; transition: height .2s ease; }
+.markdown .hd-bc b { color: var(--theme-text, var(--ink)); font-size: 12px; line-height: 1; }
+.markdown .hd-bc small { color: var(--theme-muted, var(--muted)); font: 600 11.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+/* Avaliação em bloco com progresso e dicas (bloco "avaliacao") */
+.markdown .avaliacao { margin: 1.4em 0; padding: clamp(18px, 3vw, 26px); border: 1px solid var(--theme-border, var(--line)); border-radius: 16px; background: var(--theme-surface-raised, var(--paper)); }
+.markdown .av-progresso { display: flex; align-items: center; gap: 14px; margin: 0 0 18px; }
+.markdown .av-prog { flex: 1; height: 10px; border-radius: 999px; background: var(--theme-accent-soft, var(--mint)); overflow: hidden; }
+.markdown .av-prog i { display: block; width: 0; height: 100%; background: var(--theme-action, var(--teal)); transition: width .3s ease; }
+.markdown .av-placar { color: var(--theme-accent-strong, var(--teal)); font-size: 13.5px; font-weight: 750; white-space: nowrap; }
+.markdown .av-q { margin: 14px 0; padding: 16px 18px; border: 1px solid var(--theme-border, var(--line)); border-radius: 12px; background: var(--theme-surface, var(--white)); }
+.markdown .av-q.certa { border-color: var(--theme-success, #176b49); }
+.markdown .av-q.errada { border-color: var(--theme-error, var(--teal)); }
+.markdown .av-enunciado { margin: 0 0 12px; color: var(--theme-text, var(--ink)); font-weight: 600; }
+.markdown .av-opcoes { display: grid; gap: 8px; }
+.markdown .av-opcoes label { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border: 1px solid var(--theme-border, var(--line)); border-radius: 10px; background: var(--theme-surface, var(--white)); color: var(--theme-text, var(--ink)); cursor: pointer; }
+.markdown .av-opcoes label:hover { background: var(--theme-accent-soft, var(--mint)); }
+.markdown .av-opcoes label:has(input:checked) { border-color: var(--theme-accent, var(--teal)); background: var(--theme-accent-soft, var(--mint)); }
+.markdown .av-opcoes label:has(input:disabled) { cursor: default; opacity: .85; }
+.markdown .av-opcoes input { margin: 4px 0 0; accent-color: var(--theme-accent, var(--teal)); }
+.markdown .av-fb { margin: 12px 0 0; padding: 10px 14px; border-left: 3px solid var(--theme-accent, var(--teal)); border-radius: 0 8px 8px 0; font-size: 13.5px; font-weight: 600; line-height: 1.5; }
+.markdown .av-fb.ok { border-left-color: var(--theme-success, #176b49); background: var(--theme-success-bg, #e8f5ed); color: var(--theme-success, #176b49); }
+.markdown .av-fb.erro { border-left-color: var(--theme-error, var(--teal)); background: var(--theme-error-bg, var(--mint)); color: var(--theme-error, var(--teal)); }
+.markdown .av-fb a { color: inherit; font-weight: 750; text-decoration: underline; }
+.markdown .av-acoes { margin: 18px 0 6px; }
+.markdown .av-btn { padding: 11px 18px; border: 0; border-radius: 10px; background: var(--theme-action, var(--teal)); color: var(--theme-action-text, #fff); font: inherit; font-size: 14px; font-weight: 750; cursor: pointer; }
+.markdown .av-btn:hover { filter: brightness(.94); }
+.markdown .av-btn:disabled { opacity: .55; cursor: not-allowed; }
+.markdown .av-res { min-height: 1.5em; margin: 10px 0 0; color: var(--theme-text, var(--ink)); font-weight: 700; }
+.markdown .av-gate { margin: 12px 0 0; padding: 11px 14px; border: 1px dashed var(--theme-border, var(--line)); border-radius: 10px; background: var(--theme-surface, var(--white)); color: var(--theme-text-soft, var(--soft)); font-size: 13.5px; font-weight: 650; }
+.markdown .av-gate.ok { border-style: solid; border-color: var(--theme-success, #176b49); background: var(--theme-success-bg, #e8f5ed); color: var(--theme-success, #176b49); }
+@media (prefers-reduced-motion: reduce) { .markdown .hash-lab *, .markdown .avaliacao * { transition: none !important; } }
