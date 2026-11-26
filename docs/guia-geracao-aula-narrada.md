@@ -52,7 +52,7 @@ Arquivo: `s03-c1.mp4`
 @Rafa IA, medium close-up, centered, plain white background, static camera, soft studio light. He looks at the camera like a friendly professor, calm and satisfied, small natural head movements, a slow nod at the end and a warm smile. He says in a warm, unhurried voice: "Para fechar, volte à pergunta inicial. Como você explicaria a ideia agora, em uma frase?" No background music. No on-screen text.
 ```
 
-Se o slide tiver vários clipes, mantenha um único cabeçalho com a duração total e, antes de cada prompt, escreva, por exemplo, **Clipe 1 de 2 · 9 s · `s03-c1.mp4`**. Ao final, indique a montagem em ordem de clipe e o destino do slide, por exemplo `videos/3.mp4`. Para um único clipe, basta salvar uma cópia com o número do slide na pasta `videos/`.
+Se o slide tiver vários clipes, mantenha um único cabeçalho com a duração total e, antes de cada prompt, escreva, por exemplo, **Clipe 1 de 2 · 9 s · `s03-c1.mp4`**. Indique o destino de cada exportação, por exemplo `videos/s03-c1.mp4` e `videos/s03-c2.mp4`.
 
 ## 4. Parâmetros
 
@@ -271,7 +271,7 @@ Exemplo do [catálogo de AEDS II](../content/aeds-ii/topicos.json):
 
 - **Com voz do navegador**, escreva as falas em `slides[].clips[].speech`, na ordem de reprodução. O player permanece no slide enquanto houver clipes e avança quando a última fala termina. A duração planejada serve ao roteiro; o fim da fala controla a transição.
 - **Para destacar o conteúdo**, use `focus.linhas` nos clipes de código, tabela e comparativo. A primeira linha do trecho de código ou dos dados da tabela é a linha 1. No quiz, use `focus.mostrar` para apresentar as opções e depois revelar a resposta. Na figura, `focus.destaque` serve como indicação para a produção; o player exibe a imagem estática.
-- **Quando os vídeos estiverem prontos**, adicione `"videoFolder": "videos"` na raiz do JSON, ao lado de `tema` e `config`. Coloque os MP4 na pasta `videos/` ao lado do Markdown. A numeração segue a posição do **slide**. Se o slide 3 tiver duas falas gravadas separadamente, una os dois clipes em ordem e salve o resultado como `3.mp4`. O fim desse vídeo leva ao slide 4. Se faltar o MP4 de um slide, o player usa as falas desse slide.
+- **Quando os vídeos estiverem prontos**, adicione `"videoFolder": "videos"` na raiz do JSON, ao lado de `tema` e `config`. Coloque os MP4 na pasta `videos/` ao lado do Markdown. Use a posição em `slides[]` com pelo menos dois dígitos e a posição em `clips[]` começando em 1. O player toca os arquivos em sequência e avança ao terminar o último clipe. Para slides com apenas `speech`, use `c1`. Se faltar um arquivo, o navegador narra a fala daquele clipe.
 - **Ao conferir a entrega**, informe quantos slides e clipes foram produzidos e a duração planejada total. Registre se o teste usou voz do navegador ou MP4 e quais verificações foram realizadas.
 
 ## 14. Erros comuns (evite)

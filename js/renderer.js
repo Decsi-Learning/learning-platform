@@ -125,10 +125,10 @@
     const folder = lesson.videoFolder;
     const hasVideos = typeof folder === "string" && /^[\w-]+(?:\/[\w-]+)*$/.test(folder);
     const panels = slides.map((slide, index) => {
-      const path = hasVideos ? `${folder}/${index + 1}.mp4` : "";
+      const path = hasVideos ? `${folder}/s${String(index + 1).padStart(2, "0")}` : "";
       const video = path && options.sourceUrl ? new URL(path, options.sourceUrl).href : path;
       const books = Array.isArray(slide.stack) ? slide.stack.map(book => `<li>${escapeHtml(book)}</li>`).join("") : "";
-      return `<article class="narrated-slide${slide.visual ? " lesson-layout" : ""}" data-speech="${escapeHtml(slide.speech || "")}"${slide.clips ? ` data-clips="${escapeHtml(JSON.stringify(slide.clips))}"` : ""}${video ? ` data-avatar-video="${escapeHtml(video)}"` : ""}>
+      return `<article class="narrated-slide${slide.visual ? " lesson-layout" : ""}" data-speech="${escapeHtml(slide.speech || "")}"${slide.clips ? ` data-clips="${escapeHtml(JSON.stringify(slide.clips))}"` : ""}${video ? ` data-video-prefix="${escapeHtml(video)}"` : ""}>
         <div><h4>${renderInline(slide.title)}</h4><p>${renderInline(slide.body || "")}</p></div>
         ${renderLessonVisual(slide, options.sourceUrl)}
         ${books ? `<figure><figcaption>Topo ↓</figcaption><ol>${books}</ol></figure>` : ""}
@@ -209,15 +209,14 @@
       const clips = slide.dataset.clips ? JSON.parse(slide.dataset.clips) : [{ speech: slide.dataset.speech }];
       let clipIndex = 0;
       let spokenSeconds = 0;
-      function speakText() {
+      function completeClip(seconds) {
+        spokenSeconds += seconds;
+        clipIndex++;
+        if (clipIndex < clips.length) playClip();
+        else finish(spokenSeconds);
+      }
+      function speakText(clip) {
         if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { unavailable(); return; }
-        const clip = clips[clipIndex];
-        const lines = clip.focus?.linhas || [];
-        slide.querySelectorAll("[data-line]").forEach(line => {
-          line.classList.toggle("lesson-focus", line.dataset.line >= lines[0] && line.dataset.line <= lines[1]);
-        });
-        const answer = slide.querySelector(".lesson-answer");
-        if (answer) answer.open = clip.focus?.mostrar === "opção correta";
         const utterance = new window.SpeechSynthesisUtterance(clip.speech);
         utterance.lang = "pt-BR";
         activeSpeech = { button, utterance };
@@ -225,60 +224,68 @@
         utterance.onstart = () => { startedAt = performance.now(); };
         utterance.onend = event => {
           if (activeSpeech?.utterance !== utterance) return;
-          spokenSeconds += event.elapsedTime || (startedAt === undefined ? 0 : (performance.now() - startedAt) / 1000);
-          clipIndex++;
-          if (clipIndex < clips.length) speakText();
-          else finish(spokenSeconds);
+          completeClip(event.elapsedTime || (startedAt === undefined ? 0 : (performance.now() - startedAt) / 1000));
         };
         utterance.onerror = () => { if (activeSpeech?.utterance === utterance) unavailable(); };
         window.speechSynthesis.speak(utterance);
       }
-      if (!slide.dataset.avatarVideo) { speakText(); return; }
-      const video = document.createElement("video");
-      video.className = "narrator-video";
-      video.playsInline = true;
-      video.setAttribute("aria-label", "Vídeo do avatar");
-      const timeline = document.createElement("label");
-      timeline.className = "narration-timeline";
-      timeline.innerHTML = '<span>Tempo do slide</span><input type="range" min="0" step="0.1" value="0" disabled><span class="video-clock" aria-hidden="true"></span>';
-      stepper.querySelector(".stepper-controls").before(timeline);
-      const seek = timeline.querySelector("input");
-      const clock = timeline.querySelector(".video-clock");
-      const formatTime = value => Math.floor(value / 60) + ":" + String(Math.floor(value % 60)).padStart(2, "0");
-      function updateTime() {
-        if (!Number.isFinite(video.duration) || video.duration <= 0) return;
-        seek.disabled = false;
-        seek.max = video.duration;
-        seek.value = video.currentTime;
-        const time = formatTime(video.currentTime) + " / " + formatTime(video.duration);
-        seek.setAttribute("aria-valuetext", time);
-        clock.textContent = time;
+      function playClip() {
+        const clip = clips[clipIndex];
+        const lines = clip.focus?.linhas || [];
+        slide.querySelectorAll("[data-line]").forEach(line => {
+          line.classList.toggle("lesson-focus", line.dataset.line >= lines[0] && line.dataset.line <= lines[1]);
+        });
+        const answer = slide.querySelector(".lesson-answer");
+        if (answer) answer.open = clip.focus?.mostrar === "opção correta";
+        if (!slide.dataset.videoPrefix) { speakText(clip); return; }
+        const video = document.createElement("video");
+        video.className = "narrator-video";
+        video.playsInline = true;
+        video.setAttribute("aria-label", "Vídeo do avatar");
+        const timeline = document.createElement("label");
+        timeline.className = "narration-timeline";
+        timeline.innerHTML = `<span>Clipe ${clipIndex + 1} de ${clips.length}</span><input type="range" min="0" step="0.1" value="0" disabled><span class="video-clock" aria-hidden="true"></span>`;
+        stepper.querySelector(".stepper-controls").before(timeline);
+        const seek = timeline.querySelector("input");
+        const clock = timeline.querySelector(".video-clock");
+        const formatTime = value => Math.floor(value / 60) + ":" + String(Math.floor(value % 60)).padStart(2, "0");
+        function updateTime() {
+          if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+          seek.disabled = false;
+          seek.max = video.duration;
+          seek.value = video.currentTime;
+          const time = formatTime(video.currentTime) + " / " + formatTime(video.duration);
+          seek.setAttribute("aria-valuetext", time);
+          clock.textContent = time;
+        }
+        seek.oninput = () => { video.currentTime = Number(seek.value); updateTime(); };
+        video.ontimeupdate = video.ondurationchange = updateTime;
+        video.onplay = () => { if (activeSpeech?.video === video) button.textContent = "Pausar"; };
+        video.onpause = () => { if (activeSpeech?.video === video) button.textContent = "Continuar"; };
+        activeSpeech = { button, video, timeline };
+        const fallback = () => {
+          if (activeSpeech?.video !== video) return;
+          activeSpeech = null;
+          video.pause();
+          video.remove();
+          timeline.remove();
+          button.textContent = "Parar narração";
+          speakText(clip);
+        };
+        video.onerror = fallback;
+        video.onended = () => {
+          if (activeSpeech?.video !== video) return;
+          const seconds = video.currentTime;
+          video.remove();
+          timeline.remove();
+          activeSpeech = null;
+          completeClip(seconds);
+        };
+        button.before(video);
+        video.src = `${slide.dataset.videoPrefix}-c${clipIndex + 1}.mp4`;
+        video.play().catch(fallback);
       }
-      seek.oninput = () => { video.currentTime = Number(seek.value); updateTime(); };
-      video.ontimeupdate = video.ondurationchange = updateTime;
-      video.onplay = () => { if (activeSpeech?.video === video) button.textContent = "Pausar"; };
-      video.onpause = () => { if (activeSpeech?.video === video) button.textContent = "Continuar"; };
-      activeSpeech = { button, video, timeline };
-      const fallback = () => {
-        if (activeSpeech?.video !== video) return;
-        activeSpeech = null;
-        video.pause();
-        video.remove();
-        timeline.remove();
-        button.textContent = "Parar narração";
-        speakText();
-      };
-      video.onerror = fallback;
-      video.onended = () => {
-        if (activeSpeech?.video !== video) return;
-        const seconds = video.currentTime;
-        video.remove();
-        timeline.remove();
-        finish(seconds);
-      };
-      button.before(video);
-      video.src = slide.dataset.avatarVideo;
-      video.play().catch(fallback);
+      playClip();
     }
     speakSlide();
   }

@@ -10,7 +10,7 @@ Antes de gerar uma aula, consulte o [guia de geração de aula narrada](docs/gui
 
 Em todas as trilhas, vincule o arquivo da apresentação ao campo `narratedLesson` do tópico. Os slides abrem na página principal, antes do texto de estudo.
 
-Ao criar ou atualizar uma aula, a IA deve entregar o Markdown do player e um **roteiro de produção para o Google Flow**. Na resposta ao desenvolvedor, apresente todos os slides em ordem no formato **Slide N: "Título" (duração X s)**, com um bloco de texto pronto para copiar por clipe. Inclua a fala integral em português, a direção do Rafa em inglês e o nome do MP4. Para slides com várias falas, identifique cada clipe e sua duração. O guia contém o modelo e exemplos completos.
+Ao criar ou atualizar uma aula, a IA deve entregar o Markdown do player e um **roteiro de produção para o Google Flow**. Na resposta ao desenvolvedor, apresente todos os slides em ordem no formato **Slide N: "Título" (duração X s)**, com um bloco de texto pronto para copiar por clipe. Inclua a fala integral em português, a direção do Rafa em inglês e o nome do MP4. Para slides com várias falas, identifique cada clipe e sua duração. Salve cada exportação na pasta indicada por `videoFolder`, seguindo a ordem de `slides[]` e `clips[]`. Por exemplo, o player toca `s06-c1.mp4` e `s06-c2.mp4` no slide 6 e depois abre o slide 7.
 
 Abra o roteiro com esta instrução: **No Google Flow, use o personagem @Rafa IA, gere cada clipe em 9:16 (vertical) e 360p. Na exportação, selecione 720p e mantenha 9:16.**
 

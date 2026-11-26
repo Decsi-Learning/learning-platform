@@ -138,6 +138,7 @@
 },
     {
       "id": "estruturas-dados-lineares-lista",
+      "narratedLesson": "lista-conceito-tad/aula-narrada.md",
       "title": "Estruturas de Dados lineares - Lista",
       "summary": "Listas: TAD, implementação por vetor e encadeadas (simples, dupla e circular); operações de inserção, remoção e busca.",
       "pages": [
