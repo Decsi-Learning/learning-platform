@@ -5,7 +5,8 @@ Ao final deste tópico, você deverá ser capaz de:
 * Compreender o paradigma de **Divisão e Conquista** aplicado ao **Quicksort** e o papel central da operação de **particionamento**.
 * Executar manualmente o algoritmo de particionamento de Lomuto, identificando como o **pivô** alcança sua posição definitiva.
 * Implementar o Quicksort em C com a heurística da **Mediana de Três** para mitigar o pior caso em vetores já ordenados.
-* Analisar a complexidade assintótica no melhor caso, caso médio ($\Theta(n \log n)$) e pior caso ($O(n^2)$), além do consumo de memória de pilha e da instabilidade.
+* Analisar a complexidade assintótica no melhor caso, caso médio ($O(n \log n)$) e pior caso ($O(n^2)$), além do consumo de memória de pilha e da instabilidade.
+
 ## Introdução
 
 Criado por Tony Hoare em 1960, o **Quicksort** é um dos algoritmos de ordenação mais rápidos e amplamente utilizados na prática (servindo de base para rotinas padrão como a função `qsort` da biblioteca padrão da linguagem C).
@@ -23,7 +24,7 @@ Dado um subvetor contíguo $V[\text{inicio} \dots \text{fim}]$, o Quicksort oper
    * Ao final dessa etapa, **o pivô já ocupa sua posição definitiva** no vetor ordenado e não precisará mais ser movido.
 3. **Conquista (Recursão):** aplica-se o mesmo procedimento recursivamente ao subvetor à esquerda (`inicio` até `indice_pivo - 1`) e ao subvetor à direita (`indice_pivo + 1` até `fim`).
 
-> **Regra fundamental:** o desempenho do Quicksort depende diretamente do equilíbrio entre os tamanhos das duas partições geradas. Quando o pivô divide o intervalo próximo à metade, a árvore de recursão possui altura $O(\log n)$ e o tempo total é $\Theta(n \log n)$. Se o pivô for sistematicamente o menor ou o maior elemento, uma partição terá tamanho $n - 1$ e a outra $0$, degradando o custo para $O(n^2)$.
+> **Regra fundamental:** o desempenho do Quicksort depende diretamente do equilíbrio entre os tamanhos das duas partições geradas. Quando o pivô divide o intervalo próximo à metade, a árvore de recursão possui altura $O(\log n)$ e o tempo total é $O(n \log n)$. Se o pivô for sistematicamente o menor ou o maior elemento, uma partição terá tamanho $n - 1$ e a outra $0$, degradando o custo para $O(n^2)$.
 
 ### Estratégias para Evitar o Pior Caso $O(n^2)$
 
@@ -36,31 +37,13 @@ Quando adotamos sempre o último elemento (`V[fim]`) como pivô e o vetor de ent
 
 ## Exemplo
 
-Considere o particionamento de **Lomuto** (adotando o último elemento `V[fim]` como pivô) sobre o vetor:
+### Visualização passo a passo — Particionamento de Lomuto e Recursão
 
-```text
-Índices:         0    1    2    3    4    5
-Vetor inicial: [ 28 | 12 | 45 | 19 | 33 | 24 ]   (pivô = 24)
+Acompanhe a execução do Quicksort sobre o vetor `[28, 12, 45, 19, 33, 24]`. Na primeira chamada (`quicksort(0, 5)`), adotamos o último elemento (`pivo = 24`) e usamos os ponteiros `i` (fronteira dos menores ou iguais) e `j` (varredura):
+
+```codigo
+{"title":"Quicksort passo a passo: Particionamento de Lomuto (pivô = 24)","code":"int particionar(int V[], int inicio, int fim) {\n    int pivo = V[fim], i = inicio - 1;\n    for (int j = inicio; j < fim; j++) {\n        if (V[j] <= pivo) {\n            i++;\n            trocar(&V[i], &V[j]);\n        }\n    }\n    trocar(&V[i + 1], &V[fim]);\n    return i + 1;\n}","steps":[{"line":2,"caption":"Iniciamos o particionamento no intervalo [0..5]. Escolhemos V[5] = 24 como pivô e inicializamos a fronteira dos menores i = -1.","vars":{"inicio":0,"fim":5,"pivo":24,"i":-1},"rows":[[{"s":0,"n":6,"i":[["28","",1],["12","",1],["45","",1],["19","",1],["33","",1],["24","c",2]],"l":"vetor V (pivô = 24 no fim)"}]],"stack":"quicksort(0, 5)"},{"line":4,"caption":"j = 0 (V[0] = 28): como 28 > 24, não trocamos nada. O índice i permanece em -1, mantendo 28 na região dos maiores.","vars":{"pivo":24,"i":-1,"j":0,"V[j]":28},"rows":[[{"s":0,"n":6,"i":[["28","c",3],["12","",1],["45","",1],["19","",1],["33","",1],["24","",2]],"l":"vetor V (j = 0)"}]],"stack":"quicksort(0, 5)"},{"line":6,"caption":"j = 1 (V[1] = 12): como 12 <= 24, avançamos i = 0 e trocamos V[0] com V[1]. O elemento 12 entra na região dos menores!","vars":{"pivo":24,"i":0,"j":1,"troca":"V[0] <-> V[1]"},"rows":[[{"s":0,"n":6,"i":[["12","c",3],["28","c",3],["45","",1],["19","",1],["33","",1],["24","",2]],"l":"vetor V (12 movido para esquerda)"}]],"stack":"quicksort(0, 5)"},{"line":4,"caption":"j = 2 (V[2] = 45): como 45 > 24, apenas avançamos j. A fronteira i continua em 0.","vars":{"pivo":24,"i":0,"j":2,"V[j]":45},"rows":[[{"s":0,"n":6,"i":[["12","",1],["28","",1],["45","c",3],["19","",1],["33","",1],["24","",2]],"l":"vetor V (j = 2)"}]],"stack":"quicksort(0, 5)"},{"line":6,"caption":"j = 3 (V[3] = 19): como 19 <= 24, avançamos i = 1 e trocamos V[1] com V[3]. Agora [12, 19] formam o bloco <= 24.","vars":{"pivo":24,"i":1,"j":3,"troca":"V[1] <-> V[3]"},"rows":[[{"s":0,"n":6,"i":[["12","",1],["19","c",3],["45","",1],["28","c",3],["33","",1],["24","",2]],"l":"vetor V (19 movido para esquerda)"}]],"stack":"quicksort(0, 5)"},{"line":4,"caption":"j = 4 (V[4] = 33): como 33 > 24, encerramos o laço for com i = 1. Todos os menores estão em [0..1] e os maiores em [2..4].","vars":{"pivo":24,"i":1,"j":4,"V[j]":33},"rows":[[{"s":0,"n":6,"i":[["12","",1],["19","",1],["45","",1],["28","",1],["33","c",3],["24","",2]],"l":"fim da varredura (i = 1)"}]],"stack":"quicksort(0, 5)"},{"line":9,"caption":"Posicionamento definitivo do pivô: trocamos V[i + 1] (V[2] = 45) com V[fim] (24). O pivô 24 está fixado no índice 2 para sempre!","vars":{"pivo":24,"indice_pivo":2,"troca":"V[2] <-> V[5]"},"rows":[[{"s":0,"n":6,"i":[["12","",1],["19","",1],["24","p",2],["28","",1],["33","",1],["45","",1]],"l":"pivô 24 fixado no índice 2"}]],"stack":"quicksort(0, 5) -> [0..1] e [3..5]"},{"line":10,"caption":"Conquista recursiva: chamamos quicksort(0, 1) para [12, 19] (pivô 19 já ordenado) e quicksort(3, 5) para [28, 33, 45] (pivô 45 já ordenado). Todo o vetor está ordenado!","vars":{"estado":"concluído"},"rows":[[{"s":0,"n":6,"i":[["12","p",2],["19","p",2],["24","p",2],["28","p",2],["33","p",2],["45","p",2]],"l":"vetor completamente ordenado"}]],"stack":"concluído"}]}
 ```
-
-<details>
-<summary><strong>Ver rastreamento passo a passo do Particionamento de Lomuto (pivô = 24)</strong></summary>
-
-Mantemos um índice `i` marcando o fim da região de elementos $\le 24$ (inicia em `inicio - 1 = -1`) e percorremos `j` de `0` até `4`:
-
-1. **`j = 0` (`V[0] = 28`):** $28 > 24$ $\rightarrow$ permanece na região dos maiores (`i = -1`).
-2. **`j = 1` (`V[1] = 12`):** $12 \le 24$ $\rightarrow$ avança `i = 0` e troca `V[0]` com `V[1]`:
-   `[ 12 | 28 | 45 | 19 | 33 | 24 ]`
-3. **`j = 2` (`V[2] = 45`):** $45 > 24$ $\rightarrow$ permanece na região dos maiores (`i = 0`).
-4. **`j = 3` (`V[3] = 19`):** $19 \le 24$ $\rightarrow$ avança `i = 1` e troca `V[1]` com `V[3]`:
-   `[ 12 | 19 | 45 | 28 | 33 | 24 ]`
-5. **`j = 4` (`V[4] = 33`):** $33 > 24$ $\rightarrow$ permanece na região dos maiores (`i = 1`).
-6. **Posicionamento definitivo do pivô:** troca `V[5]` (`24`) com `V[i + 1]` (`V[2] = 45`):
-   * **Resultado:** `[ 12 | 19 | (24) | 28 | 33 | 45 ]`
-   * O pivô `24` está fixado no índice `2`. As chamadas recursivas agora atuam de forma independente sobre `[12, 19]` e `[28, 33, 45]`.
-
-</details>
-
 ### Implementação em C (Com Mediana de Três)
 
 Na implementação abaixo, `preparar_pivo_mediana` ordena localmente `V[inicio]`, `V[meio]` e `V[fim]` de modo que a mediana fique posicionada em `V[fim]`, pronta para ser usada pelo particionamento de Lomuto:
