@@ -7,6 +7,10 @@ Ao final desta página, você vai conseguir:
 - Relacionar registros variáveis e blocos (espalhada e não espalhada).
 - Comparar registros fixos e variáveis em espaço, acesso e reaproveitamento.
 
+## Conexão com a Trilha
+
+Já sabemos delimitar e ler registros variáveis. Falta ver dois casos do dia a dia, os arquivos com tipos diferentes de registro e os campos muito grandes (BLOB), e comparar tudo com o tamanho fixo. Isso prepara o próximo tópico, sobre ordenação em disco e reutilização de espaço.
+
 ### Arquivo misto
 
 Os registros de tamanho variável aparecem por vários motivos:
@@ -203,10 +207,3 @@ Clique em **Executar**. Repare que o programa lê o código do tipo primeiro e s
 ## Vídeo-resumo do tópico
 
 [Resumo em vídeo: Arquivo misto, BLOB e comparação](videos/arquivos_mistos_e_blobs.mp4)
-
-## Exercícios de fixação desta página
-
-1. Como o programa distingue um registro de aluno de um registro de disciplina em um arquivo misto?
-2. Por que um BLOB costuma ficar fora do registro?
-3. Em que casos o registro variável é melhor que o fixo?
-4. Por que reaproveitar os buracos é mais difícil com registros variáveis?

@@ -7,6 +7,9 @@ Ao final desta página, você vai conseguir:
 - Comparar os métodos para delimitar registros.
 - Reconhecer o problema do separador e como evitá-lo.
 
+## Conexão com a Trilha
+
+No tópico anterior, todo campo tinha um tamanho combinado de antemão, e isso desperdiçava espaço quando os dados variam. Este tópico resolve esse problema: como guardar registros de tamanho variável e ainda saber onde cada campo e cada registro termina.
 
 ### Por que registros de tamanho variável?
 
@@ -146,10 +149,3 @@ Na próxima página você vai ver como o programa **lê** esses registros de vol
 ## Vídeo-resumo do tópico
 
 [Resumo em vídeo: Delimitando campos e registros](videos/delimitando_dados_variaveis.mp4)
-
-## Exercícios de fixação desta página
-
-1. Qual é a vantagem do prefixo de tamanho sobre o separador de campos?
-2. Escreva o registro nome = Rui, curso = Fisica no formato keyword=value.
-3. Por que o caractere separador não pode aparecer dentro dos dados?
-4. Quando o número fixo de campos por registro é uma boa solução?
