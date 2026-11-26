@@ -7,6 +7,10 @@ Ao final desta página, você vai conseguir:
 - Percorrer o arquivo pulando registros com o prefixo.
 - Descrever o que fazer quando um registro atualizado cresce.
 
+## Conexão com a Trilha
+
+Na página anterior vimos como marcar o fim de campos e registros. Agora vem a pergunta seguinte: como ler esses registros de volta e achar o registro n, já que a conta com o RRN do tamanho fixo não funciona mais.
+
 ### Como encontrar um registro?
 
 Com tamanho fixo, a conta `cabeçalho + RRN × tamanho` leva direto ao registro. Com tamanho variável **essa conta não existe**, porque os registros têm tamanhos diferentes. Para achar o registro número `n` temos duas opções:
@@ -455,10 +459,3 @@ Agora os registros começam com 2 bytes de prefixo, como na demonstração. O pr
 ## Vídeo-resumo do tópico
 
 [Resumo em vídeo: Lendo e localizando registros](videos/lendo_registros.mp4)
-
-## Exercícios de fixação desta página
-
-1. Em um arquivo com prefixo de 2 bytes, o primeiro registro tem 30 bytes de dados. Em que byte começa o segundo registro?
-2. Por que ler com o prefixo é mais barato do que ler byte por byte até o delimitador?
-3. Como um índice de byte offsets permite ir direto ao registro n?
-4. O que fazer quando o registro atualizado fica maior que o espaço do antigo?

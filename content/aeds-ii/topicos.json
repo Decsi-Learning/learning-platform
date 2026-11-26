@@ -109,7 +109,7 @@
         {
           "id": "exercicios-avaliativos-registros-tamanho-variavel",
           "title": "Exercícios avaliativos",
-          "summary": "Dez questões de marcar sobre todo o tópico.",
+          "summary": "Resolva a lista de exercícios para avançar para a próxima etapa.",
           "requiresQuizAnswers": true,
           "file": "registros-tamanho-variavel/exercicios-avaliativos-registros-tamanho-variavel.md"
         },
@@ -124,8 +124,40 @@
     {
       "id": "ordenacao-em-disco",
       "title": "Ordenação em disco e reutilização de espaço",
-      "summary": "Interpolação e interpolação polifásica; reutilização de espaço; fragmentação interna e externa.",
-      "file": null
+      "summary": "Intercalação (mergesort externo) e intercalação polifásica; reutilização de espaço; fragmentação interna e externa.",
+      "pages": [
+        {
+          "id": "intercalacao-e-mergesort-externo",
+          "title": "Intercalação e mergesort externo",
+          "summary": "Juntar listas em ordem, as duas fases do mergesort externo, k+1 buffers e o código em C com animação.",
+          "file": "ordenacao-em-disco/intercalacao-e-mergesort-externo.md"
+        },
+        {
+          "id": "passadas-balanceada-e-polifasica",
+          "title": "Passadas, balanceada e polifásica",
+          "summary": "Seleção por substituição, número de passadas, intercalação balanceada e polifásica (com animação em C).",
+          "file": "ordenacao-em-disco/passadas-balanceada-e-polifasica.md"
+        },
+        {
+          "id": "reutilizacao-de-espaco-e-fragmentacao",
+          "title": "Reutilização de espaço e fragmentação",
+          "summary": "Lista de vagas, first-fit, best-fit, worst-fit (com animação em C), fragmentação interna e externa e compactação.",
+          "file": "ordenacao-em-disco/reutilizacao-de-espaco-e-fragmentacao.md"
+        },
+        {
+          "id": "exercicios-avaliativos-ordenacao-em-disco",
+          "title": "Exercícios avaliativos",
+          "summary": "Resolva a lista de exercícios para avançar para a próxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "ordenacao-em-disco/exercicios-avaliativos-ordenacao-em-disco.md"
+        },
+        {
+          "id": "slides-ordenacao-em-disco",
+          "title": "Slides e vídeo",
+          "summary": "Apresentação do tópico, vídeo explicativo e referências.",
+          "file": "ordenacao-em-disco/slides-ordenacao-em-disco.md"
+        }
+      ]
     },
     {
       "id": "indexacao-arquivos",
