@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 390" role="img" aria-labelledby="t d" font-family="Arial, Helvetica, sans-serif">
+  <title id="t">Como o KMP usa a maior borda para escorregar o padrão sem voltar no texto</title>
+  <desc id="d">A parte superior ilustra a borda AB no prefixo ABAB (falha[3] = 2). A parte inferior mostra uma falha em T[4]=D contra P[4]=C: em vez de retroceder i no texto, o KMP alinha o prefixo AB sobre o sufixo AB já casado e retoma a comparação em P[2] com o mesmo i=4.</desc>
+  <defs>
+    <marker id="seta-azul" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="#2563eb"/>
+    </marker>
+    <marker id="seta-amber" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="#d97706"/>
+    </marker>
+  </defs>
+  <rect width="760" height="390" fill="#ffffff"/>
+
+  <!-- Seção 1: Conceito de borda -->
+  <rect x="20" y="16" width="720" height="114" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="36" y="42" font-size="15" font-weight="bold" fill="#1e293b">1. Borda de P[0..3] = ABAB → falha[3] = 2</text>
+
+  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle">
+    <rect x="36" y="56" width="46" height="38" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/><text x="59" y="82" fill="#1e3a8a">A</text>
+    <rect x="86" y="56" width="46" height="38" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/><text x="109" y="82" fill="#1e3a8a">B</text>
+    <rect x="136" y="56" width="46" height="38" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><text x="159" y="82" fill="#78350f">A</text>
+    <rect x="186" y="56" width="46" height="38" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><text x="209" y="82" fill="#78350f">B</text>
+  </g>
+  <text x="84" y="114" font-size="12" font-weight="bold" text-anchor="middle" fill="#1d4ed8">prefixo "AB"</text>
+  <text x="184" y="114" font-size="12" font-weight="bold" text-anchor="middle" fill="#b45309">sufixo "AB"</text>
+  <path d="M84,52 Q134,34 180,52" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#seta-azul)"/>
+
+  <text x="266" y="72" font-size="13.5" fill="#334155">O trecho <tspan font-family="Courier New, monospace" font-weight="bold" fill="#1d4ed8">AB</tspan> é o maior prefixo próprio de <tspan font-family="Courier New, monospace" font-weight="bold">ABAB</tspan></text>
+  <text x="266" y="93" font-size="13.5" fill="#334155">que também aparece como sufixo.</text>
+  <text x="266" y="114" font-size="13" font-weight="bold" fill="#0f766e">Se P[4] falhar, os 2 últimos caracteres casados formam "AB".</text>
+
+  <!-- Seção 2: Deslizamento sem voltar i -->
+  <text x="24" y="158" font-size="15" font-weight="bold" fill="#1e293b">2. Falha em i = 4: o padrão escorrega e o índice i nunca volta</text>
+
+  <!-- Linha vertical marcando i = 4 fixo -->
+  <rect x="336" y="170" width="54" height="196" rx="8" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="363" y="382" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#b91c1c">i = 4 (fixo!)</text>
+
+  <!-- Texto T -->
+  <text x="24" y="206" font-size="13.5" font-weight="bold" fill="#1e293b">Texto T:</text>
+  <g font-family="Courier New, monospace" font-size="21" font-weight="bold" text-anchor="middle">
+    <rect x="132" y="180" width="46" height="38" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/><text x="155" y="206" fill="#14532d">A</text>
+    <rect x="184" y="180" width="46" height="38" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/><text x="207" y="206" fill="#14532d">B</text>
+    <rect x="236" y="180" width="46" height="38" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><text x="259" y="206" fill="#78350f">A</text>
+    <rect x="288" y="180" width="46" height="38" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><text x="311" y="206" fill="#78350f">B</text>
+    <rect x="340" y="180" width="46" height="38" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="2.5"/><text x="363" y="206" fill="#991b1b">D</text>
+    <rect x="392" y="180" width="46" height="38" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/><text x="415" y="206" fill="#334155">A</text>
+    <rect x="444" y="180" width="46" height="38" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/><text x="467" y="206" fill="#334155">B</text>
+    <rect x="496" y="180" width="46" height="38" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/><text x="519" y="206" fill="#334155">A</text>
+  </g>
+
+  <!-- Padrão antes -->
+  <text x="24" y="264" font-size="13.5" font-weight="bold" fill="#475569">Antes (q=4):</text>
+  <g font-family="Courier New, monospace" font-size="21" font-weight="bold" text-anchor="middle">
+    <rect x="132" y="238" width="46" height="38" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/><text x="155" y="264" fill="#14532d">A</text>
+    <rect x="184" y="238" width="46" height="38" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/><text x="207" y="264" fill="#14532d">B</text>
+    <rect x="236" y="238" width="46" height="38" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><text x="259" y="264" fill="#78350f">A</text>
+    <rect x="288" y="238" width="46" height="38" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><text x="311" y="264" fill="#78350f">B</text>
+    <rect x="340" y="238" width="46" height="38" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="2.5"/><text x="363" y="264" fill="#991b1b">C</text>
+  </g>
+  <text x="404" y="262" font-size="13" font-weight="bold" fill="#b91c1c">P[4] = C ≠ T[4] = D → consulta falha[3] = 2</text>
+
+  <!-- Seta do escorregamento -->
+  <path d="M180,282 C180,304 284,290 284,312" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#seta-amber)"/>
+  <text x="172" y="308" font-size="12" font-weight="bold" text-anchor="end" fill="#b45309">escorrega 2</text>
+
+  <!-- Padrão depois -->
+  <text x="24" y="344" font-size="13.5" font-weight="bold" fill="#1d4ed8">Depois (q=2):</text>
+  <g font-family="Courier New, monospace" font-size="21" font-weight="bold" text-anchor="middle">
+    <rect x="236" y="318" width="46" height="38" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/><text x="259" y="344" fill="#1e3a8a">A</text>
+    <rect x="288" y="318" width="46" height="38" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/><text x="311" y="344" fill="#1e3a8a">B</text>
+    <rect x="340" y="318" width="46" height="38" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/><text x="363" y="344" fill="#78350f">A</text>
+    <rect x="392" y="318" width="46" height="38" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/><text x="415" y="344" fill="#334155">B</text>
+    <rect x="444" y="318" width="46" height="38" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/><text x="467" y="344" fill="#334155">C</text>
+  </g>
+  <text x="504" y="335" font-size="12.5" font-weight="bold" fill="#1d4ed8">"AB" já está casado!</text>
+  <text x="504" y="352" font-size="12.5" fill="#334155">Retoma comparando P[2] com T[4]</text>
+</svg>
