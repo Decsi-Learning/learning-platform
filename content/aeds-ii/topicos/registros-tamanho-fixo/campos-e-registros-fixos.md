@@ -1,38 +1,40 @@
 ## Objetivos de aprendizagem
 
-Ao final desta página, você vai conseguir:
+- Entender o que é um registro de tamanho fixo.
+- Declarar a `struct` e medir com `sizeof`.
+- Descobrir por que o `sizeof` pode passar da soma dos campos.
 
-- Explicar o que é um registro de tamanho fixo e como seus campos são organizados.
-- Declarar um registro em C com `struct` e descobrir seu tamanho com `sizeof`.
-- Explicar o alinhamento de memória e por que o `sizeof` pode ser maior que a soma dos campos.
-- Gravar e ler registros fixos em um arquivo binário com `fwrite` e `fread`.
+## O que é?
 
-### O que é um registro de tamanho fixo?
+> Todo registro tem **o mesmo número de bytes**. Todo campo também.
 
-No tópico anterior vimos que um arquivo guarda **registros**, e que cada registro é formado por **campos**. Em um arquivo de **registros de tamanho fixo**, todos os registros ocupam **exatamente o mesmo número de bytes**, e isso vale para cada campo: o campo `nome` tem sempre 30 bytes, o campo `curso` tem sempre 20, e assim por diante.
+| Campo | Tipo em C | Bytes |
+|:---|:---|---:|
+| `nome` | `char[30]` | 30 |
+| `curso` | `char[20]` | 20 |
+| `cidade` | `char[20]` | 20 |
+| **Registro** | `Aluno` | **70** |
 
-Esse tamanho é decidido **antes** de gravar o primeiro registro. Depois disso, o arquivo é só uma fila de blocos de bytes do mesmo tamanho, lado a lado.
+## Teste você mesmo
 
-Quando o dado é menor que o campo, o resto do campo fica **sem uso**. Um nome como `Ana Souza` ocupa 9 bytes em um campo de 30, e os outros 21 bytes ficam vazios. Esse espaço reservado e não usado é a **fragmentação interna**, que vamos medir na terceira página.
+Digite nos campos e mexa nos tamanhos. O que sobra é **fragmentação interna**.
 
-### Os campos de um registro
+```registro
+{
+  "title": "Monte o registro de um aluno",
+  "dica": "Escreva um nome bem longo, ou use acentos (`ã` ocupa 2 bytes). Depois diminua o campo no controle de tamanho.",
+  "campos": [
+    { "nome": "nome", "bytes": 30, "valor": "Ana Souza" },
+    { "nome": "curso", "bytes": 20, "valor": "Sistemas" },
+    { "nome": "cidade", "bytes": 20, "valor": "Mariana" }
+  ]
+}
+```
 
-Vamos usar o mesmo registro da página anterior, o de um aluno com nome, curso e cidade:
+- Campo **pequeno** demais: o dado é cortado.
+- Campo **grande** demais: o espaço é desperdiçado.
 
-| Campo | Tipo em C | Bytes | Exemplo |
-|:---|:---|---:|:---|
-| `nome` | `char[30]` | 30 | `Ana Souza` |
-| `curso` | `char[20]` | 20 | `Sistemas` |
-| `cidade` | `char[20]` | 20 | `Mariana` |
-| **Registro inteiro** | `Aluno` | **70** | |
-
-O registro tem 70 bytes. Como o tamanho é conhecido, a organização dos bytes é sempre a mesma: os 30 primeiros pertencem ao nome, os 20 seguintes ao curso e os últimos 20 à cidade.
-
-> Campos numéricos também têm tamanho fixo. Um `int` ocupa 4 bytes, seja o valor `1` ou `123456789`. O desperdício aparece principalmente nos campos de texto.
-
-### Registro em C: a struct
-
-Em C, o jeito natural de representar um registro de tamanho fixo é uma `struct`. O compilador já sabe quantos bytes ela ocupa, e o operador `sizeof` informa esse número.
+## A struct em C
 
 ```c
 typedef struct {
@@ -42,91 +44,30 @@ typedef struct {
 } Aluno;
 ```
 
-Dois cuidados importantes na hora de montar o registro:
+- Use `char nome[30]`, nunca `char *nome`: o ponteiro guarda só um endereço, não o texto.
+- Use `memset` para zerar o registro antes de preencher.
 
-- Use **vetores de `char`**, nunca ponteiros (`char *nome`). Um ponteiro guarda só um endereço da memória, e esse endereço não faz sentido depois que o programa termina. Os caracteres precisam estar dentro do registro.
-- Antes de preencher, **zere o registro** com `memset`. Assim os bytes que sobram no fim de cada campo ficam em zero, e não com lixo de memória que iria parar no arquivo.
+## Alinhamento
 
-### Alinhamento: quando o `sizeof` surpreende
+O compilador pode inserir bytes de **preenchimento** (*padding*) para alinhar os campos. Por isso o `sizeof` pode ser maior que a soma deles.
 
-O compilador pode inserir bytes de **preenchimento** (*padding*) entre os campos, para que cada um comece em um endereço que o processador acessa com facilidade. Um `int`, por exemplo, costuma começar em um endereço múltiplo de 4.
-
-Por isso o `sizeof` de uma `struct` **pode ser maior que a soma dos campos**. Observe duas structs com os mesmos campos em ordens diferentes:
-
-```c
-#include <stdio.h>
-
-struct Sem {
-    char tipo;
-    int codigo;
-    char sigla[3];
-};
-
-struct Arrumada {
-    int codigo;
-    char tipo;
-    char sigla[3];
-};
-
-int main(void) {
-    printf("soma dos campos: %d bytes\n", 1 + 4 + 3);
-    printf("sizeof(struct Sem): %zu bytes\n", sizeof(struct Sem));
-    printf("sizeof(struct Arrumada): %zu bytes\n", sizeof(struct Arrumada));
-    return 0;
-}
-```
-
-A saída do programa é:
-
-```text
-soma dos campos: 8 bytes
-sizeof(struct Sem): 12 bytes
-sizeof(struct Arrumada): 8 bytes
-```
-
-Na primeira struct, o compilador coloca 3 bytes de preenchimento depois de `tipo`, para o `int` começar em um múltiplo de 4, e mais 1 byte no fim. Na segunda, com o `int` na frente, não sobra nenhum.
-
-A regra prática é: **nunca faça a conta do tamanho de cabeça**. Use sempre `sizeof(Aluno)`, tanto para gravar quanto para calcular posições. Esse preenchimento depende do compilador e da máquina, então um arquivo gravado em um computador pode não ser lido corretamente em outro. Para as nossas aulas, o importante é usar o mesmo programa para gravar e ler.
-
-## Estrutura
-
-Os 70 bytes de um registro `Aluno`. Avance pelos passos para ver em quais bytes cada campo fica dentro do registro e como calcular onde ele começa:
-
-```demo
+```alinhamento
 {
-  "title": "Os 70 bytes de um registro Aluno",
-  "steps": [
-    {
-      "caption": "Um registro Aluno ocupa 70 bytes, divididos em três campos de tamanho fixo: nome (30), curso (20) e cidade (20).",
-      "state": "byte:  0                       30              50             70\n       +-----------------------+---------------+---------------+\n       | nome (30 bytes)       | curso (20)    | cidade (20)   |\n       +-----------------------+---------------+---------------+"
-    },
-    {
-      "caption": "O campo nome vem primeiro. Ele ocupa os bytes de 0 a 29, ou seja, 30 bytes.",
-      "state": "nome:    começa no byte 0\n         tem 30 bytes\n         termina no byte 29    (0 + 30 - 1)"
-    },
-    {
-      "caption": "O campo curso começa onde o nome termina, no byte 30, e ocupa os bytes de 30 a 49.",
-      "state": "curso:   começa no byte 30     (tamanho do nome)\n         tem 20 bytes\n         termina no byte 49    (30 + 20 - 1)"
-    },
-    {
-      "caption": "O campo cidade começa no byte 50 e ocupa os bytes de 50 a 69, o fim do registro.",
-      "state": "cidade:  começa no byte 50     (30 + 20)\n         tem 20 bytes\n         termina no byte 69    (50 + 20 - 1)"
-    },
-    {
-      "caption": "Regra geral: cada campo começa na soma dos tamanhos dos campos que vêm antes dele. A soma de todos dá o tamanho do registro.",
-      "state": "início do campo = soma dos tamanhos dos campos anteriores\n\nnome   -> byte 0\ncurso  -> byte 30\ncidade -> byte 50\n\ntotal  -> 30 + 20 + 20 = 70 bytes"
-    },
-    {
-      "caption": "Com os dados de Ana Souza, só 24 dos 70 bytes são usados. O resto de cada campo fica sem uso: é a fragmentação interna.",
-      "state": "nome:    \"Ana Souza\"   9 de 30 bytes usados, 21 sem uso\ncurso:   \"Sistemas\"    8 de 20 bytes usados, 12 sem uso\ncidade:  \"Mariana\"     7 de 20 bytes usados, 13 sem uso\n\nusados:  9 + 8 + 7    = 24 bytes\nsem uso: 21 + 12 + 13 = 46 bytes"
-    }
+  "title": "Arrume a struct",
+  "dica": "Use as setas para mudar a ordem dos campos. Desafio: ache uma ordem **sem** preenchimento.",
+  "campos": [
+    { "decl": "char tipo", "bytes": 1, "align": 1 },
+    { "decl": "int codigo", "bytes": 4, "align": 4 },
+    { "decl": "char sigla[3]", "bytes": 3, "align": 1 }
   ]
 }
 ```
 
+> Nunca some os campos de cabeça. Use sempre `sizeof(Aluno)`.
+
 ## Código em C
 
-O programa abaixo cria um registro, mostra o tamanho dele e grava duas cópias em um arquivo binário. Depois ele vai até o fim do arquivo e pergunta quantos bytes o arquivo tem. Rode no seu computador e confira o resultado.
+Grava dois registros e pergunta ao arquivo quantos bytes ele tem.
 
 ```c
 #include <stdio.h>
@@ -169,7 +110,7 @@ bytes usados pelos dados: 24
 tamanho do arquivo com 2 registros: 140 bytes
 ```
 
-O registro ocupa 70 bytes, mas os dados de verdade têm só 24. O arquivo com dois registros tem exatamente 2 × 70 = 140 bytes. Na próxima página você vai usar essa regularidade para ir direto a qualquer registro.
+> 2 registros × 70 bytes = **140 bytes**. Essa regularidade é a chave da próxima página.
 
 ## Teste rápido
 

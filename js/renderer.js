@@ -849,7 +849,496 @@
     return !!passo.fim;
   }
 
-  const BLOCK_RENDERERS = { "aula-narrada": renderNarratedLesson, video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia };
+  // ---- Widgets interativos de "Registros de tamanho fixo" (tópico 6 de AEDS II) ----
+  // Blocos: registro, alinhamento, rrn, blocos. Cada um recebe um JSON (ver docs/guia-e-modelo-markdown.md).
+  // O renderizador só emite uma "casca" com a configuração em data-cfg; iniciarWidgets() monta a parte
+  // interativa depois que a página é inserida (assim o HTML passa pelo DOMPurify sem perder nada).
+
+  // ---- contas puras (testadas em tests/renderer.test.js) ----
+  function calcCampo(valor, bytes) {
+    // quantos bytes do texto cabem no campo; o que passa do limite é "cortado"
+    const enc = new TextEncoder();
+    const cels = [];
+    let usados = 0;
+    let corte = "";
+    let cortando = false;
+    for (const ch of Array.from(String(valor))) {
+      const n = enc.encode(ch).length;
+      if (cortando || usados + n > bytes) { cortando = true; corte += ch; continue; }
+      for (let k = 0; k < n; k++) cels.push({ ch, cont: k > 0 });
+      usados += n;
+    }
+    return { cels, usados, corte };
+  }
+
+  function calcStruct(campos, ordem) {
+    // cada campo começa num múltiplo do próprio alinhamento; o tamanho final é múltiplo do maior alinhamento
+    let off = 0;
+    let maior = 1;
+    let soma = 0;
+    const itens = [];
+    for (const i of ordem) {
+      const c = campos[i];
+      const pad = (c.align - (off % c.align)) % c.align;
+      if (pad) itens.push({ pad });
+      itens.push({ campo: i, bytes: c.bytes, off: off + pad });
+      off += pad + c.bytes;
+      soma += c.bytes;
+      if (c.align > maior) maior = c.align;
+    }
+    const fim = (maior - (off % maior)) % maior;
+    if (fim) itens.push({ pad: fim, fim: true });
+    return { itens, soma, sizeof: off + fim, padding: off + fim - soma };
+  }
+
+  function melhorOrdem(campos) {
+    let melhor = null;
+    const usa = (ordem, resto) => {
+      if (!resto.length) {
+        const r = calcStruct(campos, ordem);
+        if (melhor === null || r.sizeof < melhor.sizeof) melhor = { ordem: ordem.slice(), sizeof: r.sizeof };
+        return;
+      }
+      resto.forEach((x, k) => usa(ordem.concat(x), resto.filter((_, j) => j !== k)));
+    };
+    usa([], campos.map((_, i) => i));
+    return melhor.ordem;
+  }
+
+  function calcOffset(cab, tam, rrn) { return cab + rrn * tam; }
+
+  function calcBlocos(B, R, N, espalhada) {
+    const fb = Math.floor(B / R);
+    const out = { fb, sobra: fb ? B - fb * R : B, blocos: [], divididos: 0, cabe: fb > 0 };
+    if (!espalhada) {
+      if (!fb) return out;
+      const nb = Math.ceil(N / fb);
+      for (let b = 0; b < nb; b++) {
+        const qtd = Math.min(fb, N - b * fb);
+        const segs = [];
+        for (let k = 0; k < qtd; k++) segs.push({ rec: b * fb + k, bytes: R });
+        if (B - qtd * R) segs.push({ livre: B - qtd * R, sobra: qtd === fb });
+        out.blocos.push(segs);
+      }
+    } else {
+      const total = N * R;
+      const nb = Math.ceil(total / B);
+      for (let b = 0; b < nb; b++) {
+        const ini = b * B;
+        const fim = Math.min(total, ini + B);
+        const segs = [];
+        for (let p = ini; p < fim;) {
+          const rec = Math.floor(p / R);
+          const q = Math.min(fim, (rec + 1) * R);
+          segs.push({ rec, bytes: q - p, cont: p > rec * R, corta: q < (rec + 1) * R });
+          p = q;
+        }
+        if (fim - ini < B) segs.push({ livre: B - (fim - ini), sobra: false });
+        out.blocos.push(segs);
+      }
+      for (let rec = 0; rec < N; rec++) {
+        if (Math.floor((rec * R) / B) !== Math.floor((rec * R + R - 1) / B)) out.divididos++;
+      }
+    }
+    return out;
+  }
+
+  function fmtNum(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0"); }
+
+  // ---- as quatro "cascas" ----
+  function cascaRg(tipo, data, cfg, erro) {
+    const titulo = String(data.title || "");
+    return '<section class="rg rg-' + tipo + '" data-kind="' + tipo + '" data-cfg="' + escapeHtml(JSON.stringify(cfg)) + '" aria-label="' + escapeHtml(titulo) + '">' +
+      (titulo ? '<p class="stepper-title">' + escapeHtml(titulo) + "</p>" : "") +
+      (data.dica ? '<p class="rg-dica">' + renderInline(String(data.dica)) + "</p>" : "") +
+      '<div class="rg-app"><p class="rg-dica">Carregando…</p></div></section>';
+  }
+
+  function renderRegistro(source) {
+    const data = parseJson(source);
+    const campos = data && data.campos;
+    if (!Array.isArray(campos) || campos.length < 1 || campos.length > 5) return blockError("O bloco registro precisa de 1 a 5 campos.");
+    for (const c of campos) {
+      if (!c || typeof c.nome !== "string" || !c.nome.trim() || !Number.isInteger(c.bytes) || c.bytes < 2 || c.bytes > 64) {
+        return blockError("Cada campo do bloco registro precisa de um nome e de um tamanho (2 a 64 bytes).");
+      }
+    }
+    const cfg = { campos: campos.map((c) => ({ nome: c.nome, bytes: c.bytes, valor: String(c.valor || "") })), milhao: data.milhao !== false };
+    return cascaRg("registro", data, cfg);
+  }
+
+  function renderAlinhamento(source) {
+    const data = parseJson(source);
+    const campos = data && data.campos;
+    if (!Array.isArray(campos) || campos.length < 2 || campos.length > 6) return blockError("O bloco alinhamento precisa de 2 a 6 campos.");
+    for (const c of campos) {
+      if (!c || typeof c.decl !== "string" || !c.decl.trim() || !Number.isInteger(c.bytes) || c.bytes < 1 || ![1, 2, 4, 8].includes(c.align)) {
+        return blockError("Cada campo do bloco alinhamento precisa de decl, bytes e align (1, 2, 4 ou 8).");
+      }
+    }
+    const cfg = { campos: campos.map((c) => ({ decl: c.decl, bytes: c.bytes, align: c.align })) };
+    return cascaRg("alinhamento", data, cfg);
+  }
+
+  function renderRrn(source) {
+    const data = parseJson(source);
+    if (!data || typeof data !== "object") return blockError("Este bloco rrn tem um erro de formato.");
+    const cab = data.cab === undefined ? 8 : data.cab;
+    const tam = data.tam === undefined ? 70 : data.tam;
+    const n = data.n === undefined ? 8 : data.n;
+    if (!Number.isInteger(cab) || cab < 0 || cab > 4096 || !Number.isInteger(tam) || tam < 1 || tam > 4096 || !Number.isInteger(n) || n < 3 || n > 12) {
+      return blockError("O bloco rrn precisa de cab (0 a 4096), tam (1 a 4096) e n (3 a 12).");
+    }
+    return cascaRg("rrn", data, { cab, tam, n, rrn: Math.min(Number.isInteger(data.rrn) ? Math.max(data.rrn, 0) : 3, n - 1) });
+  }
+
+  function renderBlocosWidget(source) {
+    const data = parseJson(source);
+    if (!data || typeof data !== "object") return blockError("Este bloco blocos tem um erro de formato.");
+    const B = data.bloco === undefined ? 200 : data.bloco;
+    const R = data.registro === undefined ? 70 : data.registro;
+    const N = data.registros === undefined ? 5 : data.registros;
+    if (!Number.isInteger(B) || B < 100 || B > 400 || !Number.isInteger(R) || R < 20 || R > 150 || !Number.isInteger(N) || N < 3 || N > 12) {
+      return blockError("O bloco blocos precisa de bloco (100 a 400), registro (20 a 150) e registros (3 a 12).");
+    }
+    return cascaRg("blocos", data, { B, R, N, espalhada: data.espalhada === true });
+  }
+
+  // ---- montagem do DOM ----
+  function mk(tag, cls, texto) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (texto !== undefined) e.textContent = texto;
+    return e;
+  }
+
+  function celula(cls, texto) { return mk("span", "rg-cel " + cls, texto); }
+
+  function iniciarRegistro(el, cfg) {
+    const app = el.querySelector(".rg-app");
+    app.replaceChildren();
+    const st = { bytes: cfg.campos.map((c) => c.bytes), valor: cfg.campos.map((c) => c.valor) };
+    el.__rg = st;
+    cfg.campos.forEach((c, i) => {
+      const row = mk("div", "rg-row");
+      row.dataset.i = String(i);
+      const head = mk("div", "rg-head");
+      head.append(mk("span", "rg-nome rg-c" + (i % 4), c.nome));
+      const texto = mk("input", "rg-texto");
+      texto.type = "text"; texto.value = c.valor; texto.dataset.rg = "texto"; texto.dataset.i = String(i);
+      texto.autocomplete = "off"; texto.spellcheck = false;
+      texto.setAttribute("aria-label", "Valor do campo " + c.nome);
+      const slide = mk("label", "rg-slide", "tamanho ");
+      const rng = mk("input");
+      rng.type = "range"; rng.min = "4"; rng.max = String(Math.max(40, Math.ceil(c.bytes * 1.5)));
+      rng.value = String(c.bytes); rng.dataset.rg = "tam"; rng.dataset.i = String(i);
+      rng.setAttribute("aria-label", "Tamanho do campo " + c.nome + " em bytes");
+      slide.append(rng, mk("output", "rg-tamval"));
+      head.append(texto, slide);
+      row.append(head, mk("div", "rg-cells"), mk("p", "rg-nota"));
+      app.append(row);
+    });
+    app.append(mk("div", "rg-resumo"));
+    app.querySelector(".rg-resumo").setAttribute("aria-live", "polite");
+    atualizarRegistro(el, cfg);
+  }
+
+  function atualizarRegistro(el, cfg) {
+    const st = el.__rg;
+    let usados = 0;
+    let total = 0;
+    let cortou = false;
+    cfg.campos.forEach((c, i) => {
+      const r = calcCampo(st.valor[i], st.bytes[i]);
+      const row = el.querySelector('.rg-row[data-i="' + i + '"]');
+      const cels = row.querySelector(".rg-cells");
+      cels.replaceChildren();
+      for (const k of r.cels) cels.append(celula("rg-c" + (i % 4) + (k.cont ? " rg-cont" : ""), k.cont ? "" : k.ch === " " ? "\u00b7" : k.ch));
+      for (let k = r.usados; k < st.bytes[i]; k++) cels.append(celula("rg-vazio"));
+      row.querySelector(".rg-tamval").textContent = st.bytes[i] + " bytes (do byte " + total + " ao " + (total + st.bytes[i] - 1) + ")";
+      const nota = row.querySelector(".rg-nota");
+      nota.textContent = r.corte ? "⚠ cortado: “" + r.corte + "” não coube no campo" : r.usados + " de " + st.bytes[i] + " bytes usados · " + (st.bytes[i] - r.usados) + " sem uso";
+      nota.classList.toggle("rg-corte", !!r.corte);
+      if (r.corte) cortou = true;
+      usados += r.usados;
+      total += st.bytes[i];
+    });
+    const desp = total - usados;
+    const pct = total ? Math.round((desp * 100) / total) : 0;
+    const resumo = el.querySelector(".rg-resumo");
+    resumo.replaceChildren();
+    const barra = mk("div", "rg-barra");
+    const cheio = mk("span");
+    cheio.style.width = 100 - pct + "%";
+    barra.append(cheio);
+    const linha = mk("p", "rg-linha");
+    linha.innerHTML = "<strong>" + usados + "</strong> de <strong>" + total + "</strong> bytes guardam dado · <strong class=\"rg-ruim\">" + desp + " bytes (" + pct + "%)</strong> são fragmentação interna";
+    resumo.append(barra, linha);
+    if (cfg.milhao) {
+      const m = mk("p", "rg-linha");
+      m.innerHTML = "Com 1 milhão de registros: <strong class=\"rg-ruim\">" + fmtNum(desp) + " MB</strong> desperdiçados";
+      resumo.append(m);
+    }
+    if (cortou) resumo.append(mk("p", "rg-aviso", "Há dado cortado. Aumente o campo ou use um valor menor."));
+  }
+
+  function iniciarAlinhamento(el, cfg) {
+    el.__rg = { ordem: cfg.campos.map((_, i) => i) };
+    desenharAlinhamento(el, cfg);
+  }
+
+  function desenharAlinhamento(el, cfg) {
+    const ordem = el.__rg.ordem;
+    const r = calcStruct(cfg.campos, ordem);
+    const app = el.querySelector(".rg-app");
+    app.replaceChildren();
+    const lista = mk("ol", "rg-ordem");
+    ordem.forEach((idx, pos) => {
+      const li = mk("li", "rg-c" + (idx % 4));
+      li.append(mk("code", "", cfg.campos[idx].decl + ";"));
+      const sobe = mk("button", "rg-mini", "↑");
+      sobe.type = "button"; sobe.dataset.rg = "sobe"; sobe.dataset.i = String(pos); sobe.disabled = pos === 0;
+      sobe.setAttribute("aria-label", "Subir " + cfg.campos[idx].decl);
+      const desce = mk("button", "rg-mini", "↓");
+      desce.type = "button"; desce.dataset.rg = "desce"; desce.dataset.i = String(pos); desce.disabled = pos === ordem.length - 1;
+      desce.setAttribute("aria-label", "Descer " + cfg.campos[idx].decl);
+      li.append(sobe, desce);
+      lista.append(li);
+    });
+    const mem = mk("div", "rg-mem");
+    mem.setAttribute("role", "img");
+    mem.setAttribute("aria-label", "Memória da struct: " + r.sizeof + " bytes, " + r.padding + " de preenchimento");
+    let byte = 0;
+    for (const it of r.itens) {
+      if (it.pad) {
+        for (let k = 0; k < it.pad; k++) mem.append(celula("rg-pad", "pad"));
+        byte += it.pad;
+      } else {
+        const c = cfg.campos[it.campo];
+        for (let k = 0; k < it.bytes; k++) mem.append(celula("rg-c" + (it.campo % 4), k === 0 ? c.decl.replace(/^\w+\s+/, "").replace(/\[.*$/, "") : ""));
+        byte += it.bytes;
+      }
+    }
+    const escala = mk("div", "rg-escala");
+    for (let b = 0; b < r.sizeof; b++) escala.append(mk("span", "", b % 4 === 0 ? String(b) : ""));
+    const info = mk("p", "rg-linha");
+    info.innerHTML = "soma dos campos: <strong>" + r.soma + "</strong> · <code>sizeof</code>: <strong class=\"" + (r.padding ? "rg-ruim" : "rg-bom") + "\">" + r.sizeof + "</strong> bytes · preenchimento: <strong>" + r.padding + "</strong>";
+    const msg = mk("p", "rg-msg", r.padding
+      ? "Os bytes vermelhos (pad) são preenchimento: o compilador os coloca para alinhar cada campo. Tente outra ordem."
+      : "Sem preenchimento! O sizeof é igual à soma dos campos.");
+    msg.classList.toggle("rg-ok", !r.padding);
+    const acoes = mk("div", "rg-acoes");
+    const dica = mk("button", "rg-btn", "Mostrar uma boa ordem");
+    dica.type = "button"; dica.dataset.rg = "melhor";
+    const zera = mk("button", "rg-btn rg-sec", "Reiniciar");
+    zera.type = "button"; zera.dataset.rg = "zera";
+    acoes.append(dica, zera);
+    app.append(lista, mem, escala, info, msg, acoes);
+  }
+
+  function iniciarRrn(el, cfg) {
+    const app = el.querySelector(".rg-app");
+    app.replaceChildren();
+    el.__rg = { rrn: cfg.rrn, grande: false };
+    const faixa = mk("div", "rg-faixa");
+    faixa.setAttribute("role", "group");
+    faixa.setAttribute("aria-label", "Registros do arquivo");
+    const cab = mk("span", "rg-rec rg-cabec");
+    cab.append(mk("b", "", "cab"), mk("small", "", "0"));
+    faixa.append(cab);
+    for (let i = 0; i < cfg.n; i++) {
+      const b = mk("button", "rg-rec");
+      b.type = "button"; b.dataset.rg = "rrn"; b.dataset.i = String(i);
+      b.append(mk("b", "", "R" + i), mk("small", "", String(calcOffset(cfg.cab, cfg.tam, i))));
+      b.setAttribute("aria-label", "Registro de RRN " + i);
+      faixa.append(b);
+    }
+    faixa.append(mk("span", "rg-rec rg-mais", "…"));
+    const rng = mk("input", "rg-rrnslide");
+    rng.type = "range"; rng.min = "0"; rng.max = String(cfg.n - 1); rng.value = String(cfg.rrn);
+    rng.dataset.rg = "rrnslide"; rng.setAttribute("aria-label", "RRN procurado");
+    const formula = mk("p", "rg-formula");
+    const codigo = mk("p", "rg-fseek");
+    const lanes = mk("div", "rg-lanes");
+    const seq = mk("div", "rg-lane rg-seq");
+    const dir = mk("div", "rg-lane rg-dir");
+    for (const l of [seq, dir]) { l.append(mk("span", "rg-lbl"), mk("div", "rg-mini-faixa"), mk("p", "rg-conta")); }
+    seq.querySelector(".rg-lbl").textContent = "Sequencial";
+    dir.querySelector(".rg-lbl").textContent = "Direto (com RRN)";
+    for (const l of [seq, dir]) for (let i = 0; i < cfg.n; i++) l.querySelector(".rg-mini-faixa").append(mk("span", "rg-quad"));
+    lanes.append(seq, dir);
+    const acoes = mk("div", "rg-acoes");
+    const grande = mk("button", "rg-btn", "E se o RRN fosse 5 000 000?");
+    grande.type = "button"; grande.dataset.rg = "grande";
+    acoes.append(grande);
+    app.append(faixa, rng, formula, codigo, lanes, acoes);
+    app.querySelector(".rg-lanes").setAttribute("aria-live", "polite");
+    atualizarRrn(el, cfg);
+  }
+
+  function atualizarRrn(el, cfg) {
+    const st = el.__rg;
+    const rrn = st.grande ? 5000000 : st.rrn;
+    const off = calcOffset(cfg.cab, cfg.tam, rrn);
+    const app = el.querySelector(".rg-app");
+    app.classList.toggle("rg-grande", st.grande);
+    app.querySelectorAll(".rg-faixa .rg-rec[data-i]").forEach((b) => {
+      const i = Number(b.dataset.i);
+      b.classList.toggle("rg-sel", !st.grande && i === st.rrn);
+      b.classList.toggle("rg-antes", !st.grande && i < st.rrn);
+    });
+    app.querySelector(".rg-rrnslide").value = String(st.rrn);
+    app.querySelector(".rg-rrnslide").disabled = st.grande;
+    app.querySelector(".rg-formula").innerHTML = "offset = <span class=\"rg-t0\">" + fmtNum(cfg.cab) + "</span> + <span class=\"rg-t1\">" + fmtNum(rrn) + "</span> × <span class=\"rg-t2\">" + fmtNum(cfg.tam) + "</span> = <strong>" + fmtNum(off) + "</strong>" +
+      "<small>cabeçalho + RRN × tamanho</small>";
+    app.querySelector(".rg-fseek").innerHTML = "<code>fseek(f, " + fmtNum(off) + ", SEEK_SET);</code>";
+    const seq = app.querySelector(".rg-seq");
+    const dir = app.querySelector(".rg-dir");
+    seq.querySelectorAll(".rg-quad").forEach((q, i) => { q.className = "rg-quad" + (!st.grande && i < st.rrn ? " rg-lido" : !st.grande && i === st.rrn ? " rg-alvo" : ""); });
+    dir.querySelectorAll(".rg-quad").forEach((q, i) => { q.className = "rg-quad" + (!st.grande && i === st.rrn ? " rg-alvo" : ""); });
+    seq.querySelector(".rg-conta").innerHTML = "<strong class=\"rg-ruim\">" + fmtNum(rrn) + "</strong> registros lidos só para chegar lá";
+    dir.querySelector(".rg-conta").innerHTML = "<strong class=\"rg-bom\">0</strong> registros lidos antes · <strong>1</strong> <code>fseek</code>";
+    const g = app.querySelector('[data-rg="grande"]');
+    g.textContent = st.grande ? "Voltar ao exemplo pequeno" : "E se o RRN fosse 5 000 000?";
+  }
+
+  function iniciarBlocos(el, cfg) {
+    const app = el.querySelector(".rg-app");
+    app.replaceChildren();
+    el.__rg = { B: cfg.B, R: cfg.R, espalhada: cfg.espalhada };
+    const ctrl = mk("div", "rg-ctrl");
+    const mkSlide = (rotulo, chave, min, max, valor) => {
+      const l = mk("label", "rg-slide", rotulo + " ");
+      const r = mk("input");
+      r.type = "range"; r.min = String(min); r.max = String(max); r.step = "10"; r.value = String(valor);
+      r.dataset.rg = chave; r.setAttribute("aria-label", rotulo + " em bytes");
+      l.append(r, mk("output", "rg-tamval"));
+      return l;
+    };
+    ctrl.append(mkSlide("bloco", "B", 100, 400, cfg.B), mkSlide("registro", "R", 20, 150, cfg.R));
+    const modo = mk("div", "rg-modo");
+    modo.setAttribute("role", "group");
+    modo.setAttribute("aria-label", "Organização");
+    for (const [v, t] of [["nao", "Não espalhada"], ["sim", "Espalhada"]]) {
+      const b = mk("button", "rg-btn rg-sec", t);
+      b.type = "button"; b.dataset.rg = "modo"; b.dataset.v = v;
+      modo.append(b);
+    }
+    ctrl.append(modo);
+    app.append(ctrl, mk("div", "rg-area"), mk("div", "rg-nums"), mk("p", "rg-msg"));
+    app.querySelector(".rg-nums").setAttribute("aria-live", "polite");
+    atualizarBlocos(el, cfg);
+  }
+
+  function atualizarBlocos(el, cfg) {
+    const st = el.__rg;
+    const r = calcBlocos(st.B, st.R, cfg.N, st.espalhada);
+    const app = el.querySelector(".rg-app");
+    const sliders = app.querySelectorAll(".rg-slide");
+    sliders[0].querySelector("output").textContent = st.B + " bytes";
+    sliders[1].querySelector("output").textContent = st.R + " bytes";
+    app.querySelectorAll('[data-rg="modo"]').forEach((b) => {
+      const on = (b.dataset.v === "sim") === st.espalhada;
+      b.classList.toggle("rg-on", on);
+      b.setAttribute("aria-pressed", String(on));
+    });
+    const area = app.querySelector(".rg-area");
+    area.replaceChildren();
+    r.blocos.forEach((segs, b) => {
+      const linha = mk("div", "rg-bloco");
+      linha.append(mk("span", "rg-bnome", "bloco " + b));
+      const barra = mk("div", "rg-bbarra");
+      for (const s of segs) {
+        const seg = mk("span", "rg-seg");
+        if (s.livre !== undefined) {
+          seg.classList.add(s.sobra ? "rg-sobra" : "rg-livre");
+          seg.textContent = s.sobra ? "sobra " + s.livre : "vazio";
+          seg.style.flex = s.livre + " 1 0";
+        } else {
+          seg.classList.add("rg-c" + (s.rec % 4));
+          if (s.cont) seg.classList.add("rg-cortaE");
+          if (s.corta) seg.classList.add("rg-cortaD");
+          seg.textContent = "R" + s.rec;
+          seg.style.flex = s.bytes + " 1 0";
+        }
+        barra.append(seg);
+      }
+      linha.append(barra);
+      area.append(linha);
+    });
+    const nums = app.querySelector(".rg-nums");
+    nums.replaceChildren();
+    const item = (rot, val, cls) => { const d = mk("div", "rg-num"); d.append(mk("strong", cls || "", String(val)), mk("span", "", rot)); return d; };
+    nums.append(
+      item("registros por bloco (fator de bloco)", r.fb),
+      item("bytes de sobra por bloco", st.espalhada ? 0 : r.sobra, !st.espalhada && r.sobra ? "rg-ruim" : "rg-bom"),
+      item("blocos usados", r.cabe || st.espalhada ? r.blocos.length : "—"),
+      item("registros em 2 blocos", st.espalhada ? r.divididos : 0, st.espalhada && r.divididos ? "rg-ruim" : "rg-bom")
+    );
+    const msg = app.querySelector(".rg-msg");
+    msg.classList.remove("rg-ok");
+    if (!r.cabe && !st.espalhada) msg.textContent = "O registro é maior que o bloco: não cabe! Só a organização espalhada resolve.";
+    else if (st.espalhada) msg.textContent = r.divididos ? "Espalhada: não sobra espaço, mas " + r.divididos + " registro(s) ficam em dois blocos, e ler cada um custa duas leituras." : "Espalhada: aqui nenhum registro foi dividido.";
+    else msg.textContent = r.sobra ? "Não espalhada: cada registro fica inteiro em um bloco, mas sobram " + r.sobra + " bytes em cada bloco cheio." : "A divisão é exata: não sobra nada!";
+  }
+
+  const RG_INICIAL = { registro: iniciarRegistro, alinhamento: iniciarAlinhamento, rrn: iniciarRrn, blocos: iniciarBlocos };
+
+  function iniciarWidgets(root) {
+    for (const el of root.querySelectorAll(".rg:not([data-ok])")) {
+      const cfg = parseJson(el.dataset.cfg || "");
+      const inicia = RG_INICIAL[el.dataset.kind];
+      if (!cfg || !inicia) continue;
+      el.dataset.ok = "1";
+      inicia(el, cfg);
+    }
+  }
+
+  function acaoRg(el, alvo) {
+    const cfg = parseJson(el.dataset.cfg || "");
+    if (!cfg || !el.__rg) return;
+    const acao = alvo.dataset.rg;
+    const st = el.__rg;
+    if (el.dataset.kind === "alinhamento") {
+      const i = Number(alvo.dataset.i);
+      if (acao === "sobe" && i > 0) [st.ordem[i - 1], st.ordem[i]] = [st.ordem[i], st.ordem[i - 1]];
+      if (acao === "desce" && i < st.ordem.length - 1) [st.ordem[i + 1], st.ordem[i]] = [st.ordem[i], st.ordem[i + 1]];
+      if (acao === "melhor") st.ordem = melhorOrdem(cfg.campos);
+      if (acao === "zera") st.ordem = cfg.campos.map((_, k) => k);
+      desenharAlinhamento(el, cfg);
+      const foco = el.querySelector('[data-rg="' + acao + '"][data-i="' + (acao === "sobe" ? i - 1 : i + 1) + '"]');
+      if (foco && !foco.disabled && (acao === "sobe" || acao === "desce")) foco.focus();
+    } else if (el.dataset.kind === "rrn") {
+      if (acao === "rrn") { st.rrn = Number(alvo.dataset.i); st.grande = false; }
+      if (acao === "grande") st.grande = !st.grande;
+      atualizarRrn(el, cfg);
+    } else if (el.dataset.kind === "blocos") {
+      if (acao === "modo") st.espalhada = alvo.dataset.v === "sim";
+      atualizarBlocos(el, cfg);
+    }
+  }
+
+  function entradaRg(el, alvo) {
+    const cfg = parseJson(el.dataset.cfg || "");
+    if (!cfg || !el.__rg) return;
+    const st = el.__rg;
+    const acao = alvo.dataset.rg;
+    if (el.dataset.kind === "registro") {
+      const i = Number(alvo.dataset.i);
+      if (acao === "texto") st.valor[i] = alvo.value;
+      if (acao === "tam") st.bytes[i] = Number(alvo.value);
+      atualizarRegistro(el, cfg);
+    } else if (el.dataset.kind === "rrn" && acao === "rrnslide") {
+      st.rrn = Number(alvo.value); st.grande = false;
+      atualizarRrn(el, cfg);
+    } else if (el.dataset.kind === "blocos") {
+      if (acao === "B") st.B = Number(alvo.value);
+      if (acao === "R") st.R = Number(alvo.value);
+      atualizarBlocos(el, cfg);
+    }
+  }
+
+  const BLOCK_RENDERERS = { "aula-narrada": renderNarratedLesson, video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia, registro: renderRegistro, alinhamento: renderAlinhamento, rrn: renderRrn, blocos: renderBlocosWidget };
 
   // Ponte para o renderizador do site: devolve o HTML do bloco, ou null se a linguagem não é nossa.
   function renderBlock(language, source, options = {}) {
@@ -922,9 +1411,16 @@
 
   // Botões e setas ← → dos slides e das demonstrações (escuta delegada, instalada uma única vez).
   function attachInteractions(root) {
+    iniciarWidgets(root);
     if (root.__lessonInteractions) return;
     root.__lessonInteractions = true;
+    root.addEventListener("input", (event) => {
+      const campo = event.target.closest(".rg [data-rg]");
+      if (campo) entradaRg(campo.closest(".rg"), campo);
+    });
     root.addEventListener("click", (event) => {
+      const rg = event.target.closest(".rg button[data-rg]");
+      if (rg) { if (!rg.disabled) acaoRg(rg.closest(".rg"), rg); return; }
       const view = event.target.closest(".lesson-views [data-view]");
       if (view) {
         const lesson = view.closest(".stepper");
@@ -1048,5 +1544,5 @@
     return html.join("\n");
   }
 
-  return { escapeHtml, renderInline, renderMarkdown, stepIndex, renderBlock, isAllowedEmbed, hydrateVideoEmbeds, attachInteractions, highlightC };
+  return { escapeHtml, renderInline, renderMarkdown, stepIndex, renderBlock, isAllowedEmbed, hydrateVideoEmbeds, attachInteractions, highlightC, calc: { calcCampo, calcStruct, melhorOrdem, calcOffset, calcBlocos } };
 });
