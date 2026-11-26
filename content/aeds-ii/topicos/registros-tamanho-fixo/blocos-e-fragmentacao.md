@@ -1,118 +1,54 @@
 ## Objetivos de aprendizagem
 
-Ao final desta página, você vai conseguir:
+- Calcular o fator de bloco e o número de blocos.
+- Comparar organização espalhada e não espalhada.
+- Saber quando o tamanho fixo é uma boa escolha.
 
-- Calcular o fator de bloco e o número de blocos de um arquivo de registros fixos.
-- Comparar a organização espalhada e a não espalhada.
-- Calcular a fragmentação interna de um registro.
-- Dizer quando os registros de tamanho fixo são uma boa escolha e quais são seus limites.
+## Blocos
 
-### Registros e blocos
+O disco lê **blocos** inteiros, não registros soltos.
 
-O disco não transfere registro por registro. Ele transfere **blocos**, que são pedaços de tamanho fixo, em geral de alguns milhares de bytes (4 096, por exemplo). Cada leitura traz um bloco inteiro para a memória. Por isso importa saber **quantos registros cabem em um bloco**.
+> **fator de bloco = ⌊ bloco ÷ registro ⌋** (divisão inteira)
+>
+> **blocos = ⌈ registros ÷ fator de bloco ⌉** (arredonda para cima)
 
-Esse número é o **fator de bloco**, e a conta é uma divisão inteira:
+## Encaixe os registros
 
-> **fator de bloco = ⌊ tamanho do bloco ÷ tamanho do registro ⌋**
-
-Com blocos de 4 096 bytes e registros de 70 bytes, o fator de bloco é 58. Os 58 registros ocupam 58 × 70 = 4 060 bytes, e **sobram 36 bytes** no fim do bloco.
-
-O número de blocos que o arquivo precisa vem da quantidade de registros, **arredondada para cima**:
-
-> **blocos = ⌈ registros ÷ fator de bloco ⌉**
-
-Para 1 000 registros: 1 000 ÷ 58 = 17,2, então são **18 blocos**.
-
-### Espalhada ou não espalhada?
-
-Quando o tamanho do bloco não é múltiplo do tamanho do registro, sobra espaço no fim de cada bloco. Há duas maneiras de lidar com isso:
-
-| Organização | Como funciona | Vantagem | Desvantagem |
-|:---|:---|:---|:---|
-| **Não espalhada** | Cada registro fica inteiro em um bloco. A sobra do fim do bloco não é usada | Um registro nunca exige dois acessos | Desperdiça a sobra de cada bloco |
-| **Espalhada** | O registro pode começar em um bloco e continuar no seguinte | Aproveita todo o espaço | Alguns registros exigem ler dois blocos |
-
-Com registros de tamanho fixo, a sobra é **igual em todos os blocos**. No exemplo dos blocos de 4 096 bytes, são sempre 36 bytes. Com registros de tamanho variável essa sobra muda de bloco para bloco, e isso aparece no próximo tópico.
-
-### Fragmentação interna
-
-Já vimos que o registro reserva o espaço de cada campo, e que os dados quase nunca preenchem tudo. O espaço reservado e não usado dentro do registro é a **fragmentação interna**. Veja o caso do registro de `Ana Souza`:
-
-| Campo | Reservado | Usado | Desperdiçado |
-|:---|---:|---:|---:|
-| `nome` | 30 | 9 | 21 |
-| `curso` | 20 | 8 | 12 |
-| `cidade` | 20 | 7 | 13 |
-| **Registro** | **70** | **24** | **46** |
-
-Dos 70 bytes, só 24 guardam informação, ou seja, cerca de 34%. Os outros 46 bytes (66%) são fragmentação interna. Se o arquivo tem 1 milhão de registros assim, são 46 milhões de bytes desperdiçados.
-
-Por isso **escolher o tamanho do campo é uma decisão de projeto**:
-
-- Campo **pequeno demais**: nomes longos são cortados e a informação se perde.
-- Campo **grande demais**: cada registro desperdiça espaço.
-
-Uma regra comum é medir o maior valor esperado e dimensionar o campo para ele. Mesmo assim, se poucos registros têm valores muito grandes, o campo fica largo para todos.
-
-### Remoção e buracos
-
-Quando um registro é removido, ele deixa um **buraco** com o tamanho de um registro. Como todos os registros têm o mesmo tamanho, **qualquer registro novo cabe nesse buraco**. Isso torna o reaproveitamento do espaço simples. O tópico "Ordenação em disco e reutilização de espaço" mostra como fazer isso.
-
-### Quando usar tamanho fixo?
-
-| Vantagens | Limites |
-|:---|:---|
-| Acesso direto pelo RRN, com uma conta simples | Fragmentação interna quando os dados variam de tamanho |
-| Código simples: `fread`, `fwrite` e `fseek` | O tamanho dos campos é escolhido de antemão e é difícil de mudar |
-| Atualização no lugar, sempre cabe | Valores maiores que o campo precisam ser cortados |
-| Buracos reaproveitáveis por qualquer registro | Arquivo maior que o necessário quando os dados são variados |
-
-O tamanho fixo é uma boa escolha quando os dados têm tamanho **parecido** (códigos, datas, números). Quando os tamanhos variam muito (comentários, endereços, biografias), a fragmentação interna pesa, e o próximo tópico apresenta os **registros de tamanho variável**.
-
-## Estrutura
-
-Blocos de 4 096 bytes em organização não espalhada, com quatro tamanhos de registro. O fator de bloco é a divisão inteira do tamanho do bloco pelo tamanho do registro, e a sobra é o que resta no fim de cada bloco:
-
-| Registro (bytes) | Fator de bloco | Sobra por bloco (bytes) | Aproveitamento |
-|---:|---:|---:|---:|
-| 64 | 64 | 0 | 100,0% |
-| 70 | 58 | 36 | 99,1% |
-| 100 | 40 | 96 | 97,7% |
-| 1 000 | 4 | 96 | 97,7% |
-
-Com registros de 70 bytes, cabem 58 por bloco (58 × 70 = 4 060) e sobram 36 bytes. Com 64 bytes a divisão é exata e não sobra nada. O aproveitamento é a parte do bloco ocupada por registros.
-
-## Demonstração
-
-Veja como 5 registros ficam distribuídos nas duas organizações. Os números são pequenos de propósito, para caber na tela.
-
-```demo
+```blocos
 {
-  "title": "Registros de 70 bytes em blocos de 200 bytes",
-  "steps": [
-    {
-      "caption": "Cada bloco do disco tem 200 bytes (um número pequeno, só para caber na tela). Cada registro tem 70 bytes. Queremos guardar 5 registros: R0 a R4.",
-      "state": "bloco = 200 bytes\nregistro = 70 bytes\n\n200 / 70 = 2, e sobram 60 bytes\n\nfator de bloco = 2 registros por bloco"
-    },
-    {
-      "caption": "Organização NÃO ESPALHADA: cada registro fica inteiro dentro de um bloco. Em cada bloco cabem 2 registros, e os 60 bytes que sobram ficam sem uso.",
-      "state": "bloco 0: [R0 70][R1 70][sobra 60]\nbloco 1: [R2 70][R3 70][sobra 60]\nbloco 2: [R4 70][vazio 130]\n\n5 registros -> 3 blocos"
-    },
-    {
-      "caption": "Organização ESPALHADA: o registro pode começar em um bloco e terminar no seguinte. Não sobra espaço entre registros.",
-      "state": "bloco 0: [R0 70][R1 70][R2: 60 de 70 bytes]\nbloco 1: [R2: 10 bytes finais][R3 70][R4 70][vazio 50]\n\n5 registros -> 2 blocos"
-    },
-    {
-      "caption": "Em compensação, ler o R2 exige acessar dois blocos. Na não espalhada, qualquer registro está em um bloco só.",
-      "state": "ler R1 (não espalhada) -> bloco 0\nler R2 (não espalhada) -> bloco 1\n\nler R2 (espalhada)     -> blocos 0 e 1"
-    }
-  ]
+  "title": "Registros dentro dos blocos",
+  "dica": "Mexa nos tamanhos e alterne entre as duas organizações. Procure um registro que não cabe, ou uma sobra que some.",
+  "bloco": 200,
+  "registro": 70,
+  "registros": 5
 }
 ```
 
+| Organização | Vantagem | Desvantagem |
+|:---|:---|:---|
+| **Não espalhada** | Registro nunca exige 2 leituras | Desperdiça a sobra de cada bloco |
+| **Espalhada** | Aproveita todo o espaço | Alguns registros ficam em 2 blocos |
+
+## Fragmentação interna
+
+Espaço **reservado e não usado** dentro do registro. Em `Ana Souza`, só 24 dos 70 bytes são dados: **46 bytes** (66%) são desperdício.
+
+Quem decide é o projeto: meça o maior valor esperado e dimensione o campo para ele.
+
+## Quando usar tamanho fixo?
+
+| Vantagens | Limites |
+|:---|:---|
+| Acesso direto pelo RRN | Fragmentação interna se os dados variam |
+| Código simples: `fread`, `fwrite`, `fseek` | Tamanho dos campos difícil de mudar |
+| Atualização no lugar | Valores grandes são cortados |
+| Buraco de remoção serve para qualquer registro novo | Arquivo maior que o necessário |
+
+> Bom para dados de tamanho **parecido** (códigos, datas, números). Para tamanhos muito diferentes, veja os registros de tamanho variável.
+
 ## Código em C
 
-O programa calcula o fator de bloco, a sobra e o número de blocos de um arquivo. Rode no seu computador e confira o resultado.
+Calcula fator de bloco, sobra e número de blocos.
 
 ```c
 #include <stdio.h>
@@ -143,7 +79,7 @@ blocos para 1000 registros: 18
 espaço ocupado: 73728 bytes (dados: 70000 bytes)
 ```
 
-A conta `(n + fb - 1) / fb` é um truque para **arredondar para cima** usando só divisão inteira: 1 000 ÷ 58 daria 17, e o resultado correto é 18 blocos.
+> `(n + fb - 1) / fb` arredonda para cima com divisão inteira: 1 000 ÷ 58 dá 17, mas o certo são **18** blocos.
 
 ## Teste rápido
 

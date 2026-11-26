@@ -256,6 +256,19 @@ Além do `quiz`, a página entende estes blocos. Todos usam três crases seguida
 - Cada passo tem `line` (linha destacada), `caption`, `vars` (opcional) e `rows` (opcional): uma lista de linhas, cada uma com grupos. Um grupo é `{ "i": [itens], "s": coluna, "n": largura, "l": rótulo, "a": 1 }`; `s` e `n` posicionam o grupo numa grade (sem eles, os grupos ficam lado a lado e centralizados); `a: 1` destaca o grupo ativo. Cada item é um número ou `[número, marca]`, com marca `"c"` (comparando) ou `"p"` (sendo copiado). A cor do bonequinho depende do número.
 - **Não escreva os passos à mão.** Eles são gerados a partir de uma execução real do programa: veja `tools/animacoes/` (`mergesort.c` + `gerar-mergesort.js`). O código `.c` mostrado é o mesmo que foi executado; as linhas `T(...)` do rastreador não aparecem na aula. Rode `node tools/animacoes/gerar-mergesort.js` (precisa de `gcc`) e cole o conteúdo de `saida/mergesort.json` no bloco. O mesmo vale para o merge sort externo (`mergesort-externo.c` + `gerar-externo.js`, que trabalha com arquivos de verdade na pasta `tools/animacoes/tmp`). No `.c`, as linhas `T("nome", ...)` marcam um passo (apontam para a próxima linha visível), as linhas `H(...)` e o trecho entre `//---OCULTO---` e `//---FIM-OCULTO---` só existem para o rastreador e somem da aula. Se a animação tiver mais de 8 colunas, ela aparece em cima do código (em vez de ao lado) para os bonequinhos não ficarem pequenos.
 
+**Blocos interativos de registros de tamanho fixo.** Quatro blocos em que o estudante mexe e vê o resultado na hora (código em `js/renderer.js`, visual em `blocks.css`). Todos aceitam `title` e `dica` (uma frase curta acima do bloco).
+
+````markdown
+```registro
+{ "campos": [ { "nome": "nome", "bytes": 30, "valor": "Ana Souza" } ] }
+```
+````
+
+- `registro`: 1 a 5 campos (`nome`, `bytes` de 2 a 64, `valor` inicial). O estudante digita, muda o tamanho e vê bytes usados, desperdício e dado cortado. `"milhao": false` esconde a conta de 1 milhão de registros.
+- `alinhamento`: 2 a 6 campos `{ "decl": "int codigo", "bytes": 4, "align": 4 }` (`align` é 1, 2, 4 ou 8). O estudante reordena os campos e vê o preenchimento e o `sizeof`.
+- `rrn`: `{ "cab": 8, "tam": 70, "n": 8, "rrn": 3 }`. Mostra a conta do offset e compara acesso sequencial e direto.
+- `blocos`: `{ "bloco": 200, "registro": 70, "registros": 5, "espalhada": false }`. O estudante muda os tamanhos e alterna entre organização espalhada e não espalhada.
+
 **Testes automáticos.** Com o Node 18 ou mais novo, rode na raiz do projeto `node --test "tests/*.test.js"`. Eles conferem o renderizador dos blocos acima e a estrutura de cada tópico publicado de AEDS II (seções, quizzes, exercícios com gabarito e vídeo reservado).
 
 ## Modelo copiável de aula

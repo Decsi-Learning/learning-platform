@@ -375,3 +375,47 @@ test("codigo accepts the code as a list of lines, same result as a single string
   assert.strictEqual(comoLista, comoTexto);
   assert.match(renderBlock("codigo", codigoBloco({ code: ["ok", 3] })), /class="quiz-error"/);
 });
+
+// ---- blocos interativos de "Registros de tamanho fixo" ----
+const { renderBlock: renderBlockRg, calc } = require("../js/renderer.js");
+
+test("registro block renders a shell with its config and rejects bad input", () => {
+  const html = renderBlockRg("registro", JSON.stringify({ title: "T", campos: [{ nome: "nome", bytes: 30, valor: "Ana" }] }));
+  assert.match(html, /class="rg rg-registro"/);
+  assert.match(html, /data-cfg=/);
+  assert.match(renderBlockRg("registro", "{nope"), /quiz-error/);
+  assert.match(renderBlockRg("registro", JSON.stringify({ campos: [{ nome: "x", bytes: 1 }] })), /quiz-error/);
+});
+
+test("alinhamento, rrn and blocos blocks validate their config", () => {
+  assert.match(renderBlockRg("alinhamento", JSON.stringify({ campos: [{ decl: "int a", bytes: 4, align: 4 }, { decl: "char b", bytes: 1, align: 1 }] })), /rg-alinhamento/);
+  assert.match(renderBlockRg("alinhamento", JSON.stringify({ campos: [{ decl: "int a", bytes: 4, align: 3 }, { decl: "char b", bytes: 1, align: 1 }] })), /quiz-error/);
+  assert.match(renderBlockRg("rrn", JSON.stringify({ cab: 8, tam: 70, n: 8 })), /rg-rrn/);
+  assert.match(renderBlockRg("rrn", JSON.stringify({ n: 99 })), /quiz-error/);
+  assert.match(renderBlockRg("blocos", JSON.stringify({})), /rg-blocos/);
+  assert.match(renderBlockRg("blocos", JSON.stringify({ bloco: 5 })), /quiz-error/);
+});
+
+test("calcCampo counts bytes, cuts what does not fit and counts accents as 2 bytes", () => {
+  assert.strictEqual(calc.calcCampo("Ana Souza", 30).usados, 9);
+  assert.strictEqual(calc.calcCampo("abcdef", 4).corte, "ef");
+  assert.strictEqual(calc.calcCampo("João", 30).usados, 5);
+});
+
+test("calcStruct reproduces the lesson example: 12 bytes, and 8 after reordering", () => {
+  const campos = [{ bytes: 1, align: 1 }, { bytes: 4, align: 4 }, { bytes: 3, align: 1 }];
+  assert.strictEqual(calc.calcStruct(campos, [0, 1, 2]).sizeof, 12);
+  assert.strictEqual(calc.calcStruct(campos, [1, 0, 2]).sizeof, 8);
+  assert.strictEqual(calc.calcStruct(campos, calc.melhorOrdem(campos)).padding, 0);
+});
+
+test("calcOffset and calcBlocos match the lesson numbers", () => {
+  assert.strictEqual(calc.calcOffset(8, 70, 3), 218);
+  assert.strictEqual(calc.calcOffset(8, 70, 199), 13938);
+  const nao = calc.calcBlocos(200, 70, 5, false);
+  assert.deepStrictEqual([nao.fb, nao.sobra, nao.blocos.length], [2, 60, 3]);
+  const sim = calc.calcBlocos(200, 70, 5, true);
+  assert.strictEqual(sim.blocos.length, 2);
+  assert.strictEqual(sim.divididos, 1);
+  assert.strictEqual(calc.calcBlocos(100, 150, 5, false).cabe, false);
+});
