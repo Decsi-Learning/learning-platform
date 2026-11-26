@@ -234,6 +234,12 @@
       "narratedLesson": "arvore-trie/aula-narrada.md"
     },
     {
+      "id": "arvore-radix",
+      "title": "Árvore Radix",
+      "summary": "Trie compacta: nós com rótulos de texto, divisão na inserção, fusão na remoção e economia de nós.",
+      "file": "arvore-radix/arvore-radix.md"
+    },
+    {
       "id": "arvore-patricia",
       "title": "Árvore Patricia",
       "summary": "Trie binária compacta: nós internos testam bits, folhas guardam chaves; pesquisa, inserção e complexidade.",
