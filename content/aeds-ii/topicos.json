@@ -44,7 +44,45 @@
       "id": "organizacao-dados-arquivos",
       "title": "Organização de dados em arquivos",
       "summary": "Métodos de disposição e organização de dados em arquivos.",
-      "file": "organizacao_dados_arquivos.md"
+      "pages": [
+        {
+          "id": "campos-registros-e-chaves",
+          "title": "Campos, registros e chaves",
+          "summary": "Estrutura dos arquivos, organização dos campos, chaves e cabeçalho.",
+          "file": "organizacao-dados-arquivos/campos-registros-e-chaves.md"
+        },
+        {
+          "id": "disco-buffers-e-blocagem",
+          "title": "Disco, buffers e blocagem",
+          "summary": "Como o disco transfere blocos, uso de buffers e cálculo da blocagem.",
+          "file": "organizacao-dados-arquivos/disco-buffers-e-blocagem.md"
+        },
+        {
+          "id": "acesso-sequencial-e-direto",
+          "title": "Acesso sequencial e direto",
+          "summary": "Busca sequencial, acesso direto e formas de organizar arquivos.",
+          "file": "organizacao-dados-arquivos/acesso-sequencial-e-direto.md"
+        },
+        {
+          "id": "complemento-capitulo-17",
+          "title": "Complemento: armazenamento e alocação",
+          "summary": "Hierarquia de armazenamento, buffering duplo e alocação de blocos.",
+          "file": "organizacao-dados-arquivos/complemento-capitulo-17.md"
+        },
+        {
+          "id": "exercicios-avaliativos-organizacao-dados-arquivos",
+          "title": "Exercícios avaliativos",
+          "summary": "Questões sobre os conteúdos de organização de dados em arquivos.",
+          "requiresQuizAnswers": true,
+          "file": "organizacao-dados-arquivos/exercicios-avaliativos-organizacao-dados-arquivos.md"
+        },
+        {
+          "id": "slides-organizacao-dados-arquivos",
+          "title": "Slides e vídeo",
+          "summary": "Apresentação do tópico e vídeo explicativo.",
+          "file": "organizacao-dados-arquivos/slides-organizacao-dados-arquivos.md"
+        }
+      ]
     },
     {
       "id": "registros-tamanho-fixo",
