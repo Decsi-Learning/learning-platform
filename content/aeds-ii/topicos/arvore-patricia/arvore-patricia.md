@@ -141,7 +141,7 @@ Na prática, a altura costuma ser bem menor que *b*: com chaves bem distribuída
 - **Roteamento IP**: implementações clássicas de tabelas de rotas, como a do BSD Unix, usam árvores Patricia para encontrar o maior prefixo comum.
 - **Bancos de dados e sistemas de arquivos**, como índice para chaves longas, em que testar só alguns bits economiza tempo.
 - **Bioinformática e processamento de texto**, em estruturas derivadas, como as árvores de sufixos compactas.
-- **Blockchain**: a *Merkle Patricia Trie* do Ethereum guarda o estado das contas em uma Trie compactada.
+- **Blockchain**: o Ethereum guarda o estado das contas numa *Merkle Patricia Trie*, uma estrutura **inspirada** nas Tries compactadas, mas diferente da Patricia binária desta aula. Ela ramifica por *nibbles* (dígitos hexadecimais de 4 bits, com até 16 filhos por nó), tem nós que guardam trechos inteiros do caminho e liga os nós por *hashes* criptográficos, o que permite provar que um dado faz parte do estado sem mostrar a árvore inteira.
 
 ### Exemplo: índice de arquivos
 
@@ -168,62 +168,5 @@ Veja o índice sendo montado. Clique em **Construir** (automático) ou em **Pró
     { "nome": "video.mp4", "bits": "10011" },
     { "nome": "aula.pdf", "bits": "10010" }
   ]
-}
-```
-
-## Teste de conhecimento
-
-```quiz
-{
-  "question": "O que um nó interno de uma árvore Patricia armazena?",
-  "options": [
-    { "text": "Uma chave completa", "correct": false },
-    { "text": "O índice do bit que deve ser testado nele", "correct": true },
-    { "text": "Um caractere da chave, como na Trie", "correct": false },
-    { "text": "A quantidade de chaves abaixo dele", "correct": false }
-  ],
-  "correctFeedback": "Correto! O nó interno só diz qual bit testar; as chaves ficam nas folhas.",
-  "incorrectFeedback": "Revise a seção Conceito principal: o que fica nos nós internos e o que fica nas folhas?"
-}
-```
-
-```quiz
-{
-  "question": "Por que a pesquisa na Patricia precisa comparar a chave inteira ao chegar a uma folha?",
-  "options": [
-    { "text": "Porque as folhas não guardam a chave", "correct": false },
-    { "text": "Porque alguns bits são pulados na descida, e a chave procurada pode diferir justamente neles", "correct": true },
-    { "text": "Porque a árvore pode estar desbalanceada", "correct": false }
-  ],
-  "correctFeedback": "Correto! É o que acontece na pesquisa por D, que chega à folha B: os bits testados batem, mas os bits pulados são diferentes.",
-  "incorrectFeedback": "Lembre do exemplo da pesquisa por D: que bits foram testados e quais foram pulados?"
-}
-```
-
-```quiz
-{
-  "question": "Uma árvore Patricia armazena 10 chaves. Quantos nós internos ela tem?",
-  "options": [
-    { "text": "10", "correct": false },
-    { "text": "9", "correct": true },
-    { "text": "20", "correct": false },
-    { "text": "Depende do tamanho das chaves", "correct": false }
-  ],
-  "correctFeedback": "Correto! Com n chaves há n folhas e n − 1 nós internos, porque cada nó interno tem exatamente dois filhos.",
-  "incorrectFeedback": "Cada nó interno tem dois filhos e as chaves ficam nas folhas. Quantos nós internos são necessários para separar n folhas?"
-}
-```
-
-```quiz
-{
-  "question": "Na árvore do exemplo, a chave K = 01011 é inserida. Qual bit o novo nó interno vai testar?",
-  "options": [
-    { "text": "Bit 2", "correct": false },
-    { "text": "Bit 4", "correct": false },
-    { "text": "Bit 5", "correct": true },
-    { "text": "Bit 3", "correct": false }
-  ],
-  "correctFeedback": "Correto! K desce pelos bits 1 (0), 2 (1) e 4 (1) até a folha J = 01010. O primeiro bit em que K e J diferem é o 5.",
-  "incorrectFeedback": "Desça a árvore com K = 01011 até uma folha e compare K com a chave dessa folha, bit a bit."
 }
 ```

@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 520" role="img" aria-labelledby="t d" font-family="Arial, Helvetica, sans-serif">
+  <title id="t">Segment Tree de somas do vetor v = {2, 5, 1, 4, 9, 3}</title>
+  <desc id="d">A raiz, nó 1, cobre v[0..5] e guarda 24. Seus filhos são o nó 2, que cobre v[0..2] e guarda 8, e o nó 3, que cobre v[3..5] e guarda 16. O nó 2 tem os filhos 4 (v[0..1], 7) e 5 (folha v[2], 1). O nó 3 tem os filhos 6 (v[3..4], 13) e 7 (folha v[5], 3). O nó 4 tem as folhas 8 (v[0], 2) e 9 (v[1], 5); o nó 6 tem as folhas 12 (v[3], 4) e 13 (v[4], 9). Cada nó interno guarda a soma dos dois filhos, e as folhas ficam sobre a posição do vetor que guardam.</desc>
+  <rect width="780" height="520" fill="#ffffff"/>
+
+  <text x="20" y="30" font-size="16" font-weight="bold" fill="#1e3a8a">Segment Tree de somas para v = {2, 5, 1, 4, 9, 3}</text>
+
+  <!-- Arestas -->
+  <g stroke="#4e575d" stroke-width="2.5" fill="none">
+    <line x1="380" y1="102" x2="200" y2="168"/>
+    <line x1="380" y1="102" x2="560" y2="168"/>
+    <line x1="200" y1="212" x2="140" y2="268"/>
+    <line x1="200" y1="212" x2="320" y2="268"/>
+    <line x1="560" y1="212" x2="500" y2="268"/>
+    <line x1="560" y1="212" x2="680" y2="268"/>
+    <line x1="140" y1="312" x2="80" y2="368"/>
+    <line x1="140" y1="312" x2="200" y2="368"/>
+    <line x1="500" y1="312" x2="440" y2="368"/>
+    <line x1="500" y1="312" x2="560" y2="368"/>
+  </g>
+
+  <!-- Ligação de cada folha com a sua posição no vetor -->
+  <g stroke="#9b123b" stroke-width="1.5" stroke-dasharray="4 4" fill="none">
+    <line x1="80" y1="412" x2="80" y2="446"/>
+    <line x1="200" y1="412" x2="200" y2="446"/>
+    <line x1="320" y1="312" x2="320" y2="446"/>
+    <line x1="440" y1="412" x2="440" y2="446"/>
+    <line x1="560" y1="412" x2="560" y2="446"/>
+    <line x1="680" y1="312" x2="680" y2="446"/>
+  </g>
+
+  <!-- Nós internos: soma dos dois filhos -->
+  <g fill="#dbeafe" stroke="#2563eb" stroke-width="2.5">
+    <rect x="342" y="58" width="76" height="44" rx="10"/>
+    <rect x="162" y="168" width="76" height="44" rx="10"/>
+    <rect x="522" y="168" width="76" height="44" rx="10"/>
+    <rect x="102" y="268" width="76" height="44" rx="10"/>
+    <rect x="462" y="268" width="76" height="44" rx="10"/>
+  </g>
+  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#1e3a8a">
+    <text x="380" y="88">24</text>
+    <text x="200" y="198">8</text>
+    <text x="560" y="198">16</text>
+    <text x="140" y="298">7</text>
+    <text x="500" y="298">13</text>
+  </g>
+
+  <!-- Folhas: um elemento do vetor -->
+  <g fill="#f5eaed" stroke="#9b123b" stroke-width="2.5">
+    <rect x="290" y="268" width="60" height="44" rx="10"/>
+    <rect x="650" y="268" width="60" height="44" rx="10"/>
+    <rect x="50" y="368" width="60" height="44" rx="10"/>
+    <rect x="170" y="368" width="60" height="44" rx="10"/>
+    <rect x="410" y="368" width="60" height="44" rx="10"/>
+    <rect x="530" y="368" width="60" height="44" rx="10"/>
+  </g>
+  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#76102f">
+    <text x="320" y="298">1</text>
+    <text x="680" y="298">3</text>
+    <text x="80" y="398">2</text>
+    <text x="200" y="398">5</text>
+    <text x="440" y="398">4</text>
+    <text x="560" y="398">9</text>
+  </g>
+
+  <!-- Número do nó (índice em arvore[]) e trecho coberto -->
+  <g font-size="14" fill="#292d30">
+    <text x="426" y="85">nó 1 · v[0..5]</text>
+    <text x="246" y="195">nó 2 · v[0..2]</text>
+    <text x="606" y="195">nó 3 · v[3..5]</text>
+    <text x="186" y="295">nó 4 · v[0..1]</text>
+    <text x="356" y="295">nó 5</text>
+    <text x="546" y="295">nó 6 · v[3..4]</text>
+    <text x="716" y="295">nó 7</text>
+    <text x="116" y="395">nó 8</text>
+    <text x="236" y="395">nó 9</text>
+    <text x="476" y="395">nó 12</text>
+    <text x="596" y="395">nó 13</text>
+  </g>
+
+  <!-- Vetor original -->
+  <g fill="#ffffff" stroke="#4e575d" stroke-width="2">
+    <rect x="50" y="446" width="60" height="40"/>
+    <rect x="170" y="446" width="60" height="40"/>
+    <rect x="290" y="446" width="60" height="40"/>
+    <rect x="410" y="446" width="60" height="40"/>
+    <rect x="530" y="446" width="60" height="40"/>
+    <rect x="650" y="446" width="60" height="40"/>
+  </g>
+  <g font-family="Courier New, monospace" font-size="20" font-weight="bold" text-anchor="middle" fill="#292d30">
+    <text x="80" y="473">2</text>
+    <text x="200" y="473">5</text>
+    <text x="320" y="473">1</text>
+    <text x="440" y="473">4</text>
+    <text x="560" y="473">9</text>
+    <text x="680" y="473">3</text>
+  </g>
+  <g font-family="Courier New, monospace" font-size="13" text-anchor="middle" fill="#9b123b">
+    <text x="80" y="505">v[0]</text>
+    <text x="200" y="505">v[1]</text>
+    <text x="320" y="505">v[2]</text>
+    <text x="440" y="505">v[3]</text>
+    <text x="560" y="505">v[4]</text>
+    <text x="680" y="505">v[5]</text>
+  </g>
+</svg>

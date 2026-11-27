@@ -529,11 +529,16 @@
     function updateQuizGate() {
       if (!quizGate) return;
       const forms = [...lessonContainer.querySelectorAll(".quiz-form")];
-      const allAnswered = forms.length > 0 && forms.every((form) => form.querySelector('input[type="radio"]:checked'));
+      const praticas = [...lessonContainer.querySelectorAll('.px[data-kind="pratica"]')];
+      const formsOk = forms.every((form) => form.querySelector('input[type="radio"]:checked'));
+      const praticasOk = praticas.every((pratica) => pratica.dataset.feito === "true");
+      const allAnswered = forms.length + praticas.length > 0 && formsOk && praticasOk;
       quizGate.message.hidden = allAnswered;
-      quizGate.message.textContent = forms.length
-        ? "Selecione uma alternativa em cada questão para continuar."
-        : "As questões obrigatórias ainda não foram carregadas.";
+      quizGate.message.textContent = !forms.length && !praticas.length
+        ? "As questões obrigatórias ainda não foram carregadas."
+        : !formsOk
+          ? "Selecione uma alternativa em cada questão para continuar."
+          : "Conclua as questões interativas para continuar.";
 
       if (quizGate.control instanceof HTMLButtonElement) {
         quizGate.control.disabled = !allAnswered || quizGate.control.dataset.topicFinished === "true";
@@ -568,6 +573,8 @@
       if (!event.target.matches('input[type="radio"]')) return;
       updateQuizGate();
     });
+
+    lessonContainer.addEventListener("pratica-feita", updateQuizGate);
 
     lessonContainer.addEventListener("submit", (event) => {
       const form = event.target.closest(".quiz-form");

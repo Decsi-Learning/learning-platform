@@ -3,10 +3,10 @@
   <desc id="d">Cada chave tem 5 bits. A raiz testa o bit 1. À esquerda, um nó testa o bit 2: seu filho esquerdo testa o bit 5 e separa B (00010) de C (00011); seu filho direito testa o bit 4 e separa H (01000) de J (01010). À direita da raiz, um nó testa o bit 3 e separa Q (10001) de W (10111). Os bits 3 e 4 são pulados no caminho até B e C, e o bit 2 é pulado no caminho até Q e W.</desc>
   <rect width="760" height="500" fill="#ffffff"/>
 
-  <text x="20" y="30" font-size="16" font-weight="bold" fill="#1e293b">Árvore Patricia com as chaves B, C, H, J, Q e W (5 bits cada)</text>
+  <text x="20" y="30" font-size="16" font-weight="bold" fill="#1e3a8a">Árvore Patricia com as chaves B, C, H, J, Q e W (5 bits cada)</text>
 
   <!-- Arestas -->
-  <g stroke="#475569" stroke-width="2.5" fill="none">
+  <g stroke="#4e575d" stroke-width="2.5" fill="none">
     <line x1="380" y1="85" x2="220" y2="185"/>
     <line x1="380" y1="85" x2="580" y2="185"/>
     <line x1="220" y1="185" x2="130" y2="290"/>
@@ -20,7 +20,7 @@
   </g>
 
   <!-- Bits nas arestas -->
-  <g font-family="Courier New, monospace" font-size="17" font-weight="bold" text-anchor="middle" fill="#0f172a" stroke="#ffffff" stroke-width="5" paint-order="stroke">
+  <g font-family="Courier New, monospace" font-size="17" font-weight="bold" text-anchor="middle" fill="#1e3a8a" stroke="#ffffff" stroke-width="5" paint-order="stroke">
     <text x="290" y="128">0</text>
     <text x="490" y="128">1</text>
     <text x="164" y="235">0</text>
@@ -34,24 +34,24 @@
   </g>
 
   <!-- Bits pulados -->
-  <g font-size="12" font-weight="bold" fill="#b45309">
+  <g font-size="12" font-weight="bold" fill="#1e3a8a">
     <text x="18" y="232">pula os bits 3 e 4</text>
     <text x="604" y="135">pula o bit 2</text>
   </g>
-  <g stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3" fill="none">
+  <g stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4 3" fill="none">
     <line x1="110" y1="236" x2="150" y2="248"/>
     <line x1="600" y1="138" x2="545" y2="150"/>
   </g>
 
   <!-- Nós internos: índice do bit testado -->
-  <g fill="#e2e8f0" stroke="#475569" stroke-width="2.5">
+  <g fill="#dbeafe" stroke="#2563eb" stroke-width="2.5">
     <circle cx="380" cy="85" r="26"/>
     <circle cx="220" cy="185" r="24"/>
     <circle cx="580" cy="185" r="24"/>
     <circle cx="130" cy="290" r="24"/>
     <circle cx="320" cy="290" r="24"/>
   </g>
-  <g text-anchor="middle" fill="#0f172a">
+  <g text-anchor="middle" fill="#1e3a8a">
     <text x="380" y="80" font-size="10">bit</text>
     <text x="380" y="98" font-size="19" font-weight="bold">1</text>
     <text x="220" y="180" font-size="10">bit</text>
@@ -65,7 +65,7 @@
   </g>
 
   <!-- Folhas: chaves -->
-  <g fill="#dcfce7" stroke="#16a34a" stroke-width="2.5">
+  <g fill="#f5eaed" stroke="#9b123b" stroke-width="2.5">
     <rect x="50" y="385" width="60" height="52" rx="10"/>
     <rect x="155" y="385" width="60" height="52" rx="10"/>
     <rect x="240" y="385" width="60" height="52" rx="10"/>
@@ -73,7 +73,7 @@
     <rect x="495" y="285" width="60" height="52" rx="10"/>
     <rect x="610" y="285" width="60" height="52" rx="10"/>
   </g>
-  <g text-anchor="middle" font-weight="bold" fill="#14532d">
+  <g text-anchor="middle" font-weight="bold" fill="#76102f">
     <text x="80" y="410" font-size="20">B</text>
     <text x="185" y="410" font-size="20">C</text>
     <text x="270" y="410" font-size="20">H</text>
@@ -81,7 +81,7 @@
     <text x="525" y="310" font-size="20">Q</text>
     <text x="640" y="310" font-size="20">W</text>
   </g>
-  <g text-anchor="middle" font-family="Courier New, monospace" font-size="12" fill="#15803d">
+  <g text-anchor="middle" font-family="Courier New, monospace" font-size="12" fill="#9b123b">
     <text x="80" y="429">00010</text>
     <text x="185" y="429">00011</text>
     <text x="270" y="429">01000</text>
@@ -91,11 +91,11 @@
   </g>
 
   <!-- Legenda -->
-  <g font-size="13" fill="#334155">
-    <circle cx="470" cy="400" r="11" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+  <g font-size="13" fill="#292d30">
+    <circle cx="470" cy="400" r="11" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
     <text x="490" y="405">nó interno: qual bit testar</text>
-    <rect x="459" y="428" width="22" height="18" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <rect x="459" y="428" width="22" height="18" rx="5" fill="#f5eaed" stroke="#9b123b" stroke-width="2"/>
     <text x="490" y="442">folha: guarda a chave inteira</text>
-    <text x="459" y="474" font-size="12" fill="#64748b">bit 0 → esquerda · bit 1 → direita</text>
+    <text x="459" y="474" font-size="12" fill="#687178">bit 0 → esquerda · bit 1 → direita</text>
   </g>
 </svg>
