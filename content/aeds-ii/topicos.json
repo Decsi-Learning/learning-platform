@@ -230,8 +230,22 @@
       "id": "arvore-trie",
       "title": "Árvore Trie",
       "summary": "Árvore de prefixos: inserção, busca, remoção, complexidade e variações.",
-      "file": "arvore-trie/arvore-trie.md",
-      "narratedLesson": "arvore-trie/aula-narrada.md"
+      "pages": [
+        {
+          "id": "arvore-trie",
+          "title": "Árvore Trie",
+          "summary": "Árvore de prefixos: inserção, busca, remoção, complexidade e variações.",
+          "requiresQuizAnswers": false,
+          "file": "arvore-trie/arvore-trie.md"
+        },
+        {
+          "id": "exercicios-arvore-trie",
+          "title": "Lista de Exercícios - Árvore Trie",
+          "summary": "Resolva a lista de exercícios para avançar para a próxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "arvore-trie/exercicios-arvore-trie.md"
+        }
+      ]
     },
     {
       "id": "arvore-radix",
