@@ -1,124 +1,125 @@
-## Objetivos de aprendizagem
+## Recursividade
 
-Ao final desta página, você deverá ser capaz de:
+### O que é?
 
-- Explicar o que é recursividade e como uma chamada recursiva funciona.
-- Identificar caso base e caso recursivo.
-- Acompanhar a pilha de chamadas durante a execução.
-- Reconhecer quando uma recursão não termina corretamente.
+Uma função é **recursiva** quando chama a si mesma para resolver uma versão menor do problema. Toda recursão precisa de:
 
-## Parte teórica
+- **Caso base:** condição que encerra as chamadas.
+- **Passo recursivo:** chamada que aproxima o problema do caso base.
 
-### O que é recursividade?
-
-Recursividade é uma técnica de programação em que uma função resolve um problema chamando a si mesma, diretamente ou por meio de outra função. Em geral, a função transforma o problema original em uma versão menor ou mais simples, até chegar a uma situação cuja resposta é conhecida.
-
-Uma analogia é abrir uma sequência de caixas encaixadas: para chegar ao objeto, abrimos uma caixa e encontramos outra menor. Continuamos até encontrar a última caixa, que não contém outra. Depois, voltamos fechando as caixas na ordem inversa.
-
-### Os dois elementos obrigatórios
-
-Toda recursão correta precisa, em geral, de dois elementos:
-
-1. **Caso base:** condição que encerra as chamadas recursivas. Nele, a função retorna uma resposta sem chamar a si mesma.
-2. **Caso recursivo:** parte em que a função chama a si mesma com um problema menor ou mais próximo do caso base.
-
-> Sem um caso base alcançável, as chamadas podem continuar até ocorrer estouro da pilha (*stack overflow*). Se o argumento não se aproxima do caso base, o problema também pode não terminar.
-
-### Pilha de chamadas
-
-Cada chamada de função cria um registro de execução contendo informações como parâmetros, variáveis locais e o ponto para onde a execução deve retornar. Esses registros são organizados na pilha de chamadas (*call stack*).
-
-Quando uma função chama outra, a nova chamada fica no topo da pilha. Quando ela termina, seu registro é removido e a execução continua na chamada anterior. Na recursão, isso acontece repetidamente.
+Sem progresso em direção ao caso base, a função pode continuar chamando a si mesma até ocorrer estouro de pilha.
 
 ### Exemplo: fatorial
 
-O fatorial de um inteiro não negativo é definido por:
-
-- `0! = 1` — caso base.
-- `n! = n * (n - 1)!`, para `n > 0` — caso recursivo.
-
-Para calcular `4!`, as chamadas descem até `fatorial(0)`. Depois, os resultados são devolvidos: `1`, `1`, `2`, `6` e `24`.
-
-## Estrutura de uma função recursiva
-
-```text
-FUNÇÃO resolver(problema)
-    SE problema atende ao caso base ENTÃO
-        RETORNE resposta_base
-    FIM SE
-
-    reduza o problema
-    resultado <- resolver(problema_menor)
-    combine resultado com os dados da chamada atual
-    RETORNE resultado
-FIM FUNÇÃO
-```
-
-Uma forma prática de revisar uma função recursiva é perguntar:
-
-- Qual é o caso base?
-- O que muda a cada chamada?
-- Essa mudança aproxima a execução do caso base?
-- O que acontece depois que a chamada recursiva retorna?
-
-## Demonstração
-
-Considere `fatorial(3)`:
-
-| Etapa | Ação | Situação |
-|:--|:--|:--|
-| 1 | `fatorial(3)` chama `3 * fatorial(2)` | Aguardando retorno |
-| 2 | `fatorial(2)` chama `2 * fatorial(1)` | Aguardando retorno |
-| 3 | `fatorial(1)` chama `1 * fatorial(0)` | Aguardando retorno |
-| 4 | `fatorial(0)` retorna `1` | Caso base alcançado |
-| 5 | `fatorial(1)` calcula `1 * 1` | Retorna `1` |
-| 6 | `fatorial(2)` calcula `2 * 1` | Retorna `2` |
-| 7 | `fatorial(3)` calcula `3 * 2` | Retorna `6` |
-
-### Código em C
+\(n! = n 	imes (n-1)!\), com \(0! = 1\).
 
 ```c
 int fatorial(int n) {
-    if (n == 0) {          // caso base
-        return 1;
-    }
-    return n * fatorial(n - 1); // caso recursivo
+    if (n <= 1) return 1;       // caso base
+    return n * fatorial(n - 1); // passo recursivo
 }
 ```
 
-O exemplo considera `n >= 0`. Em um programa completo, também é necessário validar entradas negativas e considerar o limite do tipo inteiro utilizado.
+### Rastreio de `fatorial(4)`
 
-## Pseudocódigo
+| Chamada | Ação |
+|---|---|
+| `fatorial(4)` | `4 * fatorial(3)` |
+| `fatorial(3)` | `3 * fatorial(2)` |
+| `fatorial(2)` | `2 * fatorial(1)` |
+| `fatorial(1)` | retorna `1` |
+| Retorno | `2 * 1 = 2`; `3 * 2 = 6`; `4 * 6 = 24` |
 
-```text
-FUNÇÃO fatorial(n)
-    SE n = 0 ENTÃO
-        RETORNE 1
-    FIM SE
+As chamadas ficam aguardando na **pilha de execução**. Quando o caso base retorna, os resultados são calculados de trás para frente.
 
-    RETORNE n * fatorial(n - 1)
-FIM FUNÇÃO
+## Demonstração interativa
+
+Avance e volte pelos passos para acompanhar o rastreio.
+
+```demo
+{
+  "title": "Rastreie fatorial(4)",
+  "steps": [
+    {
+      "caption": "A chamada inicial começa com n = 4. Como 4 não é caso base, aguarda 4 × fatorial(3).",
+      "state": "pilha de chamadas:\n fatorial(4) → aguarda 4 × fatorial(3)\n\nretorno ainda pendente: × 4"
+    },
+    {
+      "caption": "fatorial(3) também não é caso base e aguarda 3 × fatorial(2).",
+      "state": "pilha de chamadas:\n fatorial(4) → × 4\n fatorial(3) → × 3\n fatorial(2) → ..."
+    },
+    {
+      "caption": "fatorial(2) chama fatorial(1).",
+      "state": "pilha de chamadas:\n fatorial(4) → × 4\n fatorial(3) → × 3\n fatorial(2) → × 2\n fatorial(1)"
+    },
+    {
+      "caption": "fatorial(1) é o caso base e retorna 1. Agora as chamadas pendentes são resolvidas de trás para frente.",
+      "state": "retorno:\n fatorial(1) = 1\n fatorial(2) = 2 × 1 = 2\n fatorial(3) = 3 × 2 = 6\n fatorial(4) = 4 × 6 = 24"
+    }
+  ]
+}
 ```
 
-
-## Teste rápido
+### Teste rápido
 
 ```quiz
 {
-  "question": "Quais são os dois elementos fundamentais de uma função recursiva bem estruturada?",
+  "question": "Qual é a função do caso base?",
   "options": [
-    { "text": "Um laço e uma variável global.", "correct": false },
-    { "text": "Um caso base e um caso recursivo.", "correct": true },
-    { "text": "Duas funções diferentes e um vetor.", "correct": false }
+    { "text": "Fazer a função chamar a si mesma para sempre.", "correct": false },
+    { "text": "Encerrar as chamadas recursivas com uma resposta conhecida.", "correct": true },
+    { "text": "Guardar todas as chamadas em um vetor.", "correct": false },
+    { "text": "Aumentar o problema a cada chamada.", "correct": false }
   ],
-  "correctFeedback": "Correto! O caso base encerra a recursão e o caso recursivo transforma o problema para avançar em direção a ele.",
-  "incorrectFeedback": "Revise a seção sobre os dois elementos obrigatórios: um deles encerra as chamadas e o outro realiza a chamada recursiva."
+  "correctFeedback": "Isso! O caso base é a condição de parada.",
+  "incorrectFeedback": "Procure a condição que interrompe as chamadas."
 }
 ```
 
-## Exercícios de fixação desta página
 
-1. Identifique o caso base e o caso recursivo da função `fatorial`.
-2. O que pode acontecer se uma função recursiva nunca alcançar seu caso base?
-3. Explique por que as chamadas de `fatorial(3)` retornam na ordem inversa em que foram iniciadas.
-4. Altere mentalmente a função de fatorial para que o caso base seja `n == 1`. Para quais entradas essa versão funcionaria sem tratamento adicional?
+### Mais questões de fixação
+
+```quiz
+{
+  "question": "Quando a função f(n) chama f(n-1), qual condição torna essa recursão segura para terminar?",
+  "options": [
+    {
+      "text": "Uma condição base alcançável",
+      "correct": true
+    },
+    {
+      "text": "Um parâmetro que nunca muda",
+      "correct": false
+    },
+    {
+      "text": "Uma chamada dentro de um laço infinito",
+      "correct": false
+    }
+  ],
+  "correctFeedback": "Isso! O caso base precisa ser alcançado pelo passo recursivo.",
+  "incorrectFeedback": "Sem caso base alcançável, as chamadas podem continuar até estourar a pilha."
+}
+```
+
+```quiz
+{
+  "question": "Em fatorial(4), quando fatorial(1) retorna, o que acontece?",
+  "options": [
+    {
+      "text": "As chamadas pendentes retornam e calculam os produtos",
+      "correct": true
+    },
+    {
+      "text": "A função começa novamente em fatorial(4)",
+      "correct": false
+    },
+    {
+      "text": "O programa ignora os valores anteriores",
+      "correct": false
+    }
+  ],
+  "correctFeedback": "Correto: cada chamada resolve a operação que estava aguardando.",
+  "incorrectFeedback": "As chamadas anteriores ficam aguardando o resultado da chamada mais profunda."
+}
+```
+

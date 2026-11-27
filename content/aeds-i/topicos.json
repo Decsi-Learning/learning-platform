@@ -52,7 +52,8 @@
       "id": "exercicios-avaliativos-recursividade",
       "title": "Exercícios Avaliativos",
       "summary": "Questões sobre todos os conteúdos de recursividade.",
-      "file": "recursividade/exercicios-avaliativos-recursividade.md"
+      "file": "recursividade/exercicios-avaliativos-recursividade.md",
+      "requiresQuizAnswers": true
     },
     {
       "id": "slides-recursividade",
