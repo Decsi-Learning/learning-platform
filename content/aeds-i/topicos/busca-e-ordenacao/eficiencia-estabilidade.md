@@ -1,4 +1,4 @@
-## Objetivos de aprendizagem
+## 1. Objetivos de aprendizagem
 
 Ao final deste tópico, você deverá ser capaz de:
 
@@ -10,15 +10,15 @@ Ao final deste tópico, você deverá ser capaz de:
 
 * Aplicar técnicas práticas em C (como desempate por chave secundária ou índice original) para preservar a ordem relativa em registros compostos.
 
-## Introdução
+## 2. Introdução
 
 Na busca binária, vimos que dados ordenados reduzem drasticamente o tempo de consulta. No entanto, em aplicações reais, **ordenar** não é apenas colocar números em ordem crescente: frequentemente ordenamos coleções de registros estruturados (`struct`), contendo múltiplos campos (como matrícula, nota, data de nascimento, prioridade ou nome).
 
 Quando vários algoritmos resolvem o mesmo problema de ordenação, como escolher o mais adequado? Em AEDS I, a decisão envolve equilibrar **tempo de execução**, **consumo de memória** e **preservação da ordem relativa** dos dados.
 
-## Conceito principal
+## 3. Conceito principal
 
-### 1. Métricas de Eficiência: Comparações, Movimentações e Memória
+### 3.1 Métricas de Eficiência: Comparações, Movimentações e Memória
 
 Ao avaliar um algoritmo de ordenação sobre uma entrada de $n$ elementos, observamos três grandezas principais:
 
@@ -30,7 +30,7 @@ Ao avaliar um algoritmo de ordenação sobre uma entrada de $n$ elementos, obser
 
 > **Regra fundamental:** um algoritmo rápido em tempo assintótico pode não ser a única escolha se exigir um vetor auxiliar $O(n)$ em ambientes com memória restrita, ou se alterar a ordem de registros empatados quando isso importa para o domínio do problema.
 
-### 2. Estabilidade na Ordenação
+### 3.2 Estabilidade na Ordenação
 
 Um algoritmo de ordenação é **estável** quando **preserva a ordem relativa original** entre elementos que possuem chaves iguais.
 
@@ -40,7 +40,7 @@ Se dois elementos $A$ e $B$ satisfazem $\text{chave}(A) = \text{chave}(B)$ e $A$
 
 * **Quando a estabilidade não altera o resultado:** quando ordenamos chaves primitivas (como inteiros simples sem dados associados) ou quando cada elemento possui uma chave única (como um CPF ou matrícula sem empates).
 
-## Exemplo
+## 4. Exemplo
 
 Considere um vetor de registros de alunos já ordenado alfabeticamente por **nome**, que será ordenado em ordem decrescente pela **nota**:
 
@@ -64,11 +64,11 @@ Ordenação INSTÁVEL por nota (decrescente):
   3: ("Diana",  nota = 7.0)
 ```
 
-### Por que trocas distantes podem quebrar a estabilidade?
+### 4.1 Por que trocas distantes podem quebrar a estabilidade?
 
 Algoritmos que movimentam elementos apenas entre posições adjacentes ou intercalam sequências respeitando a ordem da esquerda tendem a preservar empates. Já algoritmos que efetuam **trocas de longa distância** (movendo um elemento de uma ponta a outra do vetor em um único passo) podem saltar sobre um registro de chave igual e inverter a ordem relativa original.
 
-### Implementação em C: Garantindo Estabilidade em Critérios Compostos
+### 4.2 Implementação em C: Garantindo Estabilidade em Critérios Compostos
 
 Em C, mesmo ao utilizar um algoritmo intrinsecamente instável (como os métodos avançados que veremos adiante), podemos obter um resultado estável incorporando a **posição original** (ou um critério de desempate explícito) na função de comparação:
 
@@ -115,7 +115,7 @@ int main(void) {
 }
 ```
 
-## Comparação e complexidade
+## 5. Comparação e complexidade
 
 A tabela abaixo resume como os critérios de análise se aplicam às famílias de algoritmos de ordenação da disciplina (incluindo os métodos elementares vistos na base da trilha e os algoritmos avançados que estudaremos a seguir):
 
@@ -129,7 +129,7 @@ A tabela abaixo resume como os critérios de análise se aplicam às famílias d
 
 *\*Na base elementar, Insertion Sort e Bubble Sort (com troca apenas quando estritamente maior) são estáveis, enquanto Selection Sort padrão é instável.*
 
-## Teste de conhecimento
+## 6. Teste de conhecimento
 
 ```quiz
 {

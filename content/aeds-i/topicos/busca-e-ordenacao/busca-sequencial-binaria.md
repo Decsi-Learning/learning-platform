@@ -8,7 +8,7 @@ Ao final deste tópico, você deverá ser capaz de:
 - Implementar a Busca Binária nas versões **iterativa** e **recursiva** em C, prevenindo estouro de inteiro (*integer overflow*) no cálculo do índice central.
 - Avaliar o trade-off entre o custo de ordenar previamente um vetor e o ganho assintótico em múltiplas consultas.
 
-## Introdução
+## 2. Introdução
 
 Em praticamente qualquer sistema computacional (de um catálogo de alunos em uma universidade até índices de bancos de dados), armazenar informações só faz sentido se formos capazes de **encontrá-las rapidamente** quando necessário.
 
@@ -16,9 +16,9 @@ Formalmente, dado um vetor $V$ de $n$ elementos (indexados de `0` a `n - 1`) e u
 
 A escolha entre as duas estratégias clássicas de pesquisa em memória depende diretamente de uma única pergunta estrutural: **os dados estão previamente ordenados?**
 
-## Conceito principal
+## 3. Conceito principal
 
-### 1. Busca Sequencial (Linear)
+### 3.1  Busca Sequencial (Linear)
 
 A **Busca Sequencial** é a estratégia mais direta possível: como não há garantia alguma sobre a ordem dos elementos em $V$, examinamos cada posição sequencialmente a partir do índice `0` até encontrar a chave $x$ ou atingir o fim do vetor (`n - 1`).
 
@@ -27,7 +27,7 @@ A **Busca Sequencial** é a estratégia mais direta possível: como não há gar
 
 > **Otimização clássica — Busca com Sentinela:** em vetores que possuem uma posição extra reservada ao final (`V[n]`), podemos gravar a própria chave $x$ em `V[n]` antes de iniciar o laço. Isso garante que a busca sempre encontrará $x$, eliminando o teste de limite `i < n` a cada iteração do `while` e reduzindo pela metade o número de comparações de controle do laço.
 
-### 2. Busca Binária (*Binary Search*)
+### 3.2  Busca Binária (*Binary Search*)
 
 A **Busca Binária** explora a **ordenação prévia** do vetor ($V[0] \le V[1] \le \dots \le V[n-1]$) para aplicar o paradigma de **Divisão e Conquista**.
 
@@ -43,7 +43,7 @@ Se em algum momento `inicio > fim`, o intervalo ativo tornou-se vazio e concluí
 
 ---
 
-## Exemplo
+## 4. Exemplo
 
 Considere a busca em um vetor ordenado de $11$ elementos ($n = 11$):
 
@@ -75,7 +75,7 @@ Vetor V: [ 5  | 12  | 19  | 24  | 31  | 38  | 44  | 52  | 61  | 73  | 89 ]
 
 </details>
 
-### Implementação em C
+### 4.1 Implementação em C
 
 Um detalhe técnico importante em C diz respeito ao cálculo do índice central. Em vetores muito grandes (próximos ao limite de representação do tipo `int`, $2^{31} - 1$), a expressão clássica `(inicio + fim) / 2` pode causar **estouro de inteiro (*integer overflow*)**, resultando em um índice negativo e falha de segmentação (*Segmentation Fault*). A forma segura e recomendada é:
 
@@ -140,9 +140,9 @@ int main(void) {
 }
 ```
 
-## Comparação e complexidade
+## 5. Comparação e complexidade
 
-### Quando vale a pena ordenar antes de buscar?
+### 5.1 Quando vale a pena ordenar antes de buscar?
 
 Ordenar um vetor de $n$ elementos com um algoritmo eficiente custa $O(n \log n)$. Portanto:
 
@@ -158,7 +158,7 @@ Ordenar um vetor de $n$ elementos com um algoritmo eficiente custa $O(n \log n)$
 | Memória auxiliar | $O(1)$ | $O(1)$ | $O(\log n)$ (pilha de recursão) |
 | Comparações ($n = 10^6$) | Até $1.000.000$ | No máximo $20$ | No máximo $20$ |
 
-## Teste de conhecimento
+## 6. Teste de conhecimento
 
 ```quiz
 {

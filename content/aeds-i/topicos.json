@@ -178,41 +178,77 @@
     {
       "id": "busca-ordenacao",
       "title": "Algoritmos e técnicas de busca e ordenação",
-      "summary": "Busca sequencial e binária; eficiência e estabilidade; Shellsort, Quicksort, Mergesort e Heapsort.",
+      "summary": "Busca sequencial e binária; eficiência e estabilidade; Bubble Sort, Selection Sort, Insertion Sort, Shellsort, Quicksort, Mergesort e Heapsort.",
       "pages": [
         {
           "id": "busca-sequencial-binaria",
           "title": "Busca Sequencial e Busca Binária",
           "summary": "Estratégias de pesquisa linear e por divisão de intervalo em vetores, com análise de custo.",
+          "requiresQuizAnswers": true,
           "file": "busca-e-ordenacao/busca-sequencial-binaria.md"
         },
         {
           "id": "eficiencia-estabilidade",
           "title": "Eficiência e Estabilidade na Ordenação",
           "summary": "Critérios de avaliação: número de comparações, movimentações, uso de memória e estabilidade.",
+          "requiresQuizAnswers": true,
           "file": "busca-e-ordenacao/eficiencia-estabilidade.md"
-        },{
+        },
+        {
+          "id": "bubble-sort",
+          "title": "Bubble Sort",
+          "summary": "Troca de vizinhos fora de ordem, passada a passada, até o vetor ficar ordenado.",
+          "requiresQuizAnswers": true,
+          "file": "busca-e-ordenacao/bubble-sort.md"
+        },
+        {
+          "id": "selection-sort",
+          "title": "Selection Sort",
+          "summary": "Escolhe o menor elemento restante e o coloca na sua posição definitiva a cada iteração.",
+          "requiresQuizAnswers": true,
+          "file": "busca-e-ordenacao/selection-sort.md"
+        },
+        {
+         "id": "insertion-sort",
+         "title": "Insertion Sort",
+         "summary": "Insere cada elemento na posição correta dentro do prefixo já ordenado.",
+         "requiresQuizAnswers": true,
+         "file": "busca-e-ordenacao/insertion-sort.md"
+        },
+        {
           "id": "shellsort",
           "title": "Shellsort",
           "summary": "Ordenação por incrementos decrescentes (h-ordenação) como evolução do Insertion Sort.",
+          "requiresQuizAnswers": true,
           "file": "busca-e-ordenacao/shellsort.md"
-        },{
+        },
+        {
           "id": "quicksort",
           "title": "Quicksort",
           "summary": "Algoritmo de divisão e conquista baseado em particionamento e escolha de pivô.",
+          "requiresQuizAnswers": true,
           "file": "busca-e-ordenacao/quicksort.md"
         },
         {
           "id": "mergesort",
           "title": "Mergesort",
           "summary": "Ordenação estável por intercalação recursiva de subvetores ordenados.",
+          "requiresQuizAnswers": true,
           "file": "busca-e-ordenacao/mergesort.md"
         },
         {
           "id": "heapsort",
           "title": "Heapsort",
           "summary": "Ordenação in-place O(n log n) utilizando Max-Heap e quadro comparativo dos métodos.",
+          "requiresQuizAnswers": true,
           "file": "busca-e-ordenacao/heapsort.md"
+        },
+         {
+          "id": "exercicios-avaliativos-ordenacao",
+          "title": "Exercícios avaliativos",
+          "summary": "Exercícios com gabarito sobre todo o tópico.",
+          "requiresQuizAnswers": true,
+          "file": "busca-e-ordenacao/exercicios-avaliativos-ordenacao.md"
         }
       ]
     }

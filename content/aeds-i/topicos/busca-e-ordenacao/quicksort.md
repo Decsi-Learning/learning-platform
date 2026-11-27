@@ -6,13 +6,28 @@ Ao final deste tópico, você deverá ser capaz de:
 * Executar manualmente o algoritmo de particionamento de Lomuto, identificando como o **pivô** alcança sua posição definitiva.
 * Implementar o Quicksort em C com a heurística da **Mediana de Três** para mitigar o pior caso em vetores já ordenados.
 * Analisar a complexidade assintótica no melhor caso, caso médio ($\Theta(n \log n)$) e pior caso ($O(n^2)$), além do consumo de memória de pilha e da instabilidade.
-## Introdução
+
+## 1. Conexão com a Trilha: Onde Estamos?
+
+Nos módulos anteriores desta trilha, evoluímos dos fundamentos de busca e análise de algoritmos até a quebra da barreira quadrática na ordenação:
+
+- Em **Busca Sequencial e Busca Binária**, conhecemos o poder do paradigma de **Divisão e Conquista** para descartar frações inteiras de um problema a cada passo, além da importância de manter coleções ordenadas para consultas rápidas em $O(\log n)$.
+- Em **Eficiência e Estabilidade na Ordenação**, aprendemos a medir o custo real de **comparações** e **trocas**, o impacto da memória auxiliar (*in-place*) e por que trocas de longa distância quebram a **estabilidade**.
+- Nos **Métodos Elementares** e no **Shellsort**, saímos da movimentação passo a passo ($O(n^2)$) para os saltos decrescentes ($O(n^{3/2})$), mas notamos que o desempenho ainda era limitado pela dependência de sequências de incrementos para alcançar a faixa $O(n \log n)$.
+
+Agora surge a pergunta central deste módulo:
+
+> **Como aplicar diretamente o paradigma de Divisão e Conquista na ordenação — particionando o vetor *in-place* em subproblemas independentes — para atingir tempo médio $O(n \log n)$ com altíssima velocidade na prática?**
+
+A resposta é o **Quicksort**: por meio da operação de **particionamento** em torno de um pivô, ele fixa elementos em suas posições definitivas a cada chamada recursiva, consolidando-se como o algoritmo de propósito geral mais utilizado em bibliotecas reais.
+
+## 2. Introdução
 
 Criado por Tony Hoare em 1960, o **Quicksort** é um dos algoritmos de ordenação mais rápidos e amplamente utilizados na prática (servindo de base para rotinas padrão como a função `qsort` da biblioteca padrão da linguagem C).
 
 Assim como o *Mergesort*, ele aplica o paradigma de **Divisão e Conquista**, mas inverte o momento em que o esforço computacional ocorre: enquanto o Mergesort divide o vetor ao meio sem comparar nada e realiza todo o trabalho na intercalação durante o retorno da recursão, o Quicksort concentra o trabalho pesado **antes** das chamadas recursivas, por meio de uma rotina chamada **particionamento**.
 
-## Conceito principal
+## 3. Conceito principal
 
 Dado um subvetor contíguo $V[\text{inicio} \dots \text{fim}]$, o Quicksort opera em três etapas:
 
@@ -25,7 +40,7 @@ Dado um subvetor contíguo $V[\text{inicio} \dots \text{fim}]$, o Quicksort oper
 
 > **Regra fundamental:** o desempenho do Quicksort depende diretamente do equilíbrio entre os tamanhos das duas partições geradas. Quando o pivô divide o intervalo próximo à metade, a árvore de recursão possui altura $O(\log n)$ e o tempo total é $\Theta(n \log n)$. Se o pivô for sistematicamente o menor ou o maior elemento, uma partição terá tamanho $n - 1$ e a outra $0$, degradando o custo para $O(n^2)$.
 
-### Estratégias para Evitar o Pior Caso $O(n^2)$
+### 3.1 Estratégias para Evitar o Pior Caso $O(n^2)$
 
 Quando adotamos sempre o último elemento (`V[fim]`) como pivô e o vetor de entrada já está ordenado (em ordem crescente ou decrescente), cada particionamento reduz o problema em apenas $1$ elemento ($T(n) = T(n-1) + \Theta(n) \Rightarrow O(n^2)$). Para prevenir esse cenário:
 
@@ -34,7 +49,7 @@ Quando adotamos sempre o último elemento (`V[fim]`) como pivô e o vetor de ent
 
 ---
 
-## Exemplo
+## 4. Exemplo
 
 Considere o particionamento de **Lomuto** (adotando o último elemento `V[fim]` como pivô) sobre o vetor:
 
@@ -61,7 +76,7 @@ Mantemos um índice `i` marcando o fim da região de elementos $\le 24$ (inicia 
 
 </details>
 
-### Implementação em C (Com Mediana de Três)
+### 4.1 Implementação em C (Com Mediana de Três)
 
 Na implementação abaixo, `preparar_pivo_mediana` ordena localmente `V[inicio]`, `V[meio]` e `V[fim]` de modo que a mediana fique posicionada em `V[fim]`, pronta para ser usada pelo particionamento de Lomuto:
 
@@ -119,7 +134,7 @@ int main(void) {
 }
 ```
 
-## Comparação e complexidade
+## 5. Comparação e complexidade
 
 | Critério | Análise no Quicksort | Detalhamento Técnico |
 |:--|:--|:--|
@@ -129,7 +144,7 @@ int main(void) {
 | Memória auxiliar | $O(\log n)$ (médio) / $O(n)$ (pior) | Pilha de chamadas recursivas; não aloca vetor auxiliar (*in-place*) |
 | Estabilidade | **Não estável** | Trocas durante o particionamento alteram a ordem relativa de chaves iguais |
 
-## Teste de conhecimento
+## 6. Teste de conhecimento
 
 ```quiz
 {
@@ -169,3 +184,17 @@ int main(void) {
   "incorrectFeedback": "Pense no impacto da escolha do pivô sobre o equilíbrio das duas partições geradas."
 }
 ```
+---
+
+## 7. Ponte para o Próximo Módulo da Trilha
+
+Neste módulo, vimos como o **Quicksort** atinge desempenho $O(n \log n)$ na prática trabalhando *in-place* por meio do particionamento, mas identificamos dois pontos sensíveis na sua estrutura: mesmo com heurísticas como a Mediana de Três, seu **pior caso teórico permanece $O(n^2)$**, e as trocas durante o particionamento o tornam **instável**.
+
+Com isso, surgem perguntas fundamentais que vão guiar a próxima etapa:
+
+- **É possível inverter a lógica da Divisão e Conquista** — dividindo o vetor ao meio sem comparações e ordenando na volta da recursão — para garantir tempo **$O(n \log n)$ em absolutamente todos os casos**?
+- **Como manter a estabilidade na ordenação $O(n \log n)$** quando precisamos preservar a ordem relativa de registros compostos empatados, e qual é o custo em memória auxiliar dessa garantia?
+
+É exatamente isso que vamos explorar no próximo passo da trilha:
+
+> **Próximo Módulo 🔜:** **Mergesort** — divisão equilibrada ao meio, intercalação ordenada estável e previsibilidade assintótica garantida em $O(n \log n)$!

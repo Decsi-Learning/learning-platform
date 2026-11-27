@@ -7,7 +7,21 @@ Ao final deste tópico, você deverá ser capaz de:
 * Implementar o Heapsort completo em C sem alocar vetores auxiliares.
 * Sintetizar e comparar todos os algoritmos de ordenação da disciplina quanto à complexidade assintótica, consumo de memória e estabilidade.
 
-## Introdução
+## 1. Conexão com a Trilha: Onde Estamos?
+
+Nos módulos anteriores desta trilha, exploramos todo o espectro de trade-offs entre tempo, memória e estabilidade na ordenação:
+
+- Em **Busca Sequencial e Busca Binária** e **Eficiência e Estabilidade na Ordenação**, definimos o tripé de avaliação de algoritmos em memória principal: **complexidade assintótica (melhor, médio e pior caso)**, **consumo de memória auxiliar (*in-place*)** e **estabilidade**.
+- No **Selection Sort**, vimos uma estratégia intuitiva de selecionar repetidamente o extremo restante e colocá-lo em sua posição definitiva, mas presa em $O(n^2)$ porque cada busca linear pelo mínimo custava $O(n)$ comparações.
+- Nos métodos avançados anteriores (**Shellsort**, **Quicksort** e **Mergesort**), observamos que cada um resolve parte do quebra-cabeça, mas deixa uma ponta aberta: o *Quicksort* tem pior caso $O(n^2)$ e pilha $O(\log n)$, enquanto o *Mergesort* garante $O(n \log n)$ e estabilidade, mas exige $O(n)$ de memória auxiliar extra.
+
+Agora surge a pergunta central deste módulo:
+
+> **Como acelerar a ideia do Selection Sort — encontrando o maior elemento restante em $O(\log n)$ em vez de $O(n)$ — para obter um algoritmo que garanta $O(n \log n)$ mesmo no pior caso e execute estritamente *in-place* em $O(1)$?**
+
+A resposta é o **Heapsort**: o fechamento da nossa trilha de ordenação em memória interna, que interpreta o próprio vetor como uma árvore **Max-Heap** para unir o pior caso garantido do *Mergesort* com a economia de espaço constante $O(1)$ do *Selection Sort* (mantendo a característica de ser **não estável**).
+
+## 2. Introdução
 
 Inventado por J. W. J. Williams em 1964 e aprimorado por Robert Floyd, o **Heapsort** combina duas propriedades desejáveis que pareciam opostas nos algoritmos anteriores:
 
@@ -16,11 +30,11 @@ Inventado por J. W. J. Williams em 1964 e aprimorado por Robert Floyd, o **Heaps
 
 Em essência, o Heapsort é uma versão sofisticada da ordenação por seleção: em vez de percorrer linearmente o vetor restante em $O(n)$ a cada passo para descobrir o maior elemento, ele organiza os dados em um **Max-Heap**, permitindo localizar o maior valor em $O(1)$ e restaurar a estrutura em $O(\log n)$.
 
-## Conceito principal
+## 3. Conceito principal
 
 Dado um vetor $V$ de tamanho $n$, o Heapsort opera inteiramente dentro do próprio array em **duas fases**:
 
-### Fase 1: Construção do Max-Heap (`construir_heap`) — Custo $O(n)$
+### 3.1 Fase 1: Construção do Max-Heap (`construir_heap`) — Custo $O(n)$
 
 Interpretamos o vetor $V[0 \dots n-1]$ como uma árvore binária quase completa e aplicamos a operação `sift_down` (descer) de trás para frente a partir do último nó interno até a raiz:
 
@@ -28,7 +42,7 @@ $$i = \left\lfloor \frac{n}{2} \right\rfloor - 1 \;\longrightarrow\; 0$$
 
 Ao final dessa etapa, $V$ satisfaz a propriedade de Max-Heap ($V[\text{pai}] \ge V[\text{filho}]$), e o **maior elemento de todo o vetor** está garantidamente na raiz `V[0]`.
 
-### Fase 2: Extração Sucessiva e Redução do Heap — Custo $O(n \log n)$
+### 3.2 Fase 2: Extração Sucessiva e Redução do Heap — Custo $O(n \log n)$
 
 Repetimos o seguinte ciclo para `fim` variando de `n - 1` até `1`:
 
@@ -37,7 +51,7 @@ Repetimos o seguinte ciclo para `fim` variando de `n - 1` até `1`:
 
 > **Regra fundamental:** embora o Heapsort seja teoricamente ótimo em tempo e espaço ($O(n \log n)$ e $O(1)$), na prática ele costuma ser ligeiramente mais lento que o Quicksort bem implementado devido à menor localidade de cache (saltos entre índices $i$ e $2i+1$) e por realizar cerca de o dobro de comparações. Além disso, as trocas entre a raiz e o fim do vetor tornam o Heapsort **não estável**.
 
-## Exemplo
+## 4. Exemplo
 
 Considere a ordenação crescente do vetor de $6$ elementos abaixo:
 
@@ -69,7 +83,7 @@ Vetor inicial: [ 19 | 42 | 10 | 55 | 27 | 31 ]
 
 </details>
 
-### Implementação em C
+### 4. Implementação em C
 
 Reutilizamos diretamente a função `sift_down` vista na unidade de estruturas hierárquicas:
 
@@ -132,9 +146,9 @@ int main(void) {
 }
 ```
 
-## Comparação e complexidade
+## 5. Comparação e complexidade
 
-### Síntese Geral dos Algoritmos de Ordenação (AEDS I)
+### 5.1 Síntese Geral dos Algoritmos de Ordenação (AEDS I)
 
 O quadro abaixo consolida todos os algoritmos de ordenação estudados na disciplina — desde os métodos elementares até os algoritmos avançados — servindo como guia de decisão para escolha de método:
 
@@ -150,7 +164,7 @@ O quadro abaixo consolida todos os algoritmos de ordenação estudados na discip
 
 *\*Considerando a sequência de incrementos de Knuth ($h = 3h + 1$).*
 
-## Teste de conhecimento
+## 6. Teste de conhecimento
 
 ```quiz
 {
