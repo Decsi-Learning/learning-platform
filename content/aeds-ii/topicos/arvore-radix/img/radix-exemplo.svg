@@ -3,10 +3,10 @@
   <desc id="d">A raiz tem dois filhos: ca e dia. O nó dia é fim de palavra. Do nó ca saem três filhos: s, ma e o; ma (cama) e o (cao) são fim de palavra. O nó s tem os filhos a (casa) e o (caso). São 7 nós além da raiz, contra 11 na Trie com as mesmas palavras, porque cada cadeia de letras sem bifurcação virou um único nó.</desc>
   <rect width="760" height="500" fill="#ffffff"/>
 
-  <text x="20" y="30" font-size="16" font-weight="bold" fill="#1e293b">Árvore Radix com as palavras casa, caso, cama, cao e dia</text>
+  <text x="20" y="30" font-size="16" font-weight="bold" fill="#1e3a8a">Árvore Radix com as palavras casa, caso, cama, cao e dia</text>
 
   <!-- Arestas -->
-  <g stroke="#475569" stroke-width="2.5" fill="none">
+  <g stroke="#4e575d" stroke-width="2.5" fill="none">
     <line x1="380" y1="80" x2="260" y2="170"/>
     <line x1="380" y1="80" x2="600" y2="170"/>
     <line x1="260" y1="170" x2="140" y2="270"/>
@@ -17,35 +17,35 @@
   </g>
 
   <!-- Raiz -->
-  <circle cx="380" cy="80" r="28" fill="#1e293b" stroke="#1e293b" stroke-width="2.5"/>
+  <circle cx="380" cy="80" r="28" fill="#1e3a8a" stroke="#1e3a8a" stroke-width="2.5"/>
   <text x="380" y="85" font-size="13" font-weight="bold" text-anchor="middle" fill="#ffffff">raiz</text>
 
   <!-- Nós intermediários (apenas prefixo) -->
-  <g fill="#e2e8f0" stroke="#475569" stroke-width="2.5">
+  <g fill="#dbeafe" stroke="#2563eb" stroke-width="2.5">
     <rect x="228" y="148" width="64" height="44" rx="22"/>
     <rect x="118" y="248" width="44" height="44" rx="22"/>
   </g>
-  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#1e293b">
+  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#1e3a8a">
     <text x="260" y="177">ca</text>
     <text x="140" y="277">s</text>
   </g>
 
   <!-- Nós que marcam fim de palavra -->
-  <g fill="#dcfce7" stroke="#16a34a" stroke-width="3">
+  <g fill="#f5eaed" stroke="#9b123b" stroke-width="3">
     <rect x="556" y="146" width="88" height="48" rx="24"/>
     <rect x="254" y="246" width="72" height="48" rx="24"/>
     <rect x="396" y="246" width="48" height="48" rx="24"/>
     <rect x="56" y="346" width="48" height="48" rx="24"/>
     <rect x="176" y="346" width="48" height="48" rx="24"/>
   </g>
-  <g fill="none" stroke="#16a34a" stroke-width="1.5">
+  <g fill="none" stroke="#9b123b" stroke-width="1.5">
     <rect x="562" y="152" width="76" height="36" rx="18"/>
     <rect x="260" y="252" width="60" height="36" rx="18"/>
     <rect x="402" y="252" width="36" height="36" rx="18"/>
     <rect x="62" y="352" width="36" height="36" rx="18"/>
     <rect x="182" y="352" width="36" height="36" rx="18"/>
   </g>
-  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#14532d">
+  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#76102f">
     <text x="600" y="177">dia</text>
     <text x="290" y="277">ma</text>
     <text x="420" y="277">o</text>
@@ -54,7 +54,7 @@
   </g>
 
   <!-- Palavras formadas pelo caminho -->
-  <g font-family="Courier New, monospace" font-size="15" font-weight="bold" text-anchor="middle" fill="#15803d">
+  <g font-family="Courier New, monospace" font-size="15" font-weight="bold" text-anchor="middle" fill="#9b123b">
     <text x="600" y="216">"dia"</text>
     <text x="290" y="316">"cama"</text>
     <text x="420" y="316">"cao"</text>
@@ -63,19 +63,19 @@
   </g>
 
   <!-- Comparação com a Trie -->
-  <rect x="490" y="320" width="250" height="84" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 5"/>
-  <g font-size="13" fill="#b45309">
+  <rect x="490" y="320" width="250" height="84" rx="12" fill="#eff6ff" stroke="#2563eb" stroke-width="2" stroke-dasharray="6 5"/>
+  <g font-size="13" fill="#1e3a8a">
     <text x="506" y="346" font-weight="bold">Mesmas 5 palavras:</text>
     <text x="506" y="368">Trie: 11 nós além da raiz</text>
     <text x="506" y="390">Radix: 7 nós além da raiz</text>
   </g>
 
   <!-- Legenda -->
-  <g font-size="13" fill="#334155">
-    <rect x="30" y="460" width="22" height="20" rx="10" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+  <g font-size="13" fill="#292d30">
+    <rect x="30" y="460" width="22" height="20" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
     <text x="60" y="475">nó de prefixo (fimDePalavra = false)</text>
-    <rect x="320" y="458" width="24" height="24" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
-    <rect x="324" y="462" width="16" height="16" rx="8" fill="none" stroke="#16a34a" stroke-width="1.2"/>
+    <rect x="320" y="458" width="24" height="24" rx="12" fill="#f5eaed" stroke="#9b123b" stroke-width="2.5"/>
+    <rect x="324" y="462" width="16" height="16" rx="8" fill="none" stroke="#9b123b" stroke-width="1.2"/>
     <text x="352" y="475">fim de palavra (fimDePalavra = true)</text>
   </g>
 </svg>
