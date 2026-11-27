@@ -26,7 +26,7 @@ Uma **Trie** (do inglês *re**trie**val*, recuperação) é uma árvore de busca
 
 ### Exemplo de estrutura
 
-Considere as palavras `casa`, `caso`, `cama`, `cão` (sem acento, `cao`) e `dia`. A Trie correspondente fica assim (os nós verdes, com contorno duplo, marcam fim de palavra):
+Considere as palavras `casa`, `caso`, `cama`, `cão` (sem acento, `cao`) e `dia`. A Trie correspondente fica assim (os nós vermelhos, com contorno duplo, marcam fim de palavra, e os azuis são só prefixo):
 
 ![Árvore Trie com as palavras casa, caso, cama, cao e dia; o prefixo ca é compartilhado por quatro palavras](img/trie-exemplo.svg){align=center width=100%}
 
@@ -92,7 +92,7 @@ Verificar se existe alguma palavra que começa com um prefixo (`comecaCom`) é q
 {"title":"Buscando palavras e prefixos na Trie","cols":7,"code":"#include <stdio.h>\n/* NoTrie, criarNo e inserir: veja o programa anterior */\n\nbool buscar(NoTrie *raiz, const char *palavra) {\n    NoTrie *atual = raiz;\n    for (int i = 0; palavra[i] != '\\0'; i++) {\n        int indice = palavra[i] - 'a';\n        if (atual->filhos[indice] == NULL) {\n            return false;\n        }\n        atual = atual->filhos[indice];\n    }\n    return atual->fimDePalavra;\n}\n\nbool comecaCom(NoTrie *raiz, const char *prefixo) {\n    NoTrie *atual = raiz;\n    for (int i = 0; prefixo[i] != '\\0'; i++) {\n        int indice = prefixo[i] - 'a';\n        if (atual->filhos[indice] == NULL) {\n            return false;\n        }\n        atual = atual->filhos[indice];\n    }\n    return true;\n}\n\nint main(void) {\n    NoTrie *raiz = criarNo();\n    inserir(raiz, \"sol\");\n    inserir(raiz, \"solo\");\n    inserir(raiz, \"sal\");\n    printf(\"%d\\n\", buscar(raiz, \"sol\"));      /* 1 */\n    printf(\"%d\\n\", buscar(raiz, \"so\"));       /* 0 */\n    printf(\"%d\\n\", buscar(raiz, \"sul\"));      /* 0 */\n    printf(\"%d\\n\", comecaCom(raiz, \"so\"));    /* 1 */\n    return 0;\n}","steps":[{"line":32,"caption":"Partimos da Trie montada no programa anterior, com `sol`, `solo` e `sal`.","vars":{},"rows":[[{"i":[],"l":""}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"main"},{"line":33,"caption":"Chamamos `buscar(raiz, \"sol\")`.","vars":{},"rows":[[{"i":[["s","",6],["o","",4],["l","",2]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"main"},{"line":11,"caption":"`'s' - 'a'` = 18. `filhos[18]` existe: `atual` desce para 's'.","vars":{"i":0,"palavra[i]":"'s'","indice":18,"atual":"raiz→s"},"rows":[[{"i":[["s","c",6],["o","",4],["l","",2]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","c",6]],"a":1}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"buscar ← main"},{"line":11,"caption":"`'o' - 'a'` = 14. `filhos[14]` existe: `atual` desce para 'o'.","vars":{"i":1,"palavra[i]":"'o'","indice":14,"atual":"raiz→s→o"},"rows":[[{"i":[["s","",6],["o","c",4],["l","",2]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","c",4]],"a":1},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"buscar ← main"},{"line":11,"caption":"`'l' - 'a'` = 11. `filhos[11]` existe: `atual` desce para 'l'.","vars":{"i":2,"palavra[i]":"'l'","indice":11,"atual":"raiz→s→o→l"},"rows":[[{"i":[["s","",6],["o","",4],["l","c",2]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","c",2]],"l":"fim","a":1},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"buscar ← main"},{"line":13,"caption":"O caminho existe e o nó está marcado como fim de palavra: **sol** foi encontrada, devolve `true`.","vars":{"atual":"raiz→s→o→l","fimDePalavra":"true","retorno":"true"},"rows":[[{"i":[["s","",6],["o","",4],["l","p",2]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","p",2]],"l":"fim","a":1},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"buscar ← main"},{"line":34,"caption":"Chamamos `buscar(raiz, \"so\")`.","vars":{},"rows":[[{"i":[["s","",6],["o","",4]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"main"},{"line":11,"caption":"`'s' - 'a'` = 18. `filhos[18]` existe: `atual` desce para 's'.","vars":{"i":0,"palavra[i]":"'s'","indice":18,"atual":"raiz→s"},"rows":[[{"i":[["s","c",6],["o","",4]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","c",6]],"a":1}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"buscar ← main"},{"line":11,"caption":"`'o' - 'a'` = 14. `filhos[14]` existe: `atual` desce para 'o'.","vars":{"i":1,"palavra[i]":"'o'","indice":14,"atual":"raiz→s→o"},"rows":[[{"i":[["s","",6],["o","c",4]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","c",4]],"a":1},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"buscar ← main"},{"line":13,"caption":"O caminho existe, mas o nó **não** é fim de palavra: `so` é só um prefixo de outras palavras. Devolve `false`.","vars":{"atual":"raiz→s→o","fimDePalavra":"false","retorno":"false"},"rows":[[{"i":[["s","",6],["o","c",4]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","c",4]],"a":1},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"buscar ← main"},{"line":35,"caption":"Chamamos `buscar(raiz, \"sul\")`.","vars":{},"rows":[[{"i":[["s","",6],["u","",1],["l","",2]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"main"},{"line":11,"caption":"`'s' - 'a'` = 18. `filhos[18]` existe: `atual` desce para 's'.","vars":{"i":0,"palavra[i]":"'s'","indice":18,"atual":"raiz→s"},"rows":[[{"i":[["s","c",6],["u","",1],["l","",2]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","c",6]],"a":1}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"buscar ← main"},{"line":8,"caption":"`filhos[20]` de `raiz→s` é **NULL**: não existe caminho para 'u'.","vars":{"i":1,"palavra[i]":"'u'","indice":20,"atual":"raiz→s"},"rows":[[{"i":[["s","",6],["u","c",1],["l","",2]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]],"a":1}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]},{"s":3,"n":1,"i":[["u","g",1]],"l":"NULL"}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"buscar ← main"},{"line":9,"caption":"Nenhuma palavra armazenada segue por esse caminho: devolve `false` sem olhar o resto da palavra.","vars":{"i":1,"palavra[i]":"'u'","indice":20,"atual":"raiz→s","retorno":"false"},"rows":[[{"i":[["s","",6],["u","c",1],["l","",2]],"l":"palavra"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]],"a":1}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]},{"s":3,"n":1,"i":[["u","g",1]],"l":"NULL"}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"buscar ← main"},{"line":36,"caption":"Chamamos `comecaCom(raiz, \"so\")`. Agora só queremos saber se **alguma** palavra começa com `so`.","vars":{},"rows":[[{"i":[["s","",6],["o","",4]],"l":"prefixo"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"main"},{"line":23,"caption":"`'s' - 'a'` = 18. `filhos[18]` existe: `atual` desce para 's'.","vars":{"i":0,"prefixo[i]":"'s'","indice":18,"atual":"raiz→s"},"rows":[[{"i":[["s","c",6],["o","",4]],"l":"prefixo"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","c",6]],"a":1}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"comecaCom ← main"},{"line":23,"caption":"`'o' - 'a'` = 14. `filhos[14]` existe: `atual` desce para 'o'.","vars":{"i":1,"prefixo[i]":"'o'","indice":14,"atual":"raiz→s→o"},"rows":[[{"i":[["s","",6],["o","c",4]],"l":"prefixo"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","c",4]],"a":1},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"comecaCom ← main"},{"line":25,"caption":"O caminho `so` existe inteiro, então devolve `true`, **sem olhar `fimDePalavra`**. Abaixo desse nó estão `sol` e `solo`.","vars":{"atual":"raiz→s→o","retorno":"true"},"rows":[[{"i":[["s","",6],["o","p",4]],"l":"prefixo"}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","p",4]],"a":1},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"comecaCom ← main"},{"line":37,"caption":"Resumo: `buscar` exige caminho **e** marca de fim; `comecaCom` exige só o caminho. As duas fazem no máximo um passo por letra.","vars":{},"rows":[[{"i":[],"l":""}],[{"s":3,"n":1,"i":[["raiz","",0]]}],[{"s":3,"n":1,"i":[["s","",6]]}],[{"s":2,"n":1,"i":[["o","",4]]},{"s":4,"n":1,"i":[["a","",8]]}],[{"s":2,"n":1,"i":[["l*","",2]],"l":"fim"},{"s":4,"n":1,"i":[["l*","",2]],"l":"fim"}],[{"s":2,"n":1,"i":[["o*","",4]],"l":"fim"}]],"stack":"main"}]}
 ```
 
-Para implementar um **autocompletar**, desce-se até o nó do prefixo e, a partir dele, faz-se um percurso em profundidade listando todos os nós marcados como fim de palavra.
+Para implementar um **autocompletar**, desce-se até o nó do prefixo e, a partir dele, faz-se um percurso em profundidade listando todos os nós marcados como fim de palavra. O custo O(*m*) da busca por prefixo vale só para descobrir se o prefixo existe. Listar as sugestões custa, além disso, um passo por nó visitado abaixo do prefixo, então depende de quantas palavras começam com ele e do tamanho delas.
 
 ### Remoção
 
@@ -112,7 +112,7 @@ Sejam *m* o tamanho da chave consultada, *n* o número de chaves armazenadas e *
 |:--|:--|:--|
 | Inserção | O(m) | Um passo por caractere da chave |
 | Busca | O(m) | Não depende de *n* |
-| Busca por prefixo | O(m) | *m* é o tamanho do prefixo |
+| Busca por prefixo | O(m) | *m* é o tamanho do prefixo; só verifica se o prefixo existe |
 | Remoção | O(m · σ) | `temFilhos` percorre o vetor de cada nó; com contador de filhos, cai para O(m) |
 | Espaço | O(N · σ) | *N* é o total de nós; cada nó reserva σ ponteiros |
 
@@ -153,7 +153,7 @@ Uma Trie binária resolve isso naturalmente. O alfabeto tem só dois símbolos, 
 
 Endereços IPv4 reais têm 32 bits, mas aqui usamos 4 bits para a árvore caber na tela.
 
-Veja a tabela de rotas virar uma Trie. Clique em **Construir** (automático) ou em **Próximo passo**. Cada rota é inserida bit a bit: quando o nó já existe, ele é reaproveitado; quando não existe, ele é criado (em verde). No fim do prefixo, o nó recebe a letra da saída. Repare na rota `10`: o nó dela já tinha sido criado pela rota `101`, então só falta marcá-lo.
+Veja a tabela de rotas virar uma Trie. Clique em **Construir** (automático) ou em **Próximo passo**. Cada rota é inserida bit a bit: quando o nó já existe, ele é reaproveitado; quando não existe, ele é criado (com contorno azul). No fim do prefixo, o nó recebe a letra da saída. Repare na rota `10`: o nó dela já tinha sido criado pela rota `101`, então só falta marcá-lo.
 
 ```roteamento
 {
@@ -168,61 +168,5 @@ Veja a tabela de rotas virar uma Trie. Clique em **Construir** (automático) ou 
     { "prefixo": "01", "saida": "E" },
     { "prefixo": "0110", "saida": "F" }
   ]
-}
-```
-
-
-## Teste de conhecimento
-
-```quiz
-{
-  "question": "Qual é o custo de buscar uma palavra de tamanho m em uma Trie que armazena n palavras?",
-  "options": [
-    { "text": "O(log n)", "correct": false },
-    { "text": "O(m)", "correct": true },
-    { "text": "O(n · m)", "correct": false },
-    { "text": "O(n)", "correct": false }
-  ],
-  "correctFeedback": "Correto! A busca percorre um nó por caractere da chave, independentemente de quantas palavras existem na Trie.",
-  "incorrectFeedback": "Lembre-se de que a Trie desce um nível por caractere. Quantos passos são necessários para uma palavra de tamanho m?"
-}
-```
-
-```quiz
-{
-  "question": "Uma Trie contém apenas a palavra \"carro\". O que retorna buscar(\"car\")?",
-  "options": [
-    { "text": "true, porque o caminho c-a-r existe", "correct": false },
-    { "text": "false, porque o nó do r não está marcado como fim de palavra", "correct": true },
-    { "text": "Gera erro, porque o caminho não existe", "correct": false }
-  ],
-  "correctFeedback": "Correto! O caminho existe, mas \"car\" é apenas um prefixo de \"carro\", não uma palavra armazenada.",
-  "incorrectFeedback": "Revise a seção sobre a marca de fim de palavra: existir o caminho não basta para a busca exata."
-}
-```
-
-```quiz
-{
-  "question": "Qual é a principal desvantagem de uma Trie implementada com vetor de ponteiros em cada nó?",
-  "options": [
-    { "text": "A busca é mais lenta que em uma árvore binária de busca", "correct": false },
-    { "text": "Não permite buscar palavras por prefixo", "correct": false },
-    { "text": "Consome muita memória, pois cada nó reserva espaço para todo o alfabeto", "correct": true }
-  ],
-  "correctFeedback": "Correto! Cada nó reserva σ ponteiros, mesmo que a maioria fique nula. Variações como a Trie compacta reduzem esse custo.",
-  "incorrectFeedback": "Pense no tamanho de cada nó: quantos ponteiros ele guarda e quantos são realmente usados?"
-}
-```
-
-```quiz
-{
-  "question": "Qual variação funde cadeias de nós com um único filho em uma única aresta rotulada por uma subcadeia?",
-  "options": [
-    { "text": "Trie ternária de busca", "correct": false },
-    { "text": "Trie compacta (Patricia / radix tree)", "correct": true },
-    { "text": "Árvore B", "correct": false }
-  ],
-  "correctFeedback": "Correto! A Trie compacta elimina nós intermediários sem bifurcação, economizando espaço.",
-  "incorrectFeedback": "Revise a tabela de variações e procure a que trata de ramos sem bifurcação."
 }
 ```

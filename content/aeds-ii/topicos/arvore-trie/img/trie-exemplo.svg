@@ -3,16 +3,16 @@
   <desc id="d">A raiz tem dois filhos, c e d. O ramo c continua em a; desse a saem três filhos: s, m e o. O o marca fim de palavra (cao). O s tem os filhos a (casa) e o (caso), e o m tem o filho a (cama). O ramo d continua em i e depois em a, que marca o fim de dia. O prefixo ca é guardado uma única vez e compartilhado por quatro palavras.</desc>
   <rect width="760" height="520" fill="#ffffff"/>
 
-  <text x="20" y="30" font-size="16" font-weight="bold" fill="#1e293b">Trie com as palavras casa, caso, cama, cao e dia</text>
+  <text x="20" y="30" font-size="16" font-weight="bold" fill="#1e3a8a">Trie com as palavras casa, caso, cama, cao e dia</text>
 
   <!-- Destaque do prefixo compartilhado "ca" -->
-  <rect x="214" y="122" width="92" height="140" rx="46" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 5"/>
-  <text x="196" y="196" font-size="13" font-weight="bold" text-anchor="end" fill="#b45309">prefixo "ca"</text>
-  <text x="196" y="212" font-size="12" text-anchor="end" fill="#b45309">compartilhado</text>
-  <text x="196" y="227" font-size="12" text-anchor="end" fill="#b45309">por 4 palavras</text>
+  <rect x="214" y="122" width="92" height="140" rx="46" fill="#eff6ff" stroke="#2563eb" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="196" y="196" font-size="13" font-weight="bold" text-anchor="end" fill="#1e3a8a">prefixo "ca"</text>
+  <text x="196" y="212" font-size="12" text-anchor="end" fill="#1e3a8a">compartilhado</text>
+  <text x="196" y="227" font-size="12" text-anchor="end" fill="#1e3a8a">por 4 palavras</text>
 
   <!-- Arestas -->
-  <g stroke="#475569" stroke-width="2.5" fill="none">
+  <g stroke="#4e575d" stroke-width="2.5" fill="none">
     <line x1="380" y1="80" x2="260" y2="160"/>
     <line x1="380" y1="80" x2="600" y2="160"/>
     <line x1="260" y1="160" x2="260" y2="230"/>
@@ -27,11 +27,11 @@
   </g>
 
   <!-- Raiz -->
-  <circle cx="380" cy="80" r="28" fill="#1e293b" stroke="#1e293b" stroke-width="2.5"/>
+  <circle cx="380" cy="80" r="28" fill="#1e3a8a" stroke="#1e3a8a" stroke-width="2.5"/>
   <text x="380" y="85" font-size="13" font-weight="bold" text-anchor="middle" fill="#ffffff">raiz</text>
 
   <!-- Nós intermediários (apenas prefixo) -->
-  <g fill="#e2e8f0" stroke="#475569" stroke-width="2.5">
+  <g fill="#dbeafe" stroke="#2563eb" stroke-width="2.5">
     <circle cx="260" cy="160" r="22"/>
     <circle cx="600" cy="160" r="22"/>
     <circle cx="260" cy="230" r="22"/>
@@ -39,7 +39,7 @@
     <circle cx="140" cy="310" r="22"/>
     <circle cx="260" cy="310" r="22"/>
   </g>
-  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#0f172a">
+  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#1e3a8a">
     <text x="260" y="167">c</text>
     <text x="600" y="167">d</text>
     <text x="260" y="237">a</text>
@@ -49,21 +49,21 @@
   </g>
 
   <!-- Nós que marcam fim de palavra -->
-  <g fill="#dcfce7" stroke="#16a34a" stroke-width="3">
+  <g fill="#f5eaed" stroke="#9b123b" stroke-width="3">
     <circle cx="400" cy="310" r="24"/>
     <circle cx="600" cy="310" r="24"/>
     <circle cx="80" cy="400" r="24"/>
     <circle cx="200" cy="400" r="24"/>
     <circle cx="290" cy="400" r="24"/>
   </g>
-  <g fill="none" stroke="#16a34a" stroke-width="1.5">
+  <g fill="none" stroke="#9b123b" stroke-width="1.5">
     <circle cx="400" cy="310" r="18"/>
     <circle cx="600" cy="310" r="18"/>
     <circle cx="80" cy="400" r="18"/>
     <circle cx="200" cy="400" r="18"/>
     <circle cx="290" cy="400" r="18"/>
   </g>
-  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#14532d">
+  <g font-family="Courier New, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#76102f">
     <text x="400" y="317">o</text>
     <text x="600" y="317">a</text>
     <text x="80" y="407">a</text>
@@ -72,7 +72,7 @@
   </g>
 
   <!-- Palavras formadas pelo caminho -->
-  <g font-family="Courier New, monospace" font-size="15" font-weight="bold" text-anchor="middle" fill="#15803d">
+  <g font-family="Courier New, monospace" font-size="15" font-weight="bold" text-anchor="middle" fill="#9b123b">
     <text x="400" y="352">"cao"</text>
     <text x="600" y="352">"dia"</text>
     <text x="80" y="442">"casa"</text>
@@ -81,7 +81,7 @@
   </g>
 
   <!-- Níveis -->
-  <g font-size="12" fill="#64748b" text-anchor="start">
+  <g font-size="12" fill="#687178" text-anchor="start">
     <text x="690" y="84">nível 0</text>
     <text x="690" y="164">nível 1</text>
     <text x="690" y="234">nível 2</text>
@@ -90,11 +90,11 @@
   </g>
 
   <!-- Legenda -->
-  <g font-size="13" fill="#334155">
-    <circle cx="40" cy="490" r="10" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+  <g font-size="13" fill="#292d30">
+    <circle cx="40" cy="490" r="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
     <text x="58" y="495">nó de prefixo (fimDePalavra = false)</text>
-    <circle cx="330" cy="490" r="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
-    <circle cx="330" cy="490" r="6" fill="none" stroke="#16a34a" stroke-width="1.2"/>
+    <circle cx="330" cy="490" r="10" fill="#f5eaed" stroke="#9b123b" stroke-width="2.5"/>
+    <circle cx="330" cy="490" r="6" fill="none" stroke="#9b123b" stroke-width="1.2"/>
     <text x="348" y="495">fim de palavra (fimDePalavra = true)</text>
   </g>
 </svg>
