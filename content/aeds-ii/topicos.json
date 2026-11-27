@@ -234,10 +234,88 @@
       "narratedLesson": "arvore-trie/aula-narrada.md"
     },
     {
+      "id": "arvore-radix",
+      "title": "Árvore Radix",
+      "summary": "Trie compacta: nós com rótulos de texto, divisão na inserção, fusão na remoção e economia de nós.",
+      "pages": [
+        {
+          "id": "arvore-radix",
+          "title": "Árvore Radix",
+          "summary": "Trie compacta: nós com rótulos de texto, divisão na inserção, fusão na remoção e economia de nós.",
+          "requiresQuizAnswers": false,
+          "file": "arvore-radix/arvore-radix.md"
+        },
+        {
+          "id": "exercicios-arvore-radix",
+          "title": "Lista de Exercícios - Árvore Radix",
+          "summary": "Resolva a lista de exercícios para avançar para a próxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "arvore-radix/exercicios-arvore-radix.md"
+        }
+      ]
+    },
+    {
       "id": "arvore-patricia",
       "title": "Árvore Patricia",
       "summary": "Trie binária compacta: nós internos testam bits, folhas guardam chaves; pesquisa, inserção e complexidade.",
-      "file": "arvore-patricia/arvore-patricia.md"
+      "pages": [
+        {
+          "id": "arvore-patricia",
+          "title": "Árvore Patricia",
+          "summary": "Trie binária compacta: nós internos testam bits, folhas guardam chaves; pesquisa, inserção e complexidade.",
+          "requiresQuizAnswers": false,
+          "file": "arvore-patricia/arvore-patricia.md"
+        },
+        {
+          "id": "exercicios-arvore-patricia",
+          "title": "Lista de Exercícios - Árvore Patricia",
+          "summary": "Resolva a lista de exercícios para avançar para a próxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "arvore-patricia/exercicios-arvore-patricia.md"
+        }
+      ]
+    },
+    {
+      "id": "segment-tree",
+      "title": "Segment Tree",
+      "summary": "Árvore de segmentos: somas de trechos do vetor, consulta de intervalo e atualização em O(log n).",
+      "pages": [
+        {
+          "id": "segment-tree",
+          "title": "Segment Tree",
+          "summary": "Árvore de segmentos: somas de trechos do vetor, consulta de intervalo e atualização em O(log n).",
+          "requiresQuizAnswers": false,
+          "file": "segment-tree/segment-tree.md"
+        },
+        {
+          "id": "exercicios-segment-tree",
+          "title": "Lista de Exercícios - Segment Tree",
+          "summary": "Resolva a lista de exercícios para avançar para a próxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "segment-tree/exercicios-segment-tree.md"
+        }
+      ]
+    },
+    {
+      "id": "quadtree-octree",
+      "title": "QuadTree e Octree",
+      "summary": "Árvores espaciais: o plano dividido em quadrantes (e o espaço em octantes), inserção com divisão de folhas, busca e consulta de região.",
+      "pages": [
+        {
+          "id": "quadtree-octree",
+          "title": "QuadTree e Octree",
+          "summary": "Árvores espaciais: o plano dividido em quadrantes (e o espaço em octantes), inserção com divisão de folhas, busca e consulta de região.",
+          "requiresQuizAnswers": false,
+          "file": "quadtree-octree/quadtree-octree.md"
+        },
+        {
+          "id": "exercicios-quadtree-octree",
+          "title": "Lista de Exercícios - QuadTree e Octree",
+          "summary": "Resolva a lista de exercícios para avançar para a próxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "quadtree-octree/exercicios-quadtree-octree.md"
+        }
+      ]
     }
   ]
 }

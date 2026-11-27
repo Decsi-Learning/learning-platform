@@ -369,6 +369,83 @@ test("patricia block rejects keys with the wrong number of bits", () => {
   assert.match(renderBlock("patricia", JSON.stringify({ bits: 5, chaves: [{ nome: "", bits: "01010" }] })), /quiz-error/);
 });
 
+// ---- bloco "segtree": planilha com Segment Tree ----
+test("segtree block draws the spreadsheet and one node per interval with its sum", () => {
+  const html = renderBlock("segtree", JSON.stringify({
+    title: "Vendas", coluna: "<b>Vendas</b>",
+    linhas: [{ rotulo: "Jan", valor: 2 }, { rotulo: "Fev", valor: 5 }, { rotulo: "Mar", valor: 1 }],
+    operacoes: [{ tipo: "soma", de: 0, ate: 1 }, { tipo: "editar", linha: 2, valor: 4 }],
+  }));
+  assert.match(html, /class="roteamento sg" data-kind="segtree"/);
+  assert.strictEqual((html.match(/class="rt-node sg-node/g) || []).length, 5);   // 2n − 1 nós
+  assert.match(html, /data-no="1" data-ini="0" data-fim="2"><rect[^>]*><\/rect><text class="rt-name"[^>]*>8<\/text>/);
+  assert.match(html, /<tr data-i="2" data-v="1"><td>4<\/td><td>Mar<\/td>/);       // linha de dados 2 = célula B4
+  assert.match(html, /data-ops="[^"]*&quot;editar&quot;/);
+  assert.doesNotMatch(html, /<b>Vendas<\/b>/);
+});
+
+test("segtree block rejects bad rows and operations outside the sheet", () => {
+  const linhas = [{ rotulo: "A", valor: 1 }, { rotulo: "B", valor: 2 }];
+  assert.match(renderBlock("segtree", "{nope"), /quiz-error/);
+  assert.match(renderBlock("segtree", JSON.stringify({ linhas: [linhas[0]], operacoes: [{ tipo: "soma", de: 0, ate: 0 }] })), /quiz-error/);
+  assert.match(renderBlock("segtree", JSON.stringify({ linhas: [{ rotulo: "A", valor: 1.5 }, linhas[1]], operacoes: [{ tipo: "soma", de: 0, ate: 1 }] })), /quiz-error/);
+  assert.match(renderBlock("segtree", JSON.stringify({ linhas, operacoes: [{ tipo: "soma", de: 1, ate: 0 }] })), /quiz-error/);
+  assert.match(renderBlock("segtree", JSON.stringify({ linhas, operacoes: [{ tipo: "editar", linha: 2, valor: 3 }] })), /quiz-error/);
+  assert.match(renderBlock("segtree", JSON.stringify({ linhas, operacoes: [] })), /quiz-error/);
+});
+
+// ---- bloco "pratica": questões interativas das árvores ----
+test("pratica block renders a shell with the escaped config for each tree type", () => {
+  const casos = [
+    { tipo: "segtree", vetor: [2, 5, 1], consulta: { de: 0, ate: 1 }, edicao: { pos: 2, valor: 7 } },
+    { tipo: "trie", palavras: ["sol", "solo"], busca: "so" },
+    { tipo: "radix", operacoes: [{ inserir: "romano" }, { inserir: "romance" }, { remover: "romance" }] },
+    { tipo: "patricia", bits: 3, pares: [[{ nome: "A", bits: "010" }, { nome: "B", bits: "011" }]], chaves: [{ nome: "A", bits: "010" }, { nome: "<b>B</b>", bits: "011" }], procurada: { nome: "C", bits: "110" } },
+  ];
+  for (const cfg of casos) {
+    const html = renderBlock("pratica", JSON.stringify(cfg));
+    assert.match(html, new RegExp('class="roteamento px" data-kind="pratica" data-tipo="' + cfg.tipo + '" data-cfg="'), cfg.tipo);
+    assert.doesNotMatch(html, /<b>B<\/b>/);
+  }
+});
+
+test("pratica block rejects invalid scenarios", () => {
+  const erro = (cfg) => assert.match(renderBlock("pratica", JSON.stringify(cfg)), /quiz-error/, JSON.stringify(cfg));
+  assert.match(renderBlock("pratica", "{nope"), /quiz-error/);
+  erro({ tipo: "avl" });
+  erro({ tipo: "segtree", vetor: [1, 2], consulta: { de: 1, ate: 0 }, edicao: { pos: 0, valor: 5 } });
+  erro({ tipo: "segtree", vetor: [1, 2], consulta: { de: 0, ate: 1 }, edicao: { pos: 0, valor: 1 } });   // valor igual ao atual
+  erro({ tipo: "trie", palavras: ["Sol"], busca: "so" });
+  erro({ tipo: "radix", operacoes: [{ inserir: "a" }, { remover: "b" }] });                              // remove palavra ausente
+  erro({ tipo: "patricia", bits: 3, pares: [[{ nome: "A", bits: "010" }, { nome: "B", bits: "011" }]], chaves: [{ nome: "A", bits: "010" }, { nome: "B", bits: "011" }], procurada: { nome: "A2", bits: "010" } });
+});
+
+// ---- bloco "quadtree" e prática tipo "quadtree" ----
+test("quadtree block draws the empty root, the places table and keeps the config", () => {
+  const html = renderBlock("quadtree", JSON.stringify({
+    lado: 8,
+    pontos: [{ nome: "Padaria", x: 1, y: 6 }, { nome: "<b>Escola</b>", x: 6, y: 2 }],
+    consultas: [{ nome: "centro", x0: 2, y0: 2, x1: 5, y1: 5 }],
+  }));
+  assert.match(html, /class="roteamento qt" data-kind="quadtree" data-cfg="/);
+  assert.match(html, /class="rt-tree qt-svg"/);
+  assert.strictEqual((html.match(/class="rt-node qt-vazia"/g) || []).length, 1);   // só a raiz, vazia
+  assert.match(html, /<tr data-i="0"><td><strong>P<\/strong> Padaria<\/td><td>\(1, 6\)<\/td><\/tr>/);
+  assert.doesNotMatch(html, /<b>Escola<\/b>/);
+});
+
+test("quadtree block and practice reject invalid planes, points and queries", () => {
+  const erro = (lang, cfg) => assert.match(renderBlock(lang, JSON.stringify(cfg)), /quiz-error/, JSON.stringify(cfg));
+  const pontos = [{ nome: "A", x: 1, y: 1 }, { nome: "B", x: 5, y: 5 }];
+  erro("quadtree", { lado: 6, pontos });
+  erro("quadtree", { lado: 8, pontos: [{ nome: "A", x: 1, y: 1 }, { nome: "B", x: 1, y: 1 }] });   // coordenadas repetidas
+  erro("quadtree", { lado: 8, pontos: [{ nome: "A", x: 8, y: 1 }, { nome: "B", x: 2, y: 2 }] });   // fora do plano
+  erro("quadtree", { lado: 8, pontos, consultas: [{ x0: 5, y0: 0, x1: 2, y1: 3 }] });
+  erro("pratica", { tipo: "quadtree", lado: 8, pontos, novo: { nome: "C", x: 5, y: 5 }, consulta: { x0: 0, y0: 0, x1: 3, y1: 3 } });
+  erro("pratica", { tipo: "quadtree", lado: 8, pontos, novo: { nome: "C", x: 2, y: 2 } });
+  assert.doesNotMatch(renderBlock("pratica", JSON.stringify({ tipo: "quadtree", lado: 8, pontos, novo: { nome: "C", x: 2, y: 2 }, consulta: { x0: 0, y0: 0, x1: 3, y1: 3 } })), /quiz-error/);
+});
+
 test("codigo accepts the code as a list of lines, same result as a single string", () => {
   const comoTexto = renderBlock("codigo", codigoBloco());
   const comoLista = renderBlock("codigo", codigoBloco({ code: ["int a = 1;", "int b = a + 2; // soma"] }));
