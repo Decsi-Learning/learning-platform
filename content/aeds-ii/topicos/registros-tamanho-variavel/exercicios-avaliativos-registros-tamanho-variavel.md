@@ -1,61 +1,225 @@
 ## Exercícios avaliativos — Registros de tamanho variável
 
-Resolva os exercícios abaixo e abra o gabarito de cada um para conferir. Eles cobrem todas as páginas deste tópico.
+Marque uma alternativa em cada uma das 10 questões. Elas cobrem todas as páginas deste tópico. O botão para avançar só libera depois que todas forem respondidas.
 
-## Exercícios com gabarito
+## Questões de marcar
 
-```exercicio
+```quiz
 {
-  "title": "Exercício 1: contando bytes",
-  "statement": "O registro tem três campos: 'Rui', 'Fisica' e 'Ouro Preto' (sem acentos, 1 byte por caractere). Quantos bytes ele ocupa em cada forma?\n\na) Separador ';' entre campos e '#' no fim do registro.\nb) Prefixo de 2 bytes no registro e ';' entre os campos.\nc) Prefixo de 1 byte em cada campo (3 campos, sem separadores).",
-  "answer": "Tamanhos dos campos: Rui = 3, Fisica = 6, Ouro Preto = 10 (o espaço conta). Total de dados: 3 + 6 + 10 = 19.\n\na) 19 + 2 separadores de campo (;) + 1 delimitador de registro (#) = 22 bytes.\n\nb) 19 + 2 separadores (;) = 21 bytes de dados, mais 2 bytes de prefixo = 23 bytes.\n\nc) 19 + 3 prefixos de 1 byte = 22 bytes."
+  "question": "O registro tem três campos: \"Rui\", \"Fisica\" e \"Ouro Preto\" (1 byte por caractere, o espaço conta). Quantos bytes ele ocupa com \";\" entre os campos e \"#\" no fim do registro?",
+  "options": [
+    {
+      "text": "19 bytes",
+      "correct": false
+    },
+    {
+      "text": "22 bytes",
+      "correct": true
+    },
+    {
+      "text": "25 bytes",
+      "correct": false
+    }
+  ],
+  "correctFeedback": "✅ Correto! Os dados somam 3 + 6 + 10 = 19 bytes. Com 2 separadores (;) e 1 delimitador de registro (#), são 22.",
+  "incorrectFeedback": "❌ Ainda não. Some os dados (3 + 6 + 10 = 19) e depois os 2 separadores de campo e o delimitador de registro: 19 + 3 = 22."
 }
 ```
 
-```exercicio
+```quiz
 {
-  "title": "Exercício 2: quanto se economiza",
-  "statement": "Um arquivo de 1 000 000 de registros usa registros fixos de 100 bytes. Os dados reais ocupam, em média, 40 bytes por registro. Se o arquivo passar a usar registros variáveis com prefixo de 2 bytes, qual será o novo tamanho aproximado e qual a economia?",
-  "answer": "Antes: 1 000 000 x 100 = 100 000 000 bytes (100 MB).\n\nDepois: cada registro ocupa em média 40 + 2 = 42 bytes. 1 000 000 x 42 = 42 000 000 bytes (42 MB).\n\nEconomia: 100 000 000 - 42 000 000 = 58 000 000 bytes (58 MB), ou 58% do tamanho original.\n\nO preço dessa economia: perdemos a conta direta com o RRN e a reutilização de espaço fica mais complexa."
+  "question": "Com os mesmos dados (19 bytes), usando prefixo de 2 bytes no registro e \";\" entre os campos, quantos bytes ocupa o registro?",
+  "options": [
+    {
+      "text": "21 bytes",
+      "correct": false
+    },
+    {
+      "text": "22 bytes",
+      "correct": false
+    },
+    {
+      "text": "23 bytes",
+      "correct": true
+    }
+  ],
+  "correctFeedback": "✅ Correto! Os dados com 2 separadores têm 19 + 2 = 21 bytes. Somando os 2 bytes do prefixo, são 23.",
+  "incorrectFeedback": "❌ Ainda não. Dentro do registro há 2 separadores (21 bytes de dados). Falta somar os 2 bytes do prefixo."
 }
 ```
 
-```exercicio
+```quiz
 {
-  "title": "Exercício 3: o separador e o endereço",
-  "statement": "Um arquivo usa ';' como separador de campos. Um dos registros tem o endereço 'Rua das Flores; apto 12'. O que acontece quando o programa lê esse registro? Proponha duas soluções.",
-  "answer": "O programa vai interpretar o ';' dentro do endereço como separador e achar um campo a mais: 'Rua das Flores' e ' apto 12' viram campos separados. Todos os campos seguintes ficam deslocados e o registro é lido de forma errada.\n\nSoluções possíveis:\n1) Usar um separador que nunca aparece nos dados (por exemplo um caractere de controle) ou um caractere de escape ('\\;') para representar um ponto e vírgula que faz parte do texto.\n2) Usar prefixo de tamanho em cada campo: '[23]Rua das Flores; apto 12'. O programa lê exatamente 23 bytes e o conteúdo não importa."
+  "question": "Um arquivo tem 1 000 000 de registros fixos de 100 bytes, mas os dados ocupam em média 40 bytes. Com registros variáveis e prefixo de 2 bytes, qual é o tamanho aproximado do arquivo?",
+  "options": [
+    {
+      "text": "42 MB",
+      "correct": true
+    },
+    {
+      "text": "40 MB",
+      "correct": false
+    },
+    {
+      "text": "58 MB",
+      "correct": false
+    }
+  ],
+  "correctFeedback": "✅ Correto! Cada registro passa a ocupar em média 40 + 2 = 42 bytes. São 42 milhões de bytes, uma economia de 58 MB.",
+  "incorrectFeedback": "❌ Ainda não. Cada registro ocupa em média 40 bytes de dados mais 2 de prefixo, 42 bytes. Multiplique por 1 000 000. Os 58 MB são a economia, e não o novo tamanho."
 }
 ```
 
-```exercicio
+```quiz
 {
-  "title": "Exercício 4: lendo os bytes",
-  "statement": "Um arquivo usa prefixo de 1 byte em cada campo. Seu conteúdo (com o prefixo entre colchetes) é:\n\n[3]Ana[5]Maria[4]Rita[6]Joaquim\n\nSe cada registro tem 2 campos (nome e apelido, nessa ordem), quais são os registros? Em qual byte começa o segundo registro? (Conte os prefixos como 1 byte cada.)",
-  "answer": "Ler campo a campo: Ana (3), Maria (5), Rita (4), Joaquim (6). Com 2 campos por registro:\n\nRegistro 1: Ana, Maria.\nRegistro 2: Rita, Joaquim.\n\nO primeiro registro ocupa (1 + 3) + (1 + 5) = 10 bytes, então o segundo registro começa no byte 10 (contando a partir de 0)."
+  "question": "Um arquivo usa \";\" como separador de campos e um registro tem o endereço \"Rua das Flores; apto 12\". O que acontece na leitura?",
+  "options": [
+    {
+      "text": "O programa acha um campo a mais, e os campos seguintes ficam deslocados",
+      "correct": true
+    },
+    {
+      "text": "O programa lê o endereço certo, pois o espaço protege o \";\"",
+      "correct": false
+    },
+    {
+      "text": "O programa para de ler o arquivo e perde os registros anteriores",
+      "correct": false
+    }
+  ],
+  "correctFeedback": "✅ Correto! O \";\" dentro do endereço é tomado como separador, então \"Rua das Flores\" e \" apto 12\" viram dois campos.",
+  "incorrectFeedback": "❌ Ainda não. O programa não olha o contexto: todo \";\" é separador. Isso parte o endereço em dois campos e desloca os seguintes."
 }
 ```
 
-```exercicio
+```quiz
 {
-  "title": "Exercício 5: atualização que não cabe",
-  "statement": "Em um arquivo de registros variáveis com prefixo de tamanho, um registro de 40 bytes de dados precisa ser atualizado e os dados novos têm 55 bytes. Descreva o que fazer. E se os dados novos tivessem 30 bytes?",
-  "answer": "Com 55 bytes: o registro novo não cabe no espaço antigo (40 bytes). Gravamos o registro atualizado no fim do arquivo e marcamos o registro antigo como removido, deixando um buraco de 42 bytes (40 + 2 do prefixo). Se existe um índice de offsets, ele deve ser atualizado para apontar para a nova posição.\n\nCom 30 bytes: o registro cabe no lugar. Podemos regravá-lo no mesmo local e preencher a sobra de 10 bytes com algum marcador de espaço vago (ou manter o prefixo antigo e deixar a sobra dentro do registro). Esses 10 bytes são fragmentação interna: espaço desperdiçado dentro do registro."
+  "question": "Qual solução resolve o problema de um separador aparecer dentro dos dados?",
+  "options": [
+    {
+      "text": "Trocar o \";\" por \",\", que nunca aparece em textos",
+      "correct": false
+    },
+    {
+      "text": "Gravar os campos sem nenhum separador nem prefixo",
+      "correct": false
+    },
+    {
+      "text": "Usar prefixo de tamanho em cada campo",
+      "correct": true
+    }
+  ],
+  "correctFeedback": "✅ Correto! Com o prefixo o programa lê exatamente os bytes indicados e nunca olha o conteúdo, então nenhum caractere dos dados atrapalha.",
+  "incorrectFeedback": "❌ Ainda não. A vírgula também pode aparecer nos dados, e sem separador nem prefixo não há como achar o fim do campo. O prefixo de tamanho (ou um caractere de escape) resolve."
 }
 ```
 
-```exercicio
+```quiz
 {
-  "title": "Exercício 6: keyword=value e código de tipo de campo",
-  "statement": "Um registro tem nome = Rui, curso = Fisica e cidade = Mariana. Use ';' entre os campos e '#' no fim do registro.\n\na) Escreva o registro no formato keyword=value e conte os bytes.\nb) Escreva no formato com código do tipo de campo (1 = nome, 2 = curso, 3 = cidade) e conte os bytes.\nc) Qual formato gasta menos espaço? Qual é mais fácil de entender sem a documentação?",
-  "answer": "a) nome=Rui;curso=Fisica;cidade=Mariana#\nContagem: nome=Rui (8) + ; (1) + curso=Fisica (12) + ; (1) + cidade=Mariana (14) + # (1) = 37 bytes.\n\nb) 1=Rui;2=Fisica;3=Mariana#\nContagem: 1=Rui (5) + ; (1) + 2=Fisica (8) + ; (1) + 3=Mariana (9) + # (1) = 25 bytes.\n\nc) O formato com código gasta menos (25 contra 37 bytes), porque o código é bem mais curto que o nome. O keyword=value é mais fácil de entender sozinho, pois o próprio arquivo diz o que é cada campo; com códigos é preciso ter a tabela de códigos (por exemplo, no cabeçalho)."
+  "question": "Um arquivo usa prefixo de 1 byte em cada campo: [3]Ana[5]Maria[4]Rita[6]Joaquim. Cada registro tem 2 campos. Em qual byte começa o segundo registro (contando a partir de 0)?",
+  "options": [
+    {
+      "text": "No byte 8",
+      "correct": false
+    },
+    {
+      "text": "No byte 10",
+      "correct": true
+    },
+    {
+      "text": "No byte 12",
+      "correct": false
+    }
+  ],
+  "correctFeedback": "✅ Correto! O primeiro registro ocupa (1 + 3) + (1 + 5) = 10 bytes. Ele traz Ana e Maria. O segundo traz Rita e Joaquim.",
+  "incorrectFeedback": "❌ Ainda não. Cada campo ocupa o prefixo (1 byte) mais os dados: (1 + 3) + (1 + 5) = 10 bytes. O segundo registro começa depois deles."
 }
 ```
 
-```exercicio
+```quiz
 {
-  "title": "Exercício 7: arquivo misto e BLOB",
-  "statement": "Um sistema guarda, no mesmo arquivo, registros de alunos e registros de disciplinas. Cada aluno tem também uma foto de 200 KB.\n\na) Como o programa distingue um registro de aluno de um de disciplina?\nb) Como você guardaria as fotos? Por quê?",
-  "answer": "a) É um arquivo misto. Cada registro começa com um código de tipo de registro (por exemplo, 1 para aluno e 2 para disciplina), e o cabeçalho do arquivo descreve esses códigos. O programa lê o código e interpreta o resto do registro de acordo com ele.\n\nb) A foto é um BLOB (objeto grande e não estruturado). Guardamos cada foto separadamente, em blocos de disco próprios, e o registro do aluno guarda só um ponteiro para ela. Assim os registros continuam pequenos e rápidos de percorrer, e o arquivo de registros não é inflado por 200 KB por aluno."
+  "question": "Um registro de 40 bytes de dados precisa ser atualizado e os dados novos têm 55 bytes. O que fazer?",
+  "options": [
+    {
+      "text": "Gravar o registro novo no fim do arquivo e marcar o antigo como removido",
+      "correct": true
+    },
+    {
+      "text": "Gravar por cima do registro seguinte",
+      "correct": false
+    },
+    {
+      "text": "Gravar no mesmo lugar e cortar os 15 bytes que sobram",
+      "correct": false
+    }
+  ],
+  "correctFeedback": "✅ Correto! O registro antigo vira um buraco (42 bytes, com o prefixo). Se houver índice de offsets, ele passa a apontar para a nova posição.",
+  "incorrectFeedback": "❌ Ainda não. Gravar por cima do vizinho destrói dados, e cortar os dados novos perde informação. O registro maior vai para o fim do arquivo."
+}
+```
+
+```quiz
+{
+  "question": "Agora os dados novos têm só 30 bytes, em vez dos 40 do registro antigo. O que acontece?",
+  "options": [
+    {
+      "text": "Precisam ir para o fim do arquivo, como no caso anterior",
+      "correct": false
+    },
+    {
+      "text": "Os registros seguintes andam 10 bytes para trás sozinhos",
+      "correct": false
+    },
+    {
+      "text": "Cabem no mesmo lugar, mas sobram 10 bytes (fragmentação interna)",
+      "correct": true
+    }
+  ],
+  "correctFeedback": "✅ Correto! Os 10 bytes sobrando dentro do registro são espaço desperdiçado, a fragmentação interna.",
+  "incorrectFeedback": "❌ Ainda não. Um registro menor cabe no lugar do antigo. Os registros seguintes não se movem sozinhos, e a sobra de 10 bytes fica como espaço desperdiçado."
+}
+```
+
+```quiz
+{
+  "question": "O registro nome = Rui, curso = Fisica, cidade = Mariana foi gravado em dois formatos: nome=Rui;curso=Fisica;cidade=Mariana# (37 bytes) e 1=Rui;2=Fisica;3=Mariana# (25 bytes). Qual afirmação é verdadeira?",
+  "options": [
+    {
+      "text": "O formato com código gasta menos, mas precisa de uma tabela dos códigos",
+      "correct": true
+    },
+    {
+      "text": "O formato keyword=value gasta menos, porque repete os nomes",
+      "correct": false
+    },
+    {
+      "text": "Os dois gastam o mesmo, pois guardam os mesmos dados",
+      "correct": false
+    }
+  ],
+  "correctFeedback": "✅ Correto! O código é bem mais curto que o nome do campo. Em troca, é preciso guardar o significado dos códigos, por exemplo no cabeçalho.",
+  "incorrectFeedback": "❌ Ainda não. Repetir o nome do campo em todo registro gasta mais espaço (37 contra 25 bytes). O keyword=value compensa por ser mais fácil de entender."
+}
+```
+
+```quiz
+{
+  "question": "Cada aluno tem uma foto de 200 KB, e alunos e disciplinas ficam no mesmo arquivo. Como guardar as fotos?",
+  "options": [
+    {
+      "text": "Dentro de cada registro de aluno, para ler tudo de uma vez",
+      "correct": false
+    },
+    {
+      "text": "Cada foto fica à parte, como BLOB, e o registro do aluno guarda só um ponteiro",
+      "correct": true
+    },
+    {
+      "text": "No cabeçalho do arquivo, antes dos registros",
+      "correct": false
+    }
+  ],
+  "correctFeedback": "✅ Correto! Assim os registros continuam pequenos e rápidos de percorrer. O código de tipo de registro continua separando alunos de disciplinas.",
+  "incorrectFeedback": "❌ Ainda não. Uma foto de 200 KB dentro de cada registro deixaria o arquivo enorme e lento de percorrer. O BLOB fica em blocos próprios, e o registro guarda um ponteiro."
 }
 ```

@@ -17,7 +17,7 @@ Essa organização permite que a estrutura cresça e diminua sob demanda durante
 
 Cada nó da lista guarda dois campos essenciais: o **dado** útil armazenado e uma **referência** (ponteiro) para o endereço de memória do próximo nó da sequência.
 
-![Diagrama de uma lista simplesmente encadeada com ponteiro head e três nós ligados até NULL](imagens/lista-simplesmente-encadeada.png){align=center width=78%}
+![Diagrama de uma lista simplesmente encadeada com ponteiro head e três nós ligados até NULL](imagens/lista-simplesmente-encadeada.svg){align=center width=78%}
 
 ### Como funciona
 

@@ -2,7 +2,8 @@
 .assistant-launcher{width:58px;height:58px;display:grid;place-items:center;border:0;border-radius:50%;background:#147d78;color:#fff;box-shadow:0 8px 24px rgba(23,59,67,.24);cursor:pointer;transition:transform .16s ease,box-shadow .16s ease}
 .assistant-launcher:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(23,59,67,.28)}
 .assistant-launcher:focus-visible,.assistant-close:focus-visible,.assistant-form button:focus-visible{outline:3px solid rgba(20,125,120,.35);outline-offset:3px}
-.assistant-launcher svg{width:25px;height:25px}
+.assistant-launcher{padding:0;overflow:hidden}
+.assistant-launcher img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 12%;border-radius:inherit}
 .assistant-panel{width:min(390px,calc(100vw - 32px));height:min(560px,calc(100vh - 112px));display:flex;flex-direction:column;overflow:hidden;border:1px solid #e5eae7;border-radius:18px;background:#fff;box-shadow:0 18px 54px rgba(23,59,67,.2);color:#173b43;font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 .assistant-panel[hidden]{display:none}
 .assistant-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;background:linear-gradient(145deg,#f6fbf8,#edf7f2);border-bottom:1px solid #e5eae7}
