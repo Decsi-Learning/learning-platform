@@ -621,6 +621,7 @@
 
   function mostrarRoteamento(el, n) {
     if (el.classList.contains("pt")) return mostrarPatricia(el, n);
+    if (el.classList.contains("qt")) return mostrarQuadtree(el, n);
     if (el.classList.contains("sg")) return mostrarSegtree(el, n);
     if (el.classList.contains("rt-build")) return mostrarConstrucao(el, n);
     const passos = el.__rtPassos || (el.__rtPassos = passosRoteamento(el));
@@ -1058,11 +1059,11 @@
   // { "tipo": "patricia", "bits": 5, "pares": [[{ "nome": "H", "bits": "01000" }, { "nome": "J", "bits": "01010" }]],
   //   "chaves": [{ "nome": "B", "bits": "00010" }, ...], "procurada": { "nome": "G", "bits": "00111" } }
   // O bloco só fica "feito" (data-feito="true") depois que todas as etapas forem respondidas; a página usa isso para liberar o avanço.
-  const PX_TIPOS = { segtree: "Segment Tree", trie: "Trie", radix: "árvore Radix", patricia: "árvore Patricia" };
+  const PX_TIPOS = { segtree: "Segment Tree", trie: "Trie", radix: "árvore Radix", patricia: "árvore Patricia", quadtree: "QuadTree" };
   const PALAVRA = /^[a-z]{1,10}$/;
 
   function validaPratica(d) {
-    if (!d || !PX_TIPOS[d.tipo]) return "Escolha um tipo de prática: segtree, trie, radix ou patricia.";
+    if (!d || !PX_TIPOS[d.tipo]) return "Escolha um tipo de prática: segtree, trie, radix, patricia ou quadtree.";
     if (d.tipo === "segtree") {
       const v = d.vetor;
       if (!Array.isArray(v) || v.length < 2 || v.length > 8 || !v.every(Number.isInteger)) return "O vetor precisa ter de 2 a 8 inteiros.";
@@ -1083,6 +1084,14 @@
         if (op.inserir) { if (guardadas.has(p)) return "A palavra \"" + p + "\" já foi inserida."; guardadas.add(p); }
         else if (!guardadas.delete(p)) return "Só dá para remover uma palavra que está na árvore: \"" + p + "\".";
       }
+    }
+    if (d.tipo === "quadtree") {
+      const erro = validaQuadtree({ lado: d.lado, pontos: d.pontos, consultas: d.consulta ? [d.consulta] : [] });
+      if (erro) return erro;
+      const n = d.novo;
+      if (!n || typeof n.nome !== "string" || !n.nome.trim() || !Number.isInteger(n.x) || !Number.isInteger(n.y) || n.x < 0 || n.y < 0 || n.x >= d.lado || n.y >= d.lado) return "O ponto novo precisa de um nome e de x e y dentro do plano.";
+      if (d.pontos.some((p) => p.x === n.x && p.y === n.y)) return "O ponto novo não pode repetir as coordenadas de outro.";
+      if (!d.consulta) return "A prática precisa de uma consulta (x0, y0, x1, y1).";
     }
     if (d.tipo === "patricia") {
       const nb = d.bits;
@@ -1451,7 +1460,322 @@
     return etapas;
   }
 
-  const PX_ETAPAS = { segtree: etapasSegtree, trie: etapasTrie, radix: etapasRadix, patricia: etapasPatricia };
+  // ---- QuadTree: núcleo comum do bloco "quadtree" (aplicação) e da prática tipo "quadtree" ----
+  // Cada folha guarda no máximo um ponto; o plano vai de 0 a lado − 1 em x e em y, com y para cima.
+  const QT_NOMES = ["NO", "NE", "SO", "SE"];
+
+  function qtArvore(lado) {
+    let seq = 0;
+    const novo = (x0, y0, l, prof) => ({ id: seq++, x0, y0, lado: l, prof, ponto: null, filhos: null });
+    return { raiz: novo(0, 0, lado, 0), novo };
+  }
+  const qtQuad = (n, x, y) => { const m = n.lado / 2, leste = x >= n.x0 + m, norte = y >= n.y0 + m; return norte ? (leste ? 1 : 0) : (leste ? 3 : 2); };
+  const qtClone = (n) => ({ ...n, filhos: n.filhos && n.filhos.map(qtClone) });
+  const qtNos = (r) => { const l = []; const v = (n) => { l.push(n); if (n.filhos) n.filhos.forEach(v); }; v(r); return l; };
+  const qtRegiao = (n) => "x de " + n.x0 + " a " + (n.x0 + n.lado - 1) + ", y de " + n.y0 + " a " + (n.y0 + n.lado - 1);
+  const qtEncosta = (n, r) => !(n.x0 > r.x1 || n.x0 + n.lado - 1 < r.x0 || n.y0 > r.y1 || n.y0 + n.lado - 1 < r.y0);
+  const qtDentro = (p, r) => p.x >= r.x0 && p.x <= r.x1 && p.y >= r.y0 && p.y <= r.y1;
+
+  // ev(tipo, dados) recebe cada passo; motivo diz se a chamada é a reinserção do ponto antigo ou a continuação do novo
+  function qtInserir(t, n, p, ev, motivo) {
+    if (ev) ev("inicio", { no: n, p, motivo });
+    while (n.filhos) { const q = qtQuad(n, p.x, p.y), pai = n; n = n.filhos[q]; if (ev) ev("desce", { no: n, pai, q, p }); }
+    if (!n.ponto) { n.ponto = p; if (ev) ev("guarda", { no: n, p }); return; }
+    const antigo = n.ponto, m = n.lado / 2;
+    n.ponto = null;
+    n.filhos = [t.novo(n.x0, n.y0 + m, m, n.prof + 1), t.novo(n.x0 + m, n.y0 + m, m, n.prof + 1), t.novo(n.x0, n.y0, m, n.prof + 1), t.novo(n.x0 + m, n.y0, m, n.prof + 1)];
+    if (ev) ev("divide", { no: n, p, antigo });
+    qtInserir(t, n, antigo, ev, "antigo");
+    qtInserir(t, n, p, ev, "continua");
+  }
+
+  // Mapa (à esquerda) e árvore (à direita) num só SVG.
+  // opt: { sigla(p), noCls(n), regCls(n) (camada sobre a região de qualquer nó), ptCls(p), ret, pendente, clicavel(n) }
+  function qtDesenho(raiz, lado, opt) {
+    const C = Math.round(240 / lado), OX = 26, OY = 30, PL = C * lado;
+    const rx = (n) => OX + C * n.x0, ry = (n) => OY + C * (lado - n.y0 - n.lado);
+    const cx = (x) => OX + C * (x + 0.5), cy = (y) => OY + C * (lado - y - 0.5);
+    const todos = qtNos(raiz), folhas = todos.filter((n) => !n.filhos);
+    const alvo = (n) => (opt.clicavel && opt.clicavel(n) ? ' data-px-no="' + n.id + '" tabindex="0" role="button" aria-label="nó ' + qtRegiao(n) + '"' : "");
+    let mapa = "";
+    for (let i = 0; i < lado; i++) {
+      mapa += '<text class="qt-eixo" x="' + cx(i) + '" y="' + (OY + PL + 13) + '">' + i + '</text><text class="qt-eixo" x="' + (OX - 9) + '" y="' + (cy(i) + 4) + '">' + i + "</text>";
+    }
+    for (const n of folhas) mapa += '<rect class="qt-reg' + (opt.clicavel && opt.clicavel(n) ? " px-alvo" : "") + '"' + alvo(n) + ' x="' + rx(n) + '" y="' + ry(n) + '" width="' + C * n.lado + '" height="' + C * n.lado + '"></rect>';
+    for (const n of todos) { const c = opt.regCls ? opt.regCls(n) : ""; if (c) mapa += '<rect class="qt-camada ' + c + '" x="' + rx(n) + '" y="' + ry(n) + '" width="' + C * n.lado + '" height="' + C * n.lado + '"></rect>'; }
+    mapa += '<rect class="qt-borda" x="' + OX + '" y="' + OY + '" width="' + PL + '" height="' + PL + '"></rect>';
+    if (opt.ret) { const r = opt.ret; mapa += '<rect class="qt-ret" x="' + (OX + C * r.x0) + '" y="' + (OY + C * (lado - r.y1 - 1)) + '" width="' + C * (r.x1 - r.x0 + 1) + '" height="' + C * (r.y1 - r.y0 + 1) + '"></rect>'; }
+    for (const n of folhas) if (n.ponto) {
+      const p = n.ponto;
+      mapa += '<g class="qt-pt' + (opt.ptCls ? opt.ptCls(p) : "") + '"><circle cx="' + cx(p.x) + '" cy="' + cy(p.y) + '" r="' + Math.min(10, C * 0.36) + '"></circle><text x="' + cx(p.x) + '" y="' + (cy(p.y) + 4) + '">' + escapeHtml(opt.sigla(p)) + "</text></g>";
+    }
+    if (opt.pendente) { const p = opt.pendente; mapa += '<g class="qt-pt qt-pendente"><circle cx="' + cx(p.x) + '" cy="' + cy(p.y) + '" r="' + Math.min(10, C * 0.36) + '"></circle><text x="' + cx(p.x) + '" y="' + (cy(p.y) + 4) + '">' + escapeHtml(opt.sigla(p)) + "</text></g>"; }
+    // árvore: cada folha numa coluna, pai no meio dos filhos
+    const LX = 40, LY = 58, TX = OX + PL + 44;
+    const pos = new Map();
+    let col = 0, prof = 0;
+    const mede = (n) => { prof = Math.max(prof, n.prof); if (!n.filhos) { pos.set(n.id, TX + col++ * LX + 16); return; } n.filhos.forEach(mede); pos.set(n.id, (pos.get(n.filhos[0].id) + pos.get(n.filhos[3].id)) / 2); };
+    mede(raiz);
+    const ty = (n) => 34 + n.prof * LY;
+    let arestas = "", nos = "";
+    const visita = (n, q) => {
+      if (n.filhos) n.filhos.forEach((f, i) => {
+        arestas += '<g class="rt-edge' + (opt.arestaOn && opt.arestaOn(f) ? " rt-on" : "") + '"><line x1="' + pos.get(n.id) + '" y1="' + (ty(n) + 13) + '" x2="' + pos.get(f.id) + '" y2="' + (ty(f) - 13) + '"></line></g>';
+        visita(f, i);
+      });
+      const tipo = n.filhos ? "" : n.ponto ? " qt-folha" : " qt-vazia";
+      const texto = n.filhos ? (q < 0 ? "raiz" : "+") : n.ponto ? opt.sigla(n.ponto) : "·";
+      nos += '<g class="rt-node' + tipo + (opt.noCls ? opt.noCls(n) : "") + (opt.clicavel && opt.clicavel(n) ? " px-alvo" : "") + '"' + alvo(n) + ">" +
+        '<rect x="' + (pos.get(n.id) - 15) + '" y="' + (ty(n) - 13) + '" width="30" height="26" rx="7"></rect>' +
+        '<text class="rt-name" x="' + pos.get(n.id) + '" y="' + (ty(n) + 5) + '">' + escapeHtml(texto) + "</text>" +
+        (q >= 0 ? '<text class="qt-q" x="' + pos.get(n.id) + '" y="' + (ty(n) - 17) + '">' + QT_NOMES[q] + "</text>" : "") + "</g>";
+    };
+    visita(raiz, -1);
+    const W = Math.max(TX + col * LX + 10, OX + PL + 60), H = Math.max(OY + PL + 22, 34 + prof * LY + 30);
+    return '<svg class="rt-tree qt-svg" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Mapa dividido pela QuadTree e a árvore correspondente">' + mapa + arestas + nos + "</svg>";
+  }
+
+  function qtSiglas(pontos) {
+    const iniciais = pontos.map((p) => p.nome.trim()[0].toUpperCase());
+    const unicas = new Set(iniciais).size === iniciais.length;
+    return new Map(pontos.map((p, i) => [p, unicas ? iniciais[i] : String.fromCharCode(65 + i)]));
+  }
+
+  function validaQuadtree(d) {
+    if (!d || !Number.isInteger(d.lado) || ![4, 8, 16].includes(d.lado)) return "O lado do plano precisa ser 4, 8 ou 16.";
+    if (!Array.isArray(d.pontos) || d.pontos.length < 2 || d.pontos.length > 10) return "Use de 2 a 10 pontos.";
+    const vistos = new Set();
+    for (const p of d.pontos) {
+      if (!p || typeof p.nome !== "string" || !p.nome.trim() || !Number.isInteger(p.x) || !Number.isInteger(p.y) || p.x < 0 || p.y < 0 || p.x >= d.lado || p.y >= d.lado) return "Cada ponto precisa de um nome e de x e y entre 0 e " + (d.lado - 1) + ".";
+      if (vistos.has(p.x + "," + p.y)) return "Dois pontos não podem ter as mesmas coordenadas.";
+      vistos.add(p.x + "," + p.y);
+    }
+    const ret = (r) => r && [r.x0, r.y0, r.x1, r.y1].every((v) => Number.isInteger(v) && v >= 0 && v < d.lado) && r.x0 <= r.x1 && r.y0 <= r.y1;
+    if (d.consultas !== undefined && (!Array.isArray(d.consultas) || d.consultas.length > 4 || !d.consultas.every(ret))) return "Cada consulta precisa de x0 ≤ x1 e y0 ≤ y1 dentro do plano.";
+    return null;
+  }
+
+  function renderQuadtree(source) {
+    const data = parseJson(source);
+    const erro = validaQuadtree(data);
+    if (erro) return blockError("QuadTree: " + erro);
+    const title = String(data.title || "Montando e consultando uma QuadTree");
+    const siglas = qtSiglas(data.pontos);
+    const linhas = data.pontos.map((p, i) => '<tr data-i="' + i + '"><td><strong>' + escapeHtml(siglas.get(p)) + "</strong> " + escapeHtml(p.nome) + "</td><td>(" + p.x + ", " + p.y + ")</td></tr>").join("");
+    const svg = qtDesenho(qtArvore(data.lado).raiz, data.lado, { sigla: (p) => siglas.get(p) });
+    return '<section class="roteamento qt" data-kind="quadtree" data-cfg="' + escapeHtml(JSON.stringify(data)) + '" aria-label="' + escapeHtml(title) + '">' +
+      '<p class="stepper-title">' + escapeHtml(title) + "</p>" +
+      '<div class="rt-top"><div class="rt-addr"><span class="rt-lbl">Operação</span><div class="sg-formula qt-op"><span class="rt-vazio">—</span></div></div>' +
+      '<div class="rt-actions"><button type="button" data-rt="play" class="rt-play" data-label="▶ Executar">▶ Executar</button><button type="button" data-rt="step">Próximo passo ›</button><button type="button" data-rt="reset">Reiniciar</button></div></div>' +
+      '<div class="qt-fig">' + svg + "</div>" +
+      '<div class="qt-lado"><table class="rt-table"><thead><tr><th>Lugar</th><th>Posição</th></tr></thead><tbody>' + linhas + "</tbody></table>" +
+      '<p class="rt-best">Nós na árvore: <strong>1</strong><span class="rt-count"> (só a raiz, uma folha vazia)</span></p></div>' +
+      '<p class="rt-msg" aria-live="polite">' + QT_INICIO + '</p><ol class="rt-log"></ol></section>';
+  }
+  const QT_INICIO = "A árvore começa só com a raiz: uma folha vazia que representa o mapa inteiro. Clique em <strong>Executar</strong> ou em <strong>Próximo passo</strong> para inserir os lugares, um por vez, e depois fazer as consultas.";
+
+  function passosQuadtree(el) {
+    const cfg = JSON.parse(el.dataset.cfg);
+    const siglas = qtSiglas(cfg.pontos);
+    const nome = (p) => "<strong>" + escapeHtml(p.nome) + "</strong>";
+    const t = qtArvore(cfg.lado);
+    const passos = [];
+    const foto = (extra) => passos.push({ raiz: qtClone(t.raiz), ...extra });
+    cfg.pontos.forEach((p, j) => {
+      qtInserir(t, t.raiz, p, (tipo, d) => {
+        const q = d.p;
+        const base = { linha: j, op: p.nome + " em (" + p.x + ", " + p.y + ")", foco: d.no.id };
+        if (tipo === "inicio") foto({ ...base, pendente: q, msg: d.motivo === "antigo" ? "Primeiro, " + nome(q) + ", que estava na folha, é colocado de novo a partir do nó dividido." : d.motivo === "continua" ? "Agora " + nome(q) + " continua a inserção a partir do mesmo nó dividido." : "Novo lugar: " + nome(q) + ", em (" + q.x + ", " + q.y + "). Começamos pela raiz." });
+        if (tipo === "desce") { const m = d.pai.lado / 2; foto({ ...base, pendente: q, msg: nome(q) + ", em (" + q.x + ", " + q.y + "), fica no quadrante <strong>" + QT_NOMES[d.q] + "</strong>: x " + (q.x >= d.pai.x0 + m ? "≥" : "<") + " " + (d.pai.x0 + m) + " e y " + (q.y >= d.pai.y0 + m ? "≥" : "<") + " " + (d.pai.y0 + m) + ". Descemos para ele (" + qtRegiao(d.no) + ")." }); }
+        if (tipo === "guarda") foto({ ...base, novos: [d.no.id], msg: "A folha estava vazia: " + nome(q) + " fica guardado nela." });
+        if (tipo === "divide") foto({ ...base, pendente: q, novos: d.no.filhos.map((x) => x.id), msg: "A folha já guardava " + nome(d.antigo) + ". Como cada folha guarda no máximo um lugar, ela é <strong>dividida</strong> em 4 quadrantes de lado " + d.no.lado / 2 + " (contorno azul), e " + nome(d.antigo) + " e " + nome(q) + " são distribuídos entre eles." });
+      });
+    });
+    const total = qtNos(t.raiz).length;
+    foto({ linha: cfg.pontos.length, fimIns: true, msg: "Os " + cfg.pontos.length + " lugares estão na árvore, que tem " + total + " nós. Só as regiões com lugares próximos foram divididas mais de uma vez." + ((cfg.consultas || []).length ? " Agora, as consultas." : "") });
+    for (const r of cfg.consultas || []) {
+      const ret = { x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1 };
+      const op = "consulta: " + (r.nome || "região");
+      const achados = [], fora = [], visitados = [];
+      let comparados = 0;
+      const base = () => ({ ret, op, achados: achados.slice(), fora: fora.slice(), visitados: visitados.slice(), comparados, linha: -1 });
+      foto({ ...base(), msg: "Consulta " + (r.nome ? "“" + escapeHtml(r.nome) + "”" : "") + ": quais lugares têm x de " + r.x0 + " a " + r.x1 + " e y de " + r.y0 + " a " + r.y1 + " (retângulo tracejado)? A consulta começa pela raiz." });
+      const visita = (n, q) => {
+        visitados.push(n.id);
+        const qual = q < 0 ? "A raiz" : "O nó " + QT_NOMES[q] + " (" + qtRegiao(n) + ")";
+        if (!qtEncosta(n, ret)) { qtNos(n).forEach((x) => fora.push(x.id)); foto({ ...base(), foco: n.id, msg: qual + " <strong>não encosta</strong> no retângulo: é descartado inteiro" + (n.filhos ? ", sem olhar nenhum dos seus filhos." : ".") }); return; }
+        if (!n.filhos) {
+          if (n.ponto) comparados++;
+          if (n.ponto && qtDentro(n.ponto, ret)) { achados.push(n.ponto.nome); foto({ ...base(), foco: n.id, msg: qual + " é uma folha com " + nome(n.ponto) + ", que está <strong>dentro</strong> do retângulo: encontrado." }); }
+          else foto({ ...base(), foco: n.id, msg: qual + " encosta no retângulo, mas é uma folha " + (n.ponto ? "com " + nome(n.ponto) + ", que fica fora dele." : "vazia.") });
+          return;
+        }
+        foto({ ...base(), foco: n.id, msg: qual + " encosta no retângulo e está " + (q < 0 ? "dividida" : "dividido") + ": a consulta olha os quatro filhos." });
+        n.filhos.forEach((f, i) => visita(f, i));
+      };
+      visita(t.raiz, -1);
+      foto({ ...base(), resultado: true, msg: "Resultado: " + (achados.length ? lista(achados.map((a) => "<strong>" + escapeHtml(a) + "</strong>")) : "nenhum lugar") + ". A consulta só comparou " + comparados + " dos " + cfg.pontos.length + " lugares com o retângulo" + (comparados < cfg.pontos.length ? ": os outros estavam em regiões descartadas inteiras." : ".") });
+    }
+    foto({ fim: true, linha: cfg.pontos.length, msg: "Fim. A inserção desce um caminho só, e a consulta só entra nas regiões que encostam na área procurada." });
+    return { passos, siglas: new Map(cfg.pontos.map((p) => [p.nome, siglas.get(p)])), lado: cfg.lado, nomes: cfg.pontos.map((p) => p.nome) };
+  }
+
+  function mostrarQuadtree(el, n) {
+    const dados = el.__rtPassos || (el.__rtPassos = passosQuadtree(el));
+    const passos = dados.passos;
+    const k = Math.min(n, passos.length - 1);
+    el.__rtPasso = k;
+    const passo = k >= 0 ? passos[k] : null;
+    const sigla = (p) => dados.siglas.get(p.nome);
+    if (passo) {
+      const caminho = new Set();
+      if (passo.foco !== undefined && !passo.ret) { const ach = (x, trilha) => { if (x.id === passo.foco) trilha.forEach((i) => caminho.add(i)); if (x.filhos) x.filhos.forEach((f) => ach(f, [...trilha, f.id])); }; ach(passo.raiz, [passo.raiz.id]); }
+      const fora = new Set(passo.fora || []), visit = new Set(passo.visitados || []), achados = new Set(passo.achados || []), novos = new Set(passo.novos || []);
+      el.querySelector(".qt-fig").innerHTML = qtDesenho(passo.raiz, dados.lado, {
+        sigla, ret: passo.ret, pendente: passo.pendente,
+        noCls: (x) => (fora.has(x.id) ? " qt-fora" : "") + (caminho.has(x.id) || (visit.has(x.id) && !fora.has(x.id)) ? " rt-on" : "") + (x.id === passo.foco ? " rt-cur" : "") + (novos.has(x.id) ? " rt-new" : "") + (x.ponto && achados.has(x.ponto.nome) ? " rt-win" : ""),
+        arestaOn: (x) => caminho.has(x.id) || (visit.has(x.id) && !fora.has(x.id)),
+        regCls: (x) => (x.id === passo.foco ? "qt-foco" : fora.has(x.id) && isTopoFora(passo.raiz, x, fora) ? "qt-descartado" : ""),
+        ptCls: (p) => (achados.has(p.nome) ? " qt-achado" : ""),
+      });
+    } else el.querySelector(".qt-fig").innerHTML = qtDesenho(qtArvore(dados.lado).raiz, dados.lado, { sigla });
+    const inseridos = passo ? (passo.linha < 0 ? dados.nomes.length : passo.linha) : 0;
+    el.querySelectorAll(".rt-table tbody tr").forEach((tr, j) => {
+      const emInsercao = !!passo && !passo.ret && j === passo.linha && !passo.fimIns && !passo.fim;
+      tr.classList.toggle("rt-done", !!passo && (j < inseridos || passo.fimIns || passo.fim || !!passo.ret) && !emInsercao);
+      tr.classList.toggle("rt-match", emInsercao);
+      tr.classList.toggle("rt-wait", !passo || (j > inseridos && !passo.ret && !passo.fimIns && !passo.fim));
+      tr.classList.toggle("rt-win", !!passo && !!passo.achados && passo.achados.includes(dados.nomes[j]));
+    });
+    el.querySelector(".qt-op").innerHTML = passo && passo.op ? "<code>" + escapeHtml(passo.op) + "</code>" : '<span class="rt-vazio">—</span>';
+    const nosAgora = passo ? qtNos(passo.raiz).length : 1;
+    el.querySelector(".rt-best").innerHTML = passo && passo.ret
+      ? "Encontrados: <strong>" + (passo.achados.length ? passo.achados.map(escapeHtml).join(", ") : "—") + '</strong><span class="rt-count"> · lugares comparados: ' + passo.comparados + "</span>"
+      : "Nós na árvore: <strong>" + nosAgora + '</strong><span class="rt-count">' + (nosAgora === 1 ? " (só a raiz)" : "") + "</span>";
+    el.querySelector(".rt-msg").innerHTML = passo ? passo.msg : QT_INICIO;
+    el.querySelector(".rt-log").innerHTML = passos.slice(0, Math.max(k, 0)).map((p) => "<li>" + p.msg + "</li>").join("");
+    el.classList.toggle("rt-fim", !!passo && !!passo.fim);
+    el.querySelector('[data-rt="step"]').disabled = !!passo && !!passo.fim;
+    return !!passo && !!passo.fim;
+  }
+  // um nó descartado só ganha a camada cinza se o pai dele não foi descartado (senão a camada repetiria)
+  function isTopoFora(raiz, x, fora) {
+    let pai = null;
+    const acha = (n) => { if (n.filhos) for (const f of n.filhos) { if (f.id === x.id) pai = n; acha(f); } };
+    acha(raiz);
+    return !pai || !fora.has(pai.id);
+  }
+
+  // QuadTree: quadrante do ponto novo, folha onde ele cai, o que acontece na folha cheia,
+  // nós descartados pela consulta e folhas que entram na resposta.
+  function etapasQuadtree(cfg) {
+    const lado = cfg.lado;
+    const todos = [...cfg.pontos, cfg.novo];
+    const siglas = qtSiglas(todos);
+    const sigla = (p) => siglas.get(p);
+    const t = qtArvore(lado);
+    cfg.pontos.forEach((p) => qtInserir(t, t.raiz, p));
+    const antes = qtClone(t.raiz);
+    const novo = cfg.novo, nomeN = "<strong>" + escapeHtml(novo.nome) + "</strong> = (" + novo.x + ", " + novo.y + ")";
+    const qRaiz = qtQuad(antes, novo.x, novo.y);
+    let folha = antes;
+    while (folha.filhos) folha = folha.filhos[qtQuad(folha, novo.x, novo.y)];
+    const ocupada = folha.ponto;
+    qtInserir(t, t.raiz, novo);
+    const depois = qtClone(t.raiz);
+    const idsAntes = new Set(qtNos(antes).map((n) => n.id));
+    const novos = qtNos(depois).filter((n) => !idsAntes.has(n.id)).map((n) => n.id);
+    const ret = cfg.consulta;
+    const retTxt = "x de " + ret.x0 + " a " + ret.x1 + " e y de " + ret.y0 + " a " + ret.y1;
+    // nós descartados "por inteiro": não encostam no retângulo, mas o pai encosta
+    const descartados = new Set(), achadas = new Set(), paiDe = new Map();
+    const percorre = (n) => {
+      if (!qtEncosta(n, ret)) { descartados.add(n.id); return; }
+      if (!n.filhos) { if (n.ponto && qtDentro(n.ponto, ret)) achadas.add(n.id); return; }
+      n.filhos.forEach((x) => { paiDe.set(x.id, n); percorre(x); });
+    };
+    percorre(depois);
+    const porId = new Map(qtNos(depois).map((n) => [n.id, n]));
+    const nomeNo = (n) => (n.prof === 0 ? "a raiz" : "o nó " + qtRegiao(n));
+    const desenho = (raiz, opt) => qtDesenho(raiz, lado, { sigla, ...opt });
+    const pendenteOpt = { pendente: novo };
+    return [
+      {
+        tipo: "escolha",
+        texto: "A QuadTree já guarda " + lista(cfg.pontos.map((p) => "<strong>" + escapeHtml(sigla(p)) + "</strong> = (" + p.x + ", " + p.y + ")")) + ". Vamos inserir " + nomeN + " (o ponto azul tracejado no mapa). <strong>Em que quadrante da raiz ele fica?</strong>",
+        opcoes: QT_NOMES.map((q, i) => ({ t: q + (i === 0 ? " (noroeste)" : i === 1 ? " (nordeste)" : i === 2 ? " (sudoeste)" : " (sudeste)"), ok: i === qRaiz, por: "Compare com o meio do plano, " + lado / 2 + ": x " + (novo.x >= lado / 2 ? "≥" : "<") + " " + lado / 2 + " é " + (novo.x >= lado / 2 ? "leste" : "oeste") + ", e y " + (novo.y >= lado / 2 ? "≥" : "<") + " " + lado / 2 + " é " + (novo.y >= lado / 2 ? "norte" : "sul") + "." })),
+        figura: (st) => desenho(antes, { ...pendenteOpt, regCls: (n) => (st.resolvida && antes.filhos && n === antes.filhos[qRaiz] ? "qt-foco" : "") }),
+        depois: "x = " + novo.x + (novo.x >= lado / 2 ? " ≥ " : " < ") + lado / 2 + " e y = " + novo.y + (novo.y >= lado / 2 ? " ≥ " : " < ") + lado / 2 + ": o ponto fica no quadrante <strong>" + QT_NOMES[qRaiz] + "</strong>.",
+      },
+      {
+        tipo: "nos", correta: new Set([folha.id]),
+        texto: "<strong>Em que folha " + nomeN + " vai parar?</strong> Clique nela, no mapa ou na árvore, e depois em <strong>Verificar</strong>.",
+        figura: (st) => desenho(antes, { ...pendenteOpt,
+          clicavel: (n) => !st.resolvida && !n.filhos,
+          regCls: (n) => (st.resolvida && n.id === folha.id ? "qt-certo" : !n.filhos && st.sel.has(n.id) ? "px-sel" : ""),
+          noCls: (n) => (st.sel.has(n.id) && !st.resolvida ? " px-sel" : "") + (st.resolvida && n.id === folha.id ? " rt-on rt-cur" : "") }),
+        checar(sel) {
+          if (sel.size > 1) return "O ponto vai para uma folha só: escolha apenas uma.";
+          const n = porId.get([...sel][0]) || qtNos(antes).find((x) => x.id === [...sel][0]);
+          return "A folha escolhida cobre " + qtRegiao(n) + ", e " + escapeHtml(novo.nome) + " = (" + novo.x + ", " + novo.y + ") não está nessa região. Desça a partir da raiz escolhendo, em cada nó, o quadrante do ponto.";
+        },
+        depois: "A descida termina na folha que cobre " + qtRegiao(folha) + (ocupada ? ", que <strong>já guarda</strong> " + escapeHtml(sigla(ocupada)) + " = (" + ocupada.x + ", " + ocupada.y + ")." : ", que está vazia."),
+      },
+      {
+        tipo: "escolha",
+        texto: ocupada
+          ? "A folha já guarda " + escapeHtml(sigla(ocupada)) + " = (" + ocupada.x + ", " + ocupada.y + "), e cada folha guarda no máximo um ponto. <strong>O que acontece ao inserir " + escapeHtml(novo.nome) + "?</strong>"
+          : "A folha está vazia. <strong>O que acontece ao inserir " + escapeHtml(novo.nome) + "?</strong>",
+        opcoes: ocupada
+          ? [{ t: "A folha é dividida em 4 quadrantes, e os dois pontos são distribuídos entre eles", ok: true },
+             { t: escapeHtml(novo.nome) + " substitui o ponto que estava na folha", ok: false, por: "Nenhum ponto pode se perder: os dois continuam na árvore." },
+             { t: "A folha passa a guardar os dois pontos", ok: false, por: "Nesta QuadTree, cada folha guarda no máximo um ponto. O que a inserção faz para abrir espaço?" }]
+          : [{ t: escapeHtml(novo.nome) + " fica guardado na folha, e nada é dividido", ok: true },
+             { t: "A folha é dividida em 4 quadrantes", ok: false, por: "A divisão só acontece quando a folha já tem um ponto." }],
+        figura: (st) => (st.resolvida ? desenho(depois, { noCls: (n) => (novos.includes(n.id) ? " rt-new" : "") }) : desenho(antes, { ...pendenteOpt, noCls: (n) => (n.id === folha.id ? " rt-on rt-cur" : "") })),
+        depois: ocupada
+          ? "A folha virou um nó dividido com " + (novos.length === 4 ? "4 filhos novos" : novos.length + " nós novos") + " (contorno azul), e " + escapeHtml(sigla(ocupada)) + " e " + escapeHtml(sigla(novo)) + " ficaram em folhas diferentes." + (novos.length > 4 ? " Como eles caíram de novo no mesmo quadrante, a divisão se repetiu um nível abaixo." : "")
+          : escapeHtml(novo.nome) + " ficou guardado na folha.",
+      },
+      {
+        tipo: "nos", correta: descartados,
+        texto: "Agora uma consulta: quais pontos têm " + retTxt + " (retângulo tracejado)? <strong>Quais nós a consulta descarta inteiros, sem olhar nada abaixo deles?</strong> Clique nos nós da árvore (ou nas regiões do mapa) e depois em <strong>Verificar</strong>.",
+        figura: (st) => desenho(depois, { ret,
+          clicavel: (n) => !st.resolvida && n.prof > 0,
+          regCls: (n) => (st.resolvida && descartados.has(n.id) ? "qt-descartado" : !st.resolvida && st.sel.has(n.id) && !n.filhos ? "px-sel" : ""),
+          noCls: (n) => (st.sel.has(n.id) && !st.resolvida ? " px-sel" : "") + (st.resolvida && descartados.has(n.id) ? " qt-fora" : "") }),
+        checar(sel) {
+          for (const id of sel) {
+            const n = porId.get(id);
+            if (qtEncosta(n, ret)) return "A região " + qtRegiao(n) + " encosta no retângulo: a consulta precisa entrar nesse nó.";
+            if (!descartados.has(id)) return "O nó " + qtRegiao(n) + " nem chega a ser visitado: um nó acima dele já foi descartado inteiro. Marque só o nó mais alto de cada parte descartada.";
+          }
+          return "Ainda falta nó: procure, entre os filhos dos nós que encostam no retângulo, os que ficam totalmente fora dele.";
+        },
+        depois: "São descartados " + lista([...descartados].map((id) => "o nó " + qtRegiao(porId.get(id)))) + ". Nenhum ponto dessas regiões é comparado com o retângulo.",
+      },
+      {
+        tipo: "nos", correta: achadas,
+        texto: "<strong>Quais folhas guardam pontos que entram na resposta da consulta?</strong> Clique nelas e depois em <strong>Verificar</strong>.",
+        figura: (st) => desenho(depois, { ret,
+          clicavel: (n) => !st.resolvida && !n.filhos,
+          regCls: (n) => (descartados.has(n.id) && (!paiDe.get(n.id) || !descartados.has(paiDe.get(n.id).id)) ? "qt-descartado" : !st.resolvida && st.sel.has(n.id) ? "px-sel" : ""),
+          noCls: (n) => (descartados.has(n.id) || [...descartados].some((d) => qtNos(porId.get(d)).some((x) => x.id === n.id)) ? " qt-fora" : "") + (st.sel.has(n.id) && !st.resolvida ? " px-sel" : "") + (st.resolvida && achadas.has(n.id) ? " rt-win" : ""),
+          ptCls: (p) => (st.resolvida && qtDentro(p, ret) ? " qt-achado" : "") }),
+        checar(sel) {
+          for (const id of sel) {
+            const n = porId.get(id);
+            if (!n.ponto) return "A folha que cobre " + qtRegiao(n) + " está vazia.";
+            if (!qtDentro(n.ponto, ret)) return escapeHtml(sigla(n.ponto)) + " = (" + n.ponto.x + ", " + n.ponto.y + ") fica fora do retângulo, mesmo que a região da folha encoste nele.";
+          }
+          return "Ainda falta folha: confira cada ponto que está dentro do retângulo.";
+        },
+        depois: "A resposta é " + lista([...achadas].map((id) => "<strong>" + escapeHtml(sigla(porId.get(id).ponto)) + "</strong>")) + ". A consulta só comparou com o retângulo os pontos das folhas que encostam nele.",
+      },
+    ];
+  }
+
+  const PX_ETAPAS = { segtree: etapasSegtree, trie: etapasTrie, radix: etapasRadix, patricia: etapasPatricia, quadtree: etapasQuadtree };
 
   function iniciarPratica(el) {
     if (el.__px) return;
@@ -1545,7 +1869,7 @@
     if (alvo.dataset.pxNo !== undefined) { const igual = el.querySelector('[data-px-no="' + alvo.dataset.pxNo + '"]'); if (igual) igual.focus({ preventScroll: true }); }
   }
 
-  const BLOCK_RENDERERS = { "aula-narrada": renderNarratedLesson, video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia, segtree: renderSegtree, pratica: renderPratica };
+  const BLOCK_RENDERERS = { "aula-narrada": renderNarratedLesson, video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia, segtree: renderSegtree, pratica: renderPratica, quadtree: renderQuadtree };
 
   // Ponte para o renderizador do site: devolve o HTML do bloco, ou null se a linguagem não é nossa.
   function renderBlock(language, source, options = {}) {

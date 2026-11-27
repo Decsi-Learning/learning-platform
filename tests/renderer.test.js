@@ -420,6 +420,32 @@ test("pratica block rejects invalid scenarios", () => {
   erro({ tipo: "patricia", bits: 3, pares: [[{ nome: "A", bits: "010" }, { nome: "B", bits: "011" }]], chaves: [{ nome: "A", bits: "010" }, { nome: "B", bits: "011" }], procurada: { nome: "A2", bits: "010" } });
 });
 
+// ---- bloco "quadtree" e prática tipo "quadtree" ----
+test("quadtree block draws the empty root, the places table and keeps the config", () => {
+  const html = renderBlock("quadtree", JSON.stringify({
+    lado: 8,
+    pontos: [{ nome: "Padaria", x: 1, y: 6 }, { nome: "<b>Escola</b>", x: 6, y: 2 }],
+    consultas: [{ nome: "centro", x0: 2, y0: 2, x1: 5, y1: 5 }],
+  }));
+  assert.match(html, /class="roteamento qt" data-kind="quadtree" data-cfg="/);
+  assert.match(html, /class="rt-tree qt-svg"/);
+  assert.strictEqual((html.match(/class="rt-node qt-vazia"/g) || []).length, 1);   // só a raiz, vazia
+  assert.match(html, /<tr data-i="0"><td><strong>P<\/strong> Padaria<\/td><td>\(1, 6\)<\/td><\/tr>/);
+  assert.doesNotMatch(html, /<b>Escola<\/b>/);
+});
+
+test("quadtree block and practice reject invalid planes, points and queries", () => {
+  const erro = (lang, cfg) => assert.match(renderBlock(lang, JSON.stringify(cfg)), /quiz-error/, JSON.stringify(cfg));
+  const pontos = [{ nome: "A", x: 1, y: 1 }, { nome: "B", x: 5, y: 5 }];
+  erro("quadtree", { lado: 6, pontos });
+  erro("quadtree", { lado: 8, pontos: [{ nome: "A", x: 1, y: 1 }, { nome: "B", x: 1, y: 1 }] });   // coordenadas repetidas
+  erro("quadtree", { lado: 8, pontos: [{ nome: "A", x: 8, y: 1 }, { nome: "B", x: 2, y: 2 }] });   // fora do plano
+  erro("quadtree", { lado: 8, pontos, consultas: [{ x0: 5, y0: 0, x1: 2, y1: 3 }] });
+  erro("pratica", { tipo: "quadtree", lado: 8, pontos, novo: { nome: "C", x: 5, y: 5 }, consulta: { x0: 0, y0: 0, x1: 3, y1: 3 } });
+  erro("pratica", { tipo: "quadtree", lado: 8, pontos, novo: { nome: "C", x: 2, y: 2 } });
+  assert.doesNotMatch(renderBlock("pratica", JSON.stringify({ tipo: "quadtree", lado: 8, pontos, novo: { nome: "C", x: 2, y: 2 }, consulta: { x0: 0, y0: 0, x1: 3, y1: 3 } })), /quiz-error/);
+});
+
 test("codigo accepts the code as a list of lines, same result as a single string", () => {
   const comoTexto = renderBlock("codigo", codigoBloco());
   const comoLista = renderBlock("codigo", codigoBloco({ code: ["int a = 1;", "int b = a + 2; // soma"] }));

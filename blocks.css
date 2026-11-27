@@ -412,3 +412,37 @@ html[data-theme="dark"] .markdown .codigo-code code, html[data-theme="dark"] .ma
 .markdown .lesson-layout figure img { width: 100%; max-height: 16rem; object-fit: contain; margin: 0 auto; }
 .markdown .narrated-slide.lesson-layout li { background: transparent; color: inherit; padding: 0; }
 .lesson-layout .lesson-focus { background: var(--theme-accent-soft); color: var(--theme-text); }
+
+/* QuadTree (bloco "quadtree" e prática tipo "quadtree"): mapa à esquerda, árvore à direita, nas cores das árvores */
+.markdown .qt .qt-fig { margin-bottom: 12px; }
+.markdown .qt .qt-lado { display: grid; gap: 4px; }
+.markdown .qt-svg { max-height: 360px; }
+.markdown .qt-svg .qt-eixo { fill: var(--soft); font-size: 9px; }
+.markdown .qt-svg .qt-borda { fill: none; stroke: var(--arv-b2); stroke-width: 2.5; }
+.markdown .qt-svg .qt-reg { fill: transparent; stroke: var(--arv-b); stroke-width: 1.5; transition: fill .2s; }
+.markdown .qt-svg .qt-reg.px-alvo:hover, .markdown .qt-svg .qt-reg.px-alvo:focus-visible { fill: rgba(37, 99, 235, .18); }
+.markdown .qt-svg .qt-camada { pointer-events: none; stroke-width: 3; }
+.markdown .qt-svg .qt-camada.qt-foco { fill: rgba(37, 99, 235, .2); stroke: var(--arv-b2); }
+.markdown .qt-svg .qt-camada.qt-descartado { fill: rgba(104, 113, 120, .28); stroke: none; }
+.markdown .qt-svg .qt-camada.qt-certo { fill: rgba(155, 18, 59, .22); stroke: var(--arv-r); }
+.markdown .qt-svg .qt-camada.px-sel { fill: rgba(37, 99, 235, .4); stroke: var(--arv-b2); }
+.markdown .qt-svg .qt-ret { fill: rgba(155, 18, 59, .08); stroke: var(--arv-r); stroke-width: 3; stroke-dasharray: 7 5; pointer-events: none; }
+.markdown .qt-svg .qt-pt { pointer-events: none; }
+.markdown .qt-svg .qt-pt circle { fill: var(--arv-r); stroke: #fff; stroke-width: 1.5; }
+.markdown .qt-svg .qt-pt text { fill: #fff; font: 800 10px Arial, Helvetica, sans-serif; text-anchor: middle; }
+.markdown .qt-svg .qt-pt.qt-achado circle { stroke: var(--arv-r2); stroke-width: 4; }
+.markdown .qt-svg .qt-pt.qt-pendente circle { fill: var(--arv-b); stroke: var(--arv-b2); stroke-dasharray: 3 2; }
+.markdown .qt-svg .rt-node rect { fill: var(--arv-bs); stroke: var(--arv-b); stroke-width: 2.5; transition: fill .25s, stroke .25s, opacity .25s; }
+.markdown .qt-svg .rt-node .rt-name { fill: var(--arv-b2); font-size: 13px; }
+.markdown .qt-svg .rt-node .qt-q { fill: var(--soft); font-size: 9px; font-weight: 700; }
+.markdown .qt-svg .rt-node.qt-folha rect { fill: var(--arv-rs); stroke: var(--arv-r); }
+.markdown .qt-svg .rt-node.qt-folha .rt-name { fill: var(--arv-r2); }
+.markdown .qt-svg .rt-node.qt-vazia rect { fill: var(--paper); stroke: var(--soft); stroke-dasharray: 4 3; }
+.markdown .qt-svg .rt-node.qt-vazia .rt-name { fill: var(--soft); }
+.markdown .qt-svg .rt-node.rt-on rect { stroke: var(--arv-r); stroke-width: 4; stroke-dasharray: none; }
+.markdown .qt-svg .rt-node.rt-cur rect { stroke-width: 5.5; }
+.markdown .qt-svg .rt-node.rt-new rect { fill: #bfdbfe; stroke: var(--arv-b); stroke-width: 4.5; stroke-dasharray: none; }
+.markdown .qt-svg .rt-node.rt-win rect { fill: var(--arv-r); stroke: var(--arv-r); }
+.markdown .qt-svg .rt-node.rt-win .rt-name { fill: #fff; }
+.markdown .qt-svg .rt-node.qt-fora { opacity: .3; }
+.markdown .qt-svg .rt-node.px-alvo { cursor: pointer; }

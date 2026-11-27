@@ -295,6 +295,27 @@
           "file": "segment-tree/exercicios-segment-tree.md"
         }
       ]
+    },
+    {
+      "id": "quadtree-octree",
+      "title": "QuadTree e Octree",
+      "summary": "Árvores espaciais: o plano dividido em quadrantes (e o espaço em octantes), inserção com divisão de folhas, busca e consulta de região.",
+      "pages": [
+        {
+          "id": "quadtree-octree",
+          "title": "QuadTree e Octree",
+          "summary": "Árvores espaciais: o plano dividido em quadrantes (e o espaço em octantes), inserção com divisão de folhas, busca e consulta de região.",
+          "requiresQuizAnswers": false,
+          "file": "quadtree-octree/quadtree-octree.md"
+        },
+        {
+          "id": "exercicios-quadtree-octree",
+          "title": "Lista de Exercícios - QuadTree e Octree",
+          "summary": "Resolva a lista de exercícios para avançar para a próxima etapa.",
+          "requiresQuizAnswers": true,
+          "file": "quadtree-octree/exercicios-quadtree-octree.md"
+        }
+      ]
     }
   ]
 }
