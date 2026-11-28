@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador interativo — Árvore Binária de Busca</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f5f5f4;
+  --panel: #ffffff;
+  --panel2: #f3f3f2;
+  --line: #dfe1e2;
+  --text: #292d30;
+  --muted: #737b80;
+  --text-soft: #555d62;
+  --accent: #9b123b;
+  --action: #8b1739;
+  --input: #ffffff;
+  --code: #eceef0;
+  --surface-soft: #f1f2f3;
+  --text-secondary: #555d62;
+  --input-bg: #ffffff;
+  --button-bg: #f1f2f3;
+  --button-border: #d5d8da;
+  --tree-bg: #f8f8f8;
+  --status-bg: #f1f2f3;
+  --yellow: #d6a400;
+  --green: #2f855a;
+  --red: #b4233c;
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #191b1d;
+  --panel: #232629;
+  --panel2: #2a2e31;
+  --line: #3c4145;
+  --text: #ececed;
+  --muted: #a3a9ac;
+  --text-soft: #c3c7c9;
+  --accent: #c05a76;
+  --action: #9e3b57;
+  --input: #202326;
+  --code: #303538;
+  --surface-soft: #2a2e31;
+  --text-secondary: #c3c7c9;
+  --input-bg: #202326;
+  --button-bg: #2a2e31;
+  --button-border: #3c4145;
+  --tree-bg: #202326;
+  --status-bg: #202326;
+  --yellow: #ffd43b;
+  --green: #7ee787;
+  --red: #ff7b72;
+}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 "DM Sans",system-ui,-apple-system,Segoe UI,sans-serif}
+.app{max-width:1180px;margin:0 auto;padding:24px}.header{display:flex;align-items:center;gap:14px;margin-bottom:20px}.brandmark{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#1d3557;border:1px solid #345477;color:#8ec5ff;font-size:23px}.eyebrow{margin:0;color:#8ec5ff;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.header h1{font-size:clamp(22px,3vw,30px);margin:2px 0 0;font-weight:800;letter-spacing:-.03em}.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);background:#0f192b}.panel-head h2{margin:0;font-size:15px}.panel-body{padding:18px}.field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}.field label{font-size:12px;font-weight:800;color:#a9bad1}.field input{width:100%;padding:11px 12px;border-radius:10px;border:1px solid #344864;background:#0b1424;color:var(--text);font:inherit;outline:none}.field input:focus{border-color:#60a5fa;box-shadow:0 0 0 3px #60a5fa20}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.btn{border:1px solid #344864;background:#1a2940;color:var(--text);border-radius:10px;padding:10px 12px;font:700 13px inherit;cursor:pointer;transition:.15s}.btn:hover{filter:brightness(1.15);transform:translateY(-1px)}.btn.primary{background:#2563a6;border-color:#3b82c4}.btn.search{background:#193d38;border-color:#2e6a5b}.btn.remove{background:#482a34;border-color:#7b3c4d}.btn.wide{grid-column:1/-1}.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.preset{border:1px solid #344864;background:#0e192b;color:#c8d8ec;border-radius:8px;padding:6px 9px;font:12px ui-monospace,monospace;cursor:pointer}.note{font-size:12px;color:var(--muted);margin:14px 0 0}.status{margin-top:16px;padding:12px;border-radius:12px;background:#0b1424;border:1px solid #263650;color:#b9c9df;font-size:13px;min-height:74px}.status strong{display:block;color:#fff;margin-bottom:3px}.status.success{border-color:#397457}.status.error{border-color:#7b3c4d}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}.toolbar strong{font-size:14px}.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--muted)}.legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.dot.cmp{background:var(--yellow)}.dot.found{background:var(--green)}.tree-wrap{position:relative;min-height:390px;overflow:auto;background:radial-gradient(ellipse at 50% 0%,#182a43 0%,#111b2e 58%,#10192a 100%)}#treeStage{position:relative;min-width:600px;height:390px;margin:auto}#edges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}#nodes{position:absolute;inset:0}.node{position:absolute;transform:translate(-50%,-50%);width:62px;height:76px;display:flex;align-items:flex-end;justify-content:center;transition:left .25s,top .25s;z-index:2}.node .sp{--w:58px;position:relative;flex:none;width:calc(var(--w)*.74);height:calc(var(--w)*.66);margin:0 calc(var(--w)*.07) calc(var(--w)*.1);background:var(--c);border-radius:36% 36% 20% 20%;box-shadow:inset 0 calc(var(--w)*-.09) 0 rgba(0,0,0,.2),inset 0 calc(var(--w)*.06) 0 rgba(255,255,255,.35)}.sp::before{content:"";position:absolute;left:24%;top:34%;width:15%;height:20%;background:#1b1b2f;box-shadow:calc(var(--w)*.27) 0 0 #1b1b2f}.sp::after{content:"";position:absolute;left:36%;top:66%;width:28%;height:10%;background:#1b1b2f}.sp.f1::after{height:18%;width:18%;left:41%;top:62%;border-radius:50%}.sp.f2::after{width:22%;left:39%;top:68%}.sp.f3::after{width:34%;left:33%;top:64%;height:14%;background:transparent;border:0 solid #1b1b2f;border-bottom-width:3px;border-radius:0 0 50% 50%}.sp b{position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);font:800 max(11px,calc(var(--w)*.36))/1 ui-monospace,Consolas,monospace;color:var(--text);text-shadow:none;white-space:nowrap}.sp.c0{--c:#c9a27a}.sp.c1{--c:#ff6b6b}.sp.c2{--c:#ff9d5c}.sp.c3{--c:#ffd166}.sp.c4{--c:#6fd36f}.sp.c5{--c:#4fd1c5}.sp.c6{--c:#5b9dff}.sp.c7{--c:#a078ff}.sp.c8{--c:#d86fe8}.sp.c9{--c:#ff8fb8}.sp.c10{--c:#b6e04a}.sp.c11{--c:#7fd6ff}.node.compare .sp{outline:3px solid var(--yellow);outline-offset:3px;filter:drop-shadow(0 0 8px #ffd43b55)}.node.found .sp{outline:3px solid var(--green);outline-offset:3px;filter:drop-shadow(0 0 8px #7ee78755)}.node.new .sp{animation:bounce .65s ease-out}.node.removing .sp{animation:fadeout .35s ease-in forwards}@keyframes bounce{0%{transform:translateY(0)}35%{transform:translateY(-13px)}100%{transform:translateY(0)}}@keyframes fadeout{to{opacity:.15;transform:scale(.65)}}.empty{position:absolute;inset:0;display:grid;place-items:center;color:#7588a4;text-align:center;padding:20px}.empty b{display:block;color:#c5d4e8;font-size:16px}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 18px;border-top:1px solid var(--line)}.metric{background:#0b1424;border:1px solid #263650;border-radius:11px;padding:10px 12px}.metric small{display:block;color:var(--muted);font-size:11px}.metric strong{font:700 16px ui-monospace,monospace}.traversal{padding:14px 18px;border-top:1px solid var(--line)}.traversal h3{font-size:12px;color:#a9bad1;margin:0 0 8px}.traversal code{display:block;color:#8ec5ff;overflow-wrap:anywhere;font:13px ui-monospace,monospace}.footer{margin-top:14px;color:#71839e;font-size:11px;text-align:right}
+@media(max-width:800px){.app{padding:14px}.layout{grid-template-columns:1fr}.tree-wrap{min-height:340px}#treeStage{height:340px}.toolbar{align-items:flex-start;flex-direction:column}.bottom{grid-template-columns:1fr 1fr}}
+
+.simulator-credit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  color: #64748b;
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: right;
+  opacity: 0.8;
+}
+
+
+/* Ajustes de cores para acompanhar o tema do learning-platform */
+body { background: var(--bg); color: var(--text); }
+.brandmark { background: var(--surface-soft); border-color: var(--line); color: var(--accent); }
+.eyebrow { color: var(--accent); }
+.panel-head { background: var(--surface-soft); }
+.field label, .traversal h3 { color: var(--text-secondary); }
+.field input { background: var(--input-bg); color: var(--text); border-color: var(--button-border); }
+.field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.btn, .preset { background: var(--button-bg); border-color: var(--button-border); color: var(--text); }
+.btn.primary { background: var(--action); border-color: var(--action); color: #fff; }
+.btn.search, .btn.remove { background: var(--surface-soft); border-color: var(--line); color: var(--text); }
+.status { background: var(--status-bg); border-color: var(--line); color: var(--text-secondary); }
+.status strong { color: var(--text); }
+.tree-wrap { background: var(--tree-bg); }
+.empty { color: var(--muted); }
+.empty b { color: var(--text); }
+.metric { background: var(--surface-soft); border-color: var(--line); color: var(--text); }
+.traversal code { color: var(--accent); }
+.footer { color: var(--muted); }
+.simulator-credit { color: var(--muted); }
+
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="header"><div class="brandmark">⌘</div><div><p class="eyebrow">Laboratório de AEDS</p><h1>Árvore Binária de Busca (ABB)</h1></div></header>
+  <div class="layout">
+    <section class="panel">
+      <div class="panel-head"><h2>Operações</h2></div>
+      <div class="panel-body">
+        <div class="field"><label for="value">Valor inteiro</label><input id="value" type="number" min="-999" max="999" placeholder="Ex.: 42" value="42"></div>
+        <div class="actions">
+          <button class="btn primary" id="insertBtn">＋ Inserir</button>
+          <button class="btn search" id="searchBtn">⌕ Buscar</button>
+          <button class="btn remove wide" id="removeBtn">− Remover</button>
+          <button class="btn wide" id="resetBtn">↻ Reiniciar árvore</button>
+        </div>
+        <div class="presets" aria-label="Exemplos rápidos"><button class="preset" data-value="20">20</button><button class="preset" data-value="10">10</button><button class="preset" data-value="30">30</button><button class="preset" data-value="5">5</button><button class="preset" data-value="15">15</button><button class="preset" data-value="25">25</button><button class="preset" data-value="35">35</button></div>
+        <p class="note">Dica: insira alguns valores para construir a árvore. Valores repetidos não são adicionados.</p>
+        <div id="status" class="status" role="status" aria-live="polite"><strong>Pronto para começar</strong>Insira um valor ou use um dos exemplos.</div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="toolbar"><strong>Visualização da árvore</strong><div class="legend"><span><i class="dot cmp"></i>Comparação</span><span><i class="dot found"></i>Encontrado</span></div></div>
+      <div class="tree-wrap"><div id="treeStage"><svg id="edges" aria-hidden="true"></svg><div id="nodes"></div><div id="empty" class="empty"><div><b>Árvore vazia</b>Comece inserindo um número.</div></div></div></div>
+      <div class="bottom"><div class="metric"><small>Nós na árvore</small><strong id="count">0</strong></div><div class="metric"><small>Altura</small><strong id="height">0</strong></div></div>
+      <div class="traversal"><h3>Percurso em ordem (esquerda → raiz → direita)</h3><code id="inorder">—</code></div>
+    </section>
+  </div>
+  <div class="footer">ABB · Inserção, busca e remoção</div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let root = null, nextId = 1, busy = false;
+const palette = ['c0','c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11'];
+const faces = ['f1','f2','f3'];
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+function node(value){return {value,left:null,right:null,id:nextId++,color:palette[(Math.abs(value)+nextId)%palette.length],face:faces[Math.abs(value)%faces.length]};}
+function getValue(){const raw=$('value').value.trim();if(raw===''||!Number.isInteger(Number(raw))||Number(raw)<-999||Number(raw)>999){setStatus('Valor inválido','Digite um número inteiro entre -999 e 999.','error');return null;}return Number(raw);}
+function setStatus(title,message,type=''){const el=$('status');el.className='status '+type;el.innerHTML='';const strong=document.createElement('strong');strong.textContent=title;el.append(strong,document.createTextNode(message));}
+function findNode(v){let cur=root,parent=null,side=null,path=[];while(cur){path.push(cur);if(v===cur.value)return {cur,parent,side,path};parent=cur;side=v<cur.value?'left':'right';cur=cur[side];}return {cur:null,parent,side,path};}
+async function highlightPath(path,finalClass='compare'){clearHighlights();for(const n of path){const el=document.querySelector(`[data-node-id="${n.id}"]`);if(el){el.classList.add(finalClass);await wait(480);el.classList.remove(finalClass);}}}
+function clearHighlights(){document.querySelectorAll('.node').forEach(el=>el.classList.remove('compare','found','new','removing'));}
+function insert(v){const result=findNode(v);if(result.cur)return {ok:false,duplicate:true,path:result.path};const n=node(v);if(!result.parent)root=n;else result.parent[result.side]=n;return {ok:true,node:n,path:result.path};}
+function search(v){return findNode(v);}
+function removeValue(v){const result=findNode(v);if(!result.cur)return {ok:false,path:result.path};let target=result.cur;
+  if(!target.left||!target.right){const child=target.left||target.right;if(!result.parent)root=child;else result.parent[result.side]=child;return {ok:true,removed:target.value,path:result.path,caseName:child?'um filho ou menos':'folha'};}
+  let succParent=target,succ=target.right,succPath=[target];while(succ.left){succParent=succ;succ=succ.left;succPath.push(succ);}const old=target.value;target.value=succ.value;if(succParent===target)succParent.right=succ.right;else succParent.left=succ.right;return {ok:true,removed:old,replacedBy:succ.value,path:result.path.concat(succPath),caseName:'dois filhos'};
+}
+function collectInorder(n,out=[]){if(!n)return out;collectInorder(n.left,out);out.push(n.value);collectInorder(n.right,out);return out;}
+function getHeight(n){return n?1+Math.max(getHeight(n.left),getHeight(n.right)):0;}
+function countNodes(n){return n?1+countNodes(n.left)+countNodes(n.right):0;}
+function render(){const stage=$('treeStage'),svg=$('edges'),nodes=$('nodes');nodes.innerHTML='';svg.innerHTML='';$('empty').style.display=root?'none':'grid';const count=countNodes(root),height=getHeight(root);$('count').textContent=count;$('height').textContent=height;$('inorder').textContent=count?collectInorder(root).join('  ·  '):'—';if(!root)return;
+  const width=Math.max(600,stage.clientWidth),levelGap=76,nodeGap=Math.max(62,Math.min(95,width/(Math.pow(2,Math.min(height,4)))));const stageHeight=Math.max(390,80+height*levelGap);stage.style.width=width+'px';stage.style.height=stageHeight+'px';svg.setAttribute('viewBox',`0 0 ${width} ${stageHeight}`);svg.setAttribute('width',width);svg.setAttribute('height',stageHeight);
+  let order=0,positions=new Map();function place(n,depth){if(!n)return;place(n.left,depth+1);const x=40+(order++)*(width-80)/Math.max(1,count-1);const y=45+depth*levelGap;positions.set(n.id,{x,y,n});place(n.right,depth+1);}place(root,0);
+  // Draw connectors first, behind the character nodes.
+  for(const {x,y,n} of positions.values()){for(const child of [n.left,n.right]){if(!child)continue;const p=positions.get(child.id);const line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',x);line.setAttribute('y1',y+20);line.setAttribute('x2',p.x);line.setAttribute('y2',p.y-17);line.setAttribute('stroke','var(--line)');line.setAttribute('stroke-width','2');line.setAttribute('stroke-linecap','round');svg.appendChild(line);}}
+  for(const {x,y,n} of positions.values()){const el=document.createElement('div');el.className='node';el.dataset.nodeId=n.id;el.style.left=x+'px';el.style.top=y+'px';const sprite=document.createElement('div');sprite.className=`sp ${n.color} ${n.face}`;const label=document.createElement('b');label.textContent=n.value;sprite.appendChild(label);el.appendChild(sprite);nodes.appendChild(el);}
+}
+async function run(action){if(busy)return;const v=getValue();if(v===null)return;busy=true;try{if(action==='insert'){const r=insert(v);await highlightPath(r.path);render();if(r.duplicate){setStatus('Valor já existe',`${v} já está na árvore. Valores repetidos não são inseridos.`,'error');return;}const el=document.querySelector(`[data-node-id="${r.node.id}"]`);if(el){el.classList.add('new');setTimeout(()=>el.classList.remove('new'),700);}setStatus('Inserção concluída',`O valor ${v} foi inserido seguindo a regra da ABB.`,'success');}
+  else if(action==='search'){const r=search(v);await highlightPath(r.path);if(r.cur){const el=document.querySelector(`[data-node-id="${r.cur.id}"]`);if(el)el.classList.add('found');setStatus('Valor encontrado',`${v} está na árvore. Caminho percorrido: ${r.path.map(n=>n.value).join(' → ')}.`,'success');}else setStatus('Valor não encontrado',`${v} não está na árvore. A busca terminou ao chegar em um ponteiro nulo.`,'error');}
+  else{const r=removeValue(v);await highlightPath(r.path);render();if(!r.ok){setStatus('Não foi possível remover',`${v} não está na árvore.`,'error');}else setStatus('Remoção concluída',r.replacedBy!==undefined?`${r.removed} foi removido; o sucessor ${r.replacedBy} ocupou sua posição (caso de dois filhos).`:`${r.removed} foi removido (${r.caseName}).`,'success');}}
+  finally{busy=false;}}
+$('insertBtn').addEventListener('click',()=>run('insert'));$('searchBtn').addEventListener('click',()=>run('search'));$('removeBtn').addEventListener('click',()=>run('remove'));
+$('resetBtn').addEventListener('click',()=>{if(busy)return;root=null;nextId=1;render();setStatus('Árvore reiniciada','A árvore foi limpa. Você pode começar novamente.');});
+document.querySelectorAll('.preset').forEach(btn=>btn.addEventListener('click',()=>{$('value').value=btn.dataset.value;}));
+$('value').addEventListener('keydown',e=>{if(e.key==='Enter')run('insert');});
+window.addEventListener('resize',()=>{if(!busy)render();});
+// Exemplo inicial: forma equilibrada para facilitar a exploração das operações.
+[20,10,30,5,15,25,35].forEach(v=>insert(v));render();
+</script>
+
+<div class="simulator-credit">
+  <span>Desenvolvido por Gerson Pardim Bernardino</span>
+  <span>Sob supervisão do Prof. Rafael Frederico Alexandre</span>
+</div>
+
+</body>
+</html>
