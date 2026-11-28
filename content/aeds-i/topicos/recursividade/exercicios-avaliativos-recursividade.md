@@ -1,67 +1,52 @@
 ## Exercícios avaliativos — Recursividade
 
-Esta atividade reúne os conteúdos de fundamentos da recursividade, recursão de cauda, indireta, aninhada, recursão excessiva e backtracking. Responda às questões e confira o feedback para revisar os pontos que ainda geram dúvida.
+Responda às 10 questões. O objetivo desta página é revisar os conceitos principais do tópico.
 
-## Parte 1 — Fundamentos e rastreamento
-
-### Questão 1 — Conceitos fundamentais
+### Questão 1 — Caso base
 
 ```quiz
 {
-  "question": "Em uma função recursiva, qual é a finalidade do caso base?",
+  "question": "Qual é a finalidade do caso base?",
   "options": [
-    { "text": "Realizar a chamada recursiva com um valor maior.", "correct": false },
-    { "text": "Encerrar as chamadas e fornecer uma resposta conhecida.", "correct": true },
-    { "text": "Armazenar todas as variáveis em um vetor.", "correct": false },
-    { "text": "Executar a função indefinidamente.", "correct": false }
+    { "text": "Interromper a recursão com uma resposta conhecida.", "correct": true },
+    { "text": "Aumentar o número de chamadas.", "correct": false },
+    { "text": "Armazenar o código da função.", "correct": false },
+    { "text": "Substituir todos os parâmetros.", "correct": false }
   ],
-  "correctFeedback": "Correto! O caso base interrompe a recursão e permite que os resultados retornem às chamadas anteriores.",
-  "incorrectFeedback": "Revise a função do caso base: ele é a condição de parada da recursão."
+  "correctFeedback": "Correto!",
+  "incorrectFeedback": "O caso base é a condição de parada."
 }
 ```
 
-### Questão 2 — Rastreamento
-
-Considere:
-
-```text
-FUNÇÃO soma(n)
-    SE n = 0 ENTÃO
-        RETORNE 0
-    FIM SE
-    RETORNE n + soma(n - 1)
-FIM FUNÇÃO
-```
+### Questão 2 — Rastreio
 
 ```quiz
 {
-  "question": "Qual valor é retornado por soma(3)?",
+  "question": "Se soma(n) retorna n + soma(n-1) e soma(0)=0, quanto vale soma(3)?",
   "options": [
     { "text": "3", "correct": false },
     { "text": "5", "correct": false },
     { "text": "6", "correct": true },
     { "text": "9", "correct": false }
   ],
-  "correctFeedback": "Correto! soma(3) = 3 + 2 + 1 + 0 = 6.",
-  "incorrectFeedback": "Expanda as chamadas até soma(0), que retorna zero, e depois some os valores no retorno."
+  "correctFeedback": "3 + 2 + 1 + 0 = 6.",
+  "incorrectFeedback": "Expanda as chamadas até soma(0)."
 }
 ```
-
-## Parte 2 — Tipos de recursão
 
 ### Questão 3 — Recursão de cauda
 
 ```quiz
 {
-  "question": "Qual alternativa apresenta uma chamada recursiva de cauda?",
+  "question": "Qual é uma chamada recursiva de cauda?",
   "options": [
-    { "text": "return n * fatorial(n - 1);", "correct": false },
-    { "text": "return soma(n - 1) + n;", "correct": false },
-    { "text": "return contar(n - 1, total + 1);", "correct": true },
-    { "text": "return n + contar(n - 1, total);", "correct": false }
+    { "text": "return n * f(n-1);", "correct": false },
+    { "text": "return f(n-1, total+n);", "correct": true },
+    { "text": "return n + f(n-1);", "correct": false },
+    { "text": "return f(n-1) + 1;", "correct": false }
   ],
-  "correctFeedback": "Correto! A chamada é a última operação. O estado parcial já foi atualizado no argumento total.",
-  "incorrectFeedback": "Na recursão de cauda, não pode existir uma operação pendente depois que a chamada retorna."
+  "correctFeedback": "A chamada é a última operação.",
+  "incorrectFeedback": "Não deve haver operação pendente após o retorno da chamada."
 }
 ```
 
@@ -69,15 +54,15 @@ FIM FUNÇÃO
 
 ```quiz
 {
-  "question": "Duas funções A e B chamam uma à outra, formando o fluxo A → B → A. Como esse padrão é classificado?",
+  "question": "A chama B, e B chama A. Qual é o tipo?",
   "options": [
-    { "text": "Recursão de cauda.", "correct": false },
-    { "text": "Recursão indireta.", "correct": true },
-    { "text": "Recursão aninhada.", "correct": false },
-    { "text": "Backtracking.", "correct": false }
+    { "text": "Direta", "correct": false },
+    { "text": "Indireta", "correct": true },
+    { "text": "De cauda necessariamente", "correct": false },
+    { "text": "Backtracking", "correct": false }
   ],
-  "correctFeedback": "Isso mesmo! O ciclo de chamadas entre funções diferentes caracteriza a recursão indireta.",
-  "incorrectFeedback": "Observe que a função A não chama A diretamente: existe a função B entre as chamadas."
+  "correctFeedback": "O ciclo passa por funções diferentes.",
+  "incorrectFeedback": "A não chama a si mesma diretamente."
 }
 ```
 
@@ -85,33 +70,31 @@ FIM FUNÇÃO
 
 ```quiz
 {
-  "question": "Qual expressão é um exemplo de chamada recursiva aninhada?",
+  "question": "Qual expressão exemplifica recursão aninhada?",
   "options": [
-    { "text": "A(n - 1)", "correct": false },
-    { "text": "A(B(n))", "correct": false },
-    { "text": "M(M(n + 11))", "correct": true },
-    { "text": "A(n) + 1", "correct": false }
+    { "text": "f(n-1)", "correct": false },
+    { "text": "f(n) + 1", "correct": false },
+    { "text": "f(f(n-1))", "correct": true },
+    { "text": "g(n-1)", "correct": false }
   ],
-  "correctFeedback": "Correto! Uma chamada recursiva é utilizada como argumento de outra chamada recursiva.",
-  "incorrectFeedback": "Procure a expressão em que uma chamada da própria função aparece dentro dos argumentos de outra chamada."
+  "correctFeedback": "Uma chamada recursiva está dentro de outra.",
+  "incorrectFeedback": "Procure a chamada da função dentro do argumento de outra chamada."
 }
 ```
-
-## Parte 3 — Eficiência
 
 ### Questão 6 — Recursão excessiva
 
 ```quiz
 {
-  "question": "Qual é a principal causa da ineficiência da versão recursiva simples de Fibonacci?",
+  "question": "Qual problema ocorre no Fibonacci recursivo simples?",
   "options": [
-    { "text": "A ausência de parâmetros.", "correct": false },
-    { "text": "A repetição do cálculo de subproblemas já resolvidos.", "correct": true },
-    { "text": "O uso de dois casos base.", "correct": false },
-    { "text": "A impossibilidade de retornar inteiros.", "correct": false }
+    { "text": "Repetição de cálculos de subproblemas.", "correct": true },
+    { "text": "Ausência de caso base.", "correct": false },
+    { "text": "Não usa retorno.", "correct": false },
+    { "text": "Não realiza chamadas recursivas.", "correct": false }
   ],
-  "correctFeedback": "Correto! A árvore de chamadas repete subproblemas, causando crescimento exponencial do tempo na implementação simples.",
-  "incorrectFeedback": "Observe a árvore de chamadas de Fibonacci: alguns valores aparecem em diferentes ramos."
+  "correctFeedback": "Subproblemas como fib(3) são recalculados.",
+  "incorrectFeedback": "A ineficiência vem do trabalho repetido."
 }
 ```
 
@@ -119,33 +102,31 @@ FIM FUNÇÃO
 
 ```quiz
 {
-  "question": "Como a memoização ajuda a evitar recursão excessiva em problemas com subproblemas sobrepostos?",
+  "question": "O que a memoização faz?",
   "options": [
-    { "text": "Armazena resultados calculados para reutilizá-los.", "correct": true },
-    { "text": "Remove todos os casos base.", "correct": false },
-    { "text": "Faz a função chamar a si mesma sem parâmetros.", "correct": false },
-    { "text": "Garante que o algoritmo nunca use memória.", "correct": false }
+    { "text": "Armazena resultados para reutilizá-los.", "correct": true },
+    { "text": "Remove os casos base.", "correct": false },
+    { "text": "Aumenta a profundidade das chamadas.", "correct": false },
+    { "text": "Transforma toda função em iterativa automaticamente.", "correct": false }
   ],
-  "correctFeedback": "Exatamente! Os resultados armazenados evitam que o mesmo subproblema seja recalculado.",
-  "incorrectFeedback": "Memoização significa guardar resultados anteriores para reaproveitá-los quando o mesmo subproblema aparecer."
+  "correctFeedback": "Correto: evita recalcular resultados já obtidos.",
+  "incorrectFeedback": "A memoização usa uma memória de resultados."
 }
 ```
 
-## Parte 4 — Backtracking
-
-### Questão 8 — Retrocesso
+### Questão 8 — Backtracking
 
 ```quiz
 {
-  "question": "Em um algoritmo de backtracking, o que deve acontecer quando uma escolha leva a um estado inválido ou sem solução?",
+  "question": "O que caracteriza o retrocesso?",
   "options": [
-    { "text": "Manter a escolha e ignorar as restrições.", "correct": false },
-    { "text": "Desfazer a escolha e tentar outra possibilidade.", "correct": true },
-    { "text": "Encerrar obrigatoriamente todo o programa.", "correct": false },
-    { "text": "Reiniciar o computador.", "correct": false }
+    { "text": "Desfazer uma escolha quando o caminho falha.", "correct": true },
+    { "text": "Nunca alterar o estado.", "correct": false },
+    { "text": "Executar apenas uma possibilidade.", "correct": false },
+    { "text": "Ignorar o caso base.", "correct": false }
   ],
-  "correctFeedback": "Correto! O algoritmo retrocede, restaura o estado anterior e explora outra alternativa.",
-  "incorrectFeedback": "Lembre-se das etapas: escolher, validar, avançar e desfazer quando o caminho não funciona."
+  "correctFeedback": "Isso permite explorar alternativas.",
+  "incorrectFeedback": "Retroceder significa restaurar a escolha anterior."
 }
 ```
 
@@ -153,36 +134,30 @@ FIM FUNÇÃO
 
 ```quiz
 {
-  "question": "Qual é o objetivo da poda em um algoritmo de backtracking?",
+  "question": "Em backtracking, o que é poda?",
   "options": [
-    { "text": "Explorar novamente todos os caminhos já visitados.", "correct": false },
-    { "text": "Interromper caminhos que já violam restrições ou não podem levar a uma solução.", "correct": true },
-    { "text": "Aumentar a profundidade da recursão sem necessidade.", "correct": false },
-    { "text": "Substituir todos os casos base por laços.", "correct": false }
+    { "text": "Interromper um caminho que não pode levar a uma solução válida.", "correct": true },
+    { "text": "Guardar todas as soluções em uma pilha.", "correct": false },
+    { "text": "Repetir uma chamada já concluída.", "correct": false },
+    { "text": "Remover o caso base.", "correct": false }
   ],
-  "correctFeedback": "Muito bem! A poda evita explorar caminhos que não podem produzir uma solução válida.",
-  "incorrectFeedback": "Pense na poda como uma forma de cortar antecipadamente um ramo inútil da árvore de busca."
+  "correctFeedback": "A poda evita explorar caminhos inviáveis.",
+  "incorrectFeedback": "A poda elimina antecipadamente uma possibilidade inválida."
 }
 ```
 
-## Parte 5 — Questões discursivas e de implementação
+### Questão 10 — Pilha de chamadas
 
-Responda em texto ou em uma folha à parte. Estas questões exigem justificativa e construção de soluções.
-
-1. **Análise de função:** escreva uma função recursiva que calcule a soma dos números de `1` até `n`. Identifique o caso base e o caso recursivo e rastreie a execução para `n = 4`.
-2. **Transformação em cauda:** transforme a função de soma da questão anterior em uma versão de recursão de cauda, utilizando um acumulador. Mostre a chamada inicial.
-3. **Recursão indireta:** descreva duas funções que se chamem alternadamente para verificar uma propriedade de um número. Indique os casos base e explique como o argumento progride.
-4. **Recursão aninhada:** explique a ordem de avaliação de `M(M(n + 11))`. Por que a chamada interna precisa ser resolvida antes da externa?
-5. **Eficiência:** desenhe parte da árvore de chamadas de `fib(5)` e destaque pelo menos um subproblema repetido. Explique como a memoização resolve essa repetição.
-6. **Backtracking:** descreva como resolveria um labirinto usando backtracking. Informe quais condições tornam uma posição inválida e em que momento a marcação de uma posição deve ser desfeita.
-7. **Comparação:** apresente uma situação em que uma solução recursiva é clara e adequada e outra em que uma abordagem iterativa ou com memoização seria mais interessante. Justifique considerando tempo, memória e legibilidade.
-
-## Critérios de avaliação sugeridos
-
-| Critério | O que será observado |
-|:--|:--|
-| Conceitos | Diferencia corretamente os tipos de recursão. |
-| Rastreamento | Identifica a ordem das chamadas e dos retornos. |
-| Implementação | Define caso base e progresso em direção à parada. |
-| Eficiência | Reconhece chamadas repetidas e propõe melhorias adequadas. |
-| Backtracking | Aplica escolha, validação, avanço e retrocesso corretamente. |
+```quiz
+{
+  "question": "Quando as chamadas recursivas começam a retornar?",
+  "options": [
+    { "text": "Quando é alcançado o caso base.", "correct": true },
+    { "text": "Antes da primeira chamada.", "correct": false },
+    { "text": "Somente quando o programa termina.", "correct": false },
+    { "text": "Quando a função não tem parâmetros.", "correct": false }
+  ],
+  "correctFeedback": "O retorno começa no caso base e percorre as chamadas anteriores.",
+  "incorrectFeedback": "O caso base encerra a descida recursiva."
+}
+```

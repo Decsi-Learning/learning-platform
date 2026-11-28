@@ -71,6 +71,10 @@ Remover [ 20 ] (possui 2 filhos):
     [ 5 ]  [ 15 ]
 ```
 
+```simulador
+abb
+```
+
 ### 3. Implementação em C
 
 ```c

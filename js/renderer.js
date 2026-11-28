@@ -58,6 +58,43 @@
     return typeof url === "string" && VIDEO_PREFIXES.some((prefix) => url.startsWith(prefix));
   }
 
+  // Simuladores disponíveis na plataforma
+const SIMULATORS = {
+  abb: {
+    path: "simuladores-arvores/abb/simulador-abb.html",
+    title: "Simulador de Árvore Binária de Busca"
+  }
+};
+
+// Cria o espaço onde o simulador será carregado
+function renderSimulator(source, options = {}) {
+  const type = String(source || "").trim().toLowerCase();
+
+  const simulator = SIMULATORS[type];
+
+  if (!simulator) {
+    return blockError("Este simulador não está cadastrado na plataforma.");
+  }
+
+  if (!options.sourceUrl) {
+    return blockError("Não foi possível localizar a página do simulador.");
+  }
+
+  const markdownUrl = new URL(options.sourceUrl, window.location.href);
+  const siteRoot = new URL("../../../", markdownUrl);
+  const src = new URL(simulator.path, siteRoot).href;
+
+  return `
+    <div class="simulator-frame">
+      <div
+        class="simulator-embed-slot"
+        data-simulator-src="${escapeHtml(src)}"
+        data-simulator-title="${escapeHtml(simulator.title)}">
+      </div>
+    </div>
+  `;
+}
+
   // options.defer: em vez do <iframe> (que o DOMPurify remove), emite um "slot" com data-*;
   // hydrateVideoEmbeds() cria o iframe depois da sanitização, revalidando o endereço.
   function renderVideo(source, options = {}) {
@@ -849,7 +886,7 @@
     return !!passo.fim;
   }
 
-  const BLOCK_RENDERERS = { "aula-narrada": renderNarratedLesson, video: renderVideo, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia };
+  const BLOCK_RENDERERS = { "aula-narrada": renderNarratedLesson, video: renderVideo, simulador: renderSimulator, slides: renderSlides, demo: renderDemo, carrossel: renderCarrossel, exercicio: renderExercise, codigo: renderCodigo, roteamento: renderRoteamento, patricia: renderPatricia };
 
   // Ponte para o renderizador do site: devolve o HTML do bloco, ou null se a linguagem não é nossa.
   function renderBlock(language, source, options = {}) {
@@ -871,6 +908,83 @@
       frame.loading = "lazy";
       frame.setAttribute("allowfullscreen", "");
       slot.replaceWith(frame);
+    }
+  }
+
+
+function syncSimulatorTheme(frame) {
+  try {
+    const theme =
+      document.documentElement.dataset.theme === "dark"
+        ? "dark"
+        : "light";
+
+    const simulatorDocument = frame.contentDocument;
+
+    if (!simulatorDocument?.documentElement) return;
+
+    simulatorDocument.documentElement.dataset.theme = theme;
+    simulatorDocument.documentElement.style.colorScheme = theme;
+  } catch {
+    // O iframe pode ainda não ter terminado de carregar.
+  }
+}
+
+let simulatorThemeObserver = null;
+
+function observeSimulatorTheme() {
+  if (simulatorThemeObserver) return;
+
+  simulatorThemeObserver = new MutationObserver(() => {
+    document
+      .querySelectorAll("iframe.simulator-embed")
+      .forEach(syncSimulatorTheme);
+  });
+
+  simulatorThemeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"]
+  });
+}
+
+
+    // Depois da sanitização: transforma os espaços reservados em simuladores.
+  function hydrateSimulatorEmbeds(root) {
+    for (const slot of root.querySelectorAll("[data-simulator-src]")) {
+      const src = slot.getAttribute("data-simulator-src");
+
+      let url;
+
+      try {
+        url = new URL(src, window.location.href);
+      } catch {
+        continue;
+      }
+
+      // Aceita somente simuladores cadastrados e hospedados no mesmo site.
+      const allowed = url.origin === window.location.origin &&
+        Object.values(SIMULATORS).some((simulator) =>
+          url.pathname.endsWith("/" + simulator.path)
+        );
+
+      if (!allowed) continue;
+
+      const frame = document.createElement("iframe");
+      frame.className = "simulator-embed";
+      frame.src = url.href;
+      frame.title = slot.getAttribute("data-simulator-title") || "Simulador interativo";
+      
+      frame.loading = "lazy";
+
+      frame.addEventListener("load", () => {
+      syncSimulatorTheme(frame);
+  });
+
+slot.replaceWith(frame);
+
+syncSimulatorTheme(frame);
+observeSimulatorTheme();
+
     }
   }
 
@@ -1048,5 +1162,5 @@
     return html.join("\n");
   }
 
-  return { escapeHtml, renderInline, renderMarkdown, stepIndex, renderBlock, isAllowedEmbed, hydrateVideoEmbeds, attachInteractions, highlightC };
+  return { escapeHtml, renderInline, renderMarkdown, stepIndex, renderBlock, isAllowedEmbed, hydrateVideoEmbeds, hydrateSimulatorEmbeds, attachInteractions, highlightC };
 });
